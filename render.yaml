@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: thekedar-pro
+    env: python
+    buildCommand: ""
+    startCommand: python server.py
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: DB_DIR
+        value: /var/data
+    disk:
+      name: thekedar-db-data
+      mountPath: /var/data
+      sizeGB: 1
+    routes:
+      - type: redirect
+        source: https://www.thekedarpro.com/*
+        destination: https://thekedarpro.com/*

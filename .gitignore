@@ -1,0 +1,29 @@
+# Executables & Binaries
+cloudflared.exe
+*.exe
+*.dll
+*.so
+*.dylib
+
+# SQLite Database & Data files (local database, backed up to persistent volumes in production)
+*.db
+*.sqlite
+*.sqlite3
+attendance.db
+
+# Environments & Dependencies
+node_modules/
+.env
+.env.local
+.env.*.local
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE & OS Garbage
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
