@@ -61,21 +61,21 @@ def init_db():
         print("DB init warning:", e)
 
 def send_real_email_otp(to_email, otp_code):
-    gmail_user = os.environ.get("GMAIL_USER")
-    gmail_pass = os.environ.get("GMAIL_APP_PASSWORD")
+    gmail_user = os.environ.get("GMAIL_USER") or os.environ.get("SMTP_USER") or os.environ.get("EMAIL_USER") or os.environ.get("MAIL_USERNAME")
+    gmail_pass = os.environ.get("GMAIL_APP_PASSWORD") or os.environ.get("SMTP_PASS") or os.environ.get("EMAIL_PASS") or os.environ.get("MAIL_PASSWORD")
 
-    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com" if gmail_user else None)
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
     smtp_port = int(os.environ.get("SMTP_PORT", 587))
-    smtp_user = gmail_user or os.environ.get("SMTP_USER")
-    smtp_pass = gmail_pass or os.environ.get("SMTP_PASS")
+    smtp_user = gmail_user
+    smtp_pass = gmail_pass
     smtp_from = os.environ.get("SMTP_FROM", smtp_user or "noreply@thekedar.com")
 
-    if not smtp_host or not smtp_user or not smtp_pass:
+    if not smtp_user or not smtp_pass:
         if os.environ.get("ALLOW_TEST_MODE") == "1":
             print(f"[TEST MODE] Generated OTP for {to_email}: {otp_code}")
             return True, "SENT"
         print(f"[SMTP ERROR] Email credentials (GMAIL_USER/GMAIL_APP_PASSWORD) not configured on server.")
-        return False, "Email service is not configured. Please contact administrator."
+        return False, "SMTP credentials missing on Vercel. Please set GMAIL_USER and GMAIL_APP_PASSWORD in Vercel Project Settings."
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f"🔒 {otp_code} is your THEKEDAR Verification Code"
