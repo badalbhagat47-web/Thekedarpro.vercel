@@ -258,6 +258,10 @@ const SuperAdminModule = {
                             class="px-2.5 py-1 ${c.status === 'BLOCKED' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-700 hover:bg-slate-800'} text-white rounded-lg text-xs font-semibold transition">
                       ${c.status === 'BLOCKED' ? 'Activate' : 'Suspend'}
                     </button>
+                    <button onclick="SuperAdminModule.openTwoStepDeleteModal('${c.id}')" 
+                            class="px-2.5 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/80 rounded-lg text-xs font-semibold transition">
+                      <i class="fa-solid fa-trash-can text-[11px] mr-1"></i>Delete
+                    </button>
                   </td>
                 </tr>
               `).join('')}
@@ -640,6 +644,90 @@ const SuperAdminModule = {
     `;
 
     modal.classList.remove('hidden');
+  },
+
+  // TWO-STEP COMPANY DELETION MODAL
+  openTwoStepDeleteModal(companyId) {
+    const comp = window.appStore.data.companies.find(c => c.id === companyId);
+    if (!comp) return;
+
+    const modal = document.getElementById('modalOverlay');
+    const content = document.getElementById('modalContent');
+
+    content.innerHTML = `
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl max-w-md mx-auto space-y-4 border border-rose-200 dark:border-rose-900/60">
+        <!-- STEP 1 WARNING HEADER -->
+        <div class="flex items-start gap-3 text-rose-600">
+          <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950/60 flex items-center justify-center shrink-0 border border-rose-200 dark:border-rose-800">
+            <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Two-Step Permanent Deletion</h3>
+            <p class="text-xs text-rose-600 dark:text-rose-400 font-semibold mt-0.5">Critical Administrative Action</p>
+          </div>
+        </div>
+
+        <div class="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40 rounded-xl text-xs space-y-1.5 text-slate-700 dark:text-slate-300">
+          <div>Company Name: <strong class="text-slate-900 dark:text-white font-bold">${comp.name}</strong></div>
+          <div>Company ID: <strong class="font-mono text-rose-600 font-bold">${comp.id}</strong></div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+            ⚠️ This will permanently delete the firm, all registered workers, attendance records, and financial logs. This action <strong>CANNOT BE UNDONE</strong>.
+          </p>
+        </div>
+
+        <!-- STEP 2 INPUT VALIDATION -->
+        <div class="space-y-2">
+          <label class="block text-xs font-semibold text-slate-800 dark:text-slate-200">
+            Step 2: Type the exact Company ID <span class="font-mono text-rose-600 font-bold select-all">"${comp.id}"</span> to confirm:
+          </label>
+          <input type="text" id="twoStepConfirmInput" 
+                 oninput="SuperAdminModule.validateTwoStepInput('${comp.id}')"
+                 placeholder="Type '${comp.id}'" 
+                 class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500">
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="appController.closeModal()" 
+                  class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold hover:bg-slate-200">
+            Cancel
+          </button>
+          <button id="twoStepSubmitBtn" disabled
+                  onclick="SuperAdminModule.confirmTwoStepDelete('${comp.id}')" 
+                  class="px-4 py-2 bg-slate-300 text-slate-500 dark:bg-slate-800 dark:text-slate-600 rounded-xl text-xs font-bold transition opacity-60 cursor-not-allowed">
+            Permanently Delete Firm
+          </button>
+        </div>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      const inp = document.getElementById('twoStepConfirmInput');
+      if (inp) inp.focus();
+    }, 100);
+  },
+
+  validateTwoStepInput(targetId) {
+    const input = document.getElementById('twoStepConfirmInput');
+    const submitBtn = document.getElementById('twoStepSubmitBtn');
+    if (!input || !submitBtn) return;
+
+    if (input.value.trim() === targetId) {
+      submitBtn.disabled = false;
+      submitBtn.className = "px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-rose-900/20 cursor-pointer active:scale-95";
+    } else {
+      submitBtn.disabled = true;
+      submitBtn.className = "px-4 py-2 bg-slate-300 text-slate-500 dark:bg-slate-800 dark:text-slate-600 rounded-xl text-xs font-bold transition opacity-60 cursor-not-allowed";
+    }
+  },
+
+  confirmTwoStepDelete(companyId) {
+    const input = document.getElementById('twoStepConfirmInput');
+    if (!input || input.value.trim() !== companyId) return;
+
+    window.appStore.deleteCompany(companyId);
+    window.appController.closeModal();
+    window.appController.renderCurrentView();
   }
 };
 

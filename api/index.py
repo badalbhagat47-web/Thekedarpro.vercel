@@ -576,6 +576,26 @@ class handler(BaseHTTPRequestHandler):
             self.send_json({"success": True, "company": new_comp})
             return
 
+        elif path == '/api/admin/delete-company':
+            current_data = get_db_state() or {}
+            target_id = payload.get('companyId', '').strip()
+            if not target_id:
+                self.send_json({"success": False, "error": "Company ID is required"}, status=400)
+                return
+
+            companies = current_data.get('companies', [])
+            updated_comps = [c for c in companies if c.get('id') != target_id]
+
+            workers = current_data.get('workers', [])
+            updated_workers = [w for w in workers if w.get('companyId') != target_id]
+
+            current_data['companies'] = updated_comps
+            current_data['workers'] = updated_workers
+            set_db_state(current_data)
+
+            self.send_json({"success": True, "message": f"Company {target_id} permanently deleted"})
+            return
+
         self.send_json({"error": "Endpoint not found"}, status=404)
 
     def do_OPTIONS(self):

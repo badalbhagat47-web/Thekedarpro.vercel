@@ -705,6 +705,25 @@ class Store {
     return null;
   }
 
+  deleteCompany(companyId) {
+    const compIdx = this.data.companies.findIndex(c => c.id === companyId);
+    if (compIdx !== -1) {
+      this.data.companies.splice(compIdx, 1);
+      this.data.workers = this.data.workers.filter(w => w.companyId !== companyId);
+      this.saveData();
+
+      // Sync with backend API
+      fetch('/api/admin/delete-company', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companyId })
+      }).catch(err => console.log('Backend sync delete exception:', err));
+
+      return { success: true };
+    }
+    return { success: false, error: 'Company not found' };
+  }
+
   // --- DATA ISOLATION QUERY METHODS ---
   getCompanyWorkers(companyId, includeInactive = false) {
     return this.data.workers.filter(w => w.companyId === companyId && (includeInactive || w.status !== 'INACTIVE'));
