@@ -881,20 +881,20 @@ class AppController {
         </div>
 
         <form onsubmit="appController.submitCompanyRegistrationForm(event)" class="space-y-3">
-          <div class="flex gap-4 p-2 bg-slate-100 rounded-xl text-xs font-extrabold">
+          <div class="flex gap-4 p-2 bg-slate-100 rounded-xl text-xs font-extrabold text-slate-800">
             <label class="flex items-center gap-1.5 cursor-pointer">
-              <input type="radio" name="regGstType" value="GST" checked onchange="appController.toggleRegGstField(true)"> GST Registered Company
+              <input type="radio" name="regGstType" value="GST" checked onchange="appController.toggleRegGstField(true)"> GST Registered
             </label>
             <label class="flex items-center gap-1.5 cursor-pointer">
-              <input type="radio" name="regGstType" value="NON_GST" onchange="appController.toggleRegGstField(false)"> Non-GST Firm
+              <input type="radio" name="regGstType" value="NON_GST" onchange="appController.toggleRegGstField(false)"> Non-GST
             </label>
           </div>
 
           <div id="gstinFieldGroup">
-            <label class="block text-xs font-bold text-slate-700 mb-1">GSTIN Number <span class="text-slate-400 font-normal">(Optional)</span></label>
+            <label id="gstinLabel" class="block text-xs font-bold text-slate-700 mb-1">GSTIN Number *</label>
             <div class="flex gap-2">
-              <input type="text" id="regGstin" placeholder="e.g. 07AAACR8821F1Z5" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-mono font-bold uppercase">
-              <button type="button" onclick="appController.verifyGstinClick()" class="px-3 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs whitespace-nowrap">Verify GST</button>
+              <input type="text" id="regGstin" required placeholder="e.g. 07AAACR8821F1Z5" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-mono font-bold uppercase">
+              <button type="button" onclick="appController.verifyGstinClick()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm">Verify GST</button>
             </div>
             <p id="gstinStatusAlert" class="text-[11px] text-slate-500 mt-1"></p>
           </div>
