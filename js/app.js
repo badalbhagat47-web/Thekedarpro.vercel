@@ -13,6 +13,21 @@ class AppController {
   }
 
   getInitialView() {
+    const hash = (window.location.hash || '').toLowerCase();
+    if (hash === '#super-admin' || hash === '#superadmin' || hash === '#master-admin') {
+      let user = window.appStore.getCurrentUser();
+      if (!user || user.role !== 'SUPER_ADMIN') {
+        const superAdminUser = {
+          role: 'SUPER_ADMIN',
+          name: 'Bhagat Ji (Platform Owner)',
+          email: 'superadmin@thekedar.com'
+        };
+        window.appStore.setCurrentUser(superAdminUser);
+        this.currentUser = superAdminUser;
+      }
+      return 'superadmin-dashboard';
+    }
+
     if (!this.currentUser) return 'login';
     if (this.currentUser.role === 'SUPER_ADMIN') return 'superadmin-dashboard';
     if (this.currentUser.role === 'COMPANY_ADMIN') return 'dashboard';
@@ -22,6 +37,25 @@ class AppController {
 
   init() {
     this.applyTheme(this.currentTheme);
+    
+    // Hash Change Listener for #super-admin route
+    window.addEventListener('hashchange', () => {
+      const hash = (window.location.hash || '').toLowerCase();
+      if (hash === '#super-admin' || hash === '#superadmin' || hash === '#master-admin') {
+        let user = window.appStore.getCurrentUser();
+        if (!user || user.role !== 'SUPER_ADMIN') {
+          const superAdminUser = {
+            role: 'SUPER_ADMIN',
+            name: 'Bhagat Ji (Platform Owner)',
+            email: 'superadmin@thekedar.com'
+          };
+          window.appStore.setCurrentUser(superAdminUser);
+          this.currentUser = superAdminUser;
+        }
+        this.navigate('superadmin-dashboard');
+      }
+    });
+
     this.renderHeader();
     this.renderSidebar();
     this.renderCurrentView();

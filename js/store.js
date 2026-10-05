@@ -616,21 +616,22 @@ class Store {
     };
   }
 
-  // --- SUPER ADMIN MANAGEMENT METHODS ---
+  // --- MASTER SUPER ADMIN MANAGEMENT METHODS ---
   getSuperAdminStats() {
     const companies = this.data.companies || [];
     const workers = this.data.workers || [];
 
     const totalCompanies = companies.length;
-    const gstCompanies = companies.filter(c => c.gstStatus === 'GST_VERIFIED').length;
-    const nonGstCompanies = companies.filter(c => c.gstStatus !== 'GST_VERIFIED').length;
-    const activeCompanies = companies.filter(c => c.status !== 'BLOCKED').length;
-    const inactiveCompanies = companies.filter(c => c.status === 'BLOCKED').length;
     const totalWorkers = workers.length;
+    const activeCompanies = companies.filter(c => c.status !== 'BLOCKED').length;
+    const suspendedCompanies = companies.filter(c => c.status === 'BLOCKED').length;
 
     const activeSubscriptions = companies.filter(c => !c.subscription || c.subscription.status === 'ACTIVE').length;
     const expiredSubscriptions = companies.filter(c => c.subscription && c.subscription.status === 'EXPIRED').length;
     const trialCompanies = companies.filter(c => c.subscription && c.subscription.status === 'TRIAL').length;
+
+    const companiesWithSub = activeSubscriptions + trialCompanies;
+    const companiesWithoutSub = totalCompanies - companiesWithSub;
 
     let totalRevenue = 0;
     let pendingPayments = 0;
@@ -645,11 +646,11 @@ class Store {
 
     return { 
       totalCompanies, 
-      gstCompanies, 
-      nonGstCompanies, 
       totalWorkers, 
       activeCompanies, 
-      inactiveCompanies, 
+      suspendedCompanies, 
+      companiesWithSub,
+      companiesWithoutSub,
       activeSubscriptions, 
       expiredSubscriptions, 
       trialCompanies, 

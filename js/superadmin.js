@@ -118,56 +118,56 @@ const SuperAdminModule = {
   // 1. OVERVIEW VIEW
   renderOverviewSection(stats, companies) {
     return `
-      <!-- 11 TOP-LEVEL KPI METRIC CARDS -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <!-- 10 MASTER SUPER ADMIN KPI METRIC CARDS -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-amber-500 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">Total Companies</span>
           <div class="text-2xl font-black text-slate-900 dark:text-white">${stats.totalCompanies}</div>
           <span class="text-[9px] text-slate-400 font-semibold block">Registered Firms</span>
         </div>
 
-        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-emerald-500 shadow-sm space-y-1">
-          <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">GST Verified</span>
-          <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400">${stats.gstCompanies}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Tax Compliant</span>
-        </div>
-
-        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-slate-600 shadow-sm space-y-1">
-          <span class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Non-GST Firms</span>
-          <div class="text-2xl font-black text-slate-800 dark:text-slate-200">${stats.nonGstCompanies}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Unregistered/Local</span>
-        </div>
-
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-indigo-500 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">Total Workers</span>
           <div class="text-2xl font-black text-indigo-600 dark:text-indigo-400">${stats.totalWorkers}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Active Workforce</span>
+          <span class="text-[9px] text-slate-400 font-semibold block">Platform Workforce</span>
         </div>
 
-        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-teal-500 shadow-sm space-y-1">
-          <span class="text-[10px] font-black uppercase text-teal-600 dark:text-teal-400 tracking-wider">Active Status</span>
-          <div class="text-2xl font-black text-teal-600 dark:text-teal-400">${stats.activeCompanies}</div>
+        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-emerald-500 shadow-sm space-y-1">
+          <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Active Companies</span>
+          <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400">${stats.activeCompanies}</div>
           <span class="text-[9px] text-slate-400 font-semibold block">Operational</span>
         </div>
 
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-rose-500 shadow-sm space-y-1">
-          <span class="text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 tracking-wider">Blocked Firms</span>
-          <div class="text-2xl font-black text-rose-600 dark:text-rose-400">${stats.inactiveCompanies}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Suspended Access</span>
+          <span class="text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 tracking-wider">Suspended Companies</span>
+          <div class="text-2xl font-black text-rose-600 dark:text-rose-400">${stats.suspendedCompanies}</div>
+          <span class="text-[9px] text-slate-400 font-semibold block">Blocked Access</span>
+        </div>
+
+        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-teal-500 shadow-sm space-y-1">
+          <span class="text-[10px] font-black uppercase text-teal-600 dark:text-teal-400 tracking-wider">With Subscription</span>
+          <div class="text-2xl font-black text-teal-600 dark:text-teal-400">${stats.companiesWithSub}</div>
+          <span class="text-[9px] text-slate-400 font-semibold block">Paid or Active Trial</span>
         </div>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-slate-600 shadow-sm space-y-1">
+          <span class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Without Sub</span>
+          <div class="text-xl font-black text-slate-800 dark:text-slate-200">${stats.companiesWithoutSub}</div>
+          <span class="text-[9px] text-slate-400 font-semibold block">Expired / Unsubscribed</span>
+        </div>
+
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-blue-500 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider">Active Subs</span>
           <div class="text-xl font-black text-blue-600 dark:text-blue-400">${stats.activeSubscriptions}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Paid Subscriptions</span>
+          <span class="text-[9px] text-slate-400 font-semibold block">Paid Active Plans</span>
         </div>
 
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-purple-500 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider">Expired Subs</span>
           <div class="text-xl font-black text-purple-600 dark:text-purple-400">${stats.expiredSubscriptions}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Renewal Due</span>
+          <span class="text-[9px] text-slate-400 font-semibold block">Renewal Overdue</span>
         </div>
 
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-amber-600 shadow-sm space-y-1">
@@ -179,13 +179,7 @@ const SuperAdminModule = {
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-emerald-600 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Total Revenue</span>
           <div class="text-xl font-black text-emerald-600 dark:text-emerald-400">₹${stats.totalRevenue.toLocaleString()}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Gross SaaS Earnings</span>
-        </div>
-
-        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-rose-600 shadow-sm space-y-1">
-          <span class="text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 tracking-wider">Pending Payments</span>
-          <div class="text-xl font-black text-rose-600 dark:text-rose-400">₹${stats.pendingPayments.toLocaleString()}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Awaiting Clearance</span>
+          <span class="text-[9px] text-slate-400 font-semibold block">Gross SaaS Collection</span>
         </div>
       </div>
 
