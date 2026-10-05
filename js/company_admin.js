@@ -1780,38 +1780,6 @@ const CompanyAdminModule = {
           </div>
 
           <button onclick="CompanyAdminModule.saveCompanySettings()" class="w-full py-3.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl text-xs shadow-md">Save Company Schedule & Settings</button>
-
-          <!-- DATA BACKUP & RESTORE PROTECTION CARD -->
-          <div class="border-t dark:border-slate-800 pt-4 mt-4 bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-2xl space-y-2">
-            <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
-              <i class="fa-solid fa-database text-base"></i>
-              <h4 class="text-xs font-black uppercase tracking-wider">Company Data Backup & Protection</h4>
-            </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400">Download a full JSON backup of your workers, attendance records, advances, and settings to prevent any data loss across devices or browser clears.</p>
-            <div class="flex flex-wrap items-center gap-3 pt-1">
-              <button onclick="CompanyAdminModule.downloadJSONBackup()" 
-                      class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center gap-2">
-                <i class="fa-solid fa-download"></i> Download Data Backup (JSON)
-              </button>
-              <button onclick="CompanyAdminModule.triggerImportJSONBackup()" 
-                      class="py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center gap-2">
-                <i class="fa-solid fa-upload"></i> Import Data Backup (JSON)
-              </button>
-            </div>
-          </div>
-
-          <!-- SECURED PLATFORM RESET DATA CARD -->
-          <div class="border-t dark:border-slate-800 pt-4 mt-4 bg-rose-500/10 border border-rose-500/30 p-4 rounded-2xl space-y-2">
-            <div class="flex items-center gap-2 text-rose-600 dark:text-rose-400">
-              <i class="fa-solid fa-triangle-exclamation text-base"></i>
-              <h4 class="text-xs font-black uppercase tracking-wider">Reset Company Platform Data</h4>
-            </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400">Restores platform seed state for testing/development. This option is double-guarded and restricted exclusively to Company Admins.</p>
-            <button onclick="CompanyAdminModule.resetCompanyPlatformData()" 
-                    class="py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs rounded-xl shadow transition flex items-center gap-2">
-              <i class="fa-solid fa-rotate-right"></i> Reset All Platform Data
-            </button>
-          </div>
         </div>
       </div>
     `;
