@@ -421,12 +421,16 @@ img, svg, video, canvas, input, select, textarea, button {
   margin-bottom: 0.75rem;
 }
 
-#modalOverlay, .modal-backdrop {
+#modalOverlay:not(.hidden), .modal-backdrop:not(.hidden) {
   padding: 0.75rem !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   box-sizing: border-box !important;
+}
+
+#modalOverlay.hidden, .modal-backdrop.hidden {
+  display: none !important;
 }
 
 #modalOverlay #modalContent, #modalContent, .modal-box {
