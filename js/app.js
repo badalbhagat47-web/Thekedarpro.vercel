@@ -139,6 +139,9 @@ class AppController {
     const langBtnText = document.getElementById('langBtnText');
     const headerSubTitle = document.getElementById('headerSubTitle');
 
+    const brandSubTitle = document.getElementById('headerBrandSubTitle');
+    const notificationBtn = document.getElementById('headerNotificationBtn');
+
     if (langBtnText) {
       langBtnText.innerText = window.i18n.currentLang === 'hi' ? 'English' : 'हिंदी';
     }
@@ -155,6 +158,8 @@ class AppController {
       if (loginNavBtn) loginNavBtn.classList.remove('hidden');
       if (logoutBtn) logoutBtn.classList.add('hidden');
       if (resetDemoBtn) resetDemoBtn.classList.add('hidden');
+      if (brandSubTitle) brandSubTitle.classList.add('hidden');
+      if (notificationBtn) notificationBtn.classList.add('hidden');
       return;
     }
 
@@ -164,21 +169,49 @@ class AppController {
     }
     if (loginNavBtn) loginNavBtn.classList.add('hidden');
     if (logoutBtn) logoutBtn.classList.remove('hidden');
+
+    const isSuperAdmin = this.currentUser && this.currentUser.role === 'SUPER_ADMIN';
+
+    if (brandSubTitle) {
+      if (isSuperAdmin) {
+        brandSubTitle.classList.remove('hidden');
+      } else {
+        brandSubTitle.classList.add('hidden');
+      }
+    }
+
+    if (notificationBtn) {
+      if (isSuperAdmin) {
+        notificationBtn.classList.remove('hidden');
+      } else {
+        notificationBtn.classList.add('hidden');
+      }
+    }
     
     // RESTRICT RESET DEMO DATA BUTTON EXCLUSIVELY TO SUPER_ADMIN ROLE
     if (resetDemoBtn) {
-      if (this.currentUser && this.currentUser.role === 'SUPER_ADMIN') {
+      if (isSuperAdmin) {
         resetDemoBtn.classList.remove('hidden');
       } else {
         resetDemoBtn.classList.add('hidden');
       }
     }
 
-    if (userNameEl) userNameEl.innerText = this.currentUser.name || this.currentUser.companyName || 'User';
+    if (userNameEl) {
+      userNameEl.innerText = isSuperAdmin ? 'Bhagat Ji (Platform Owner)' : (this.currentUser.name || this.currentUser.companyName || 'User');
+    }
+
     if (userRoleEl) {
-      userRoleEl.innerText = this.currentUser.role === 'SUPER_ADMIN' 
-        ? 'SUPER ADMIN' 
-        : (this.currentUser.role === 'COMPANY_ADMIN' ? 'CONTRACTOR ADMIN' : 'WORKER');
+      if (isSuperAdmin) {
+        userRoleEl.className = 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider shadow-sm';
+        userRoleEl.innerText = 'SUPER ADMIN';
+      } else if (this.currentUser.role === 'COMPANY_ADMIN') {
+        userRoleEl.className = 'bg-indigo-600 text-white font-extrabold px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider';
+        userRoleEl.innerText = 'CONTRACTOR ADMIN';
+      } else {
+        userRoleEl.className = 'bg-slate-700 text-slate-200 font-bold px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider';
+        userRoleEl.innerText = 'WORKER';
+      }
     }
   }
 
