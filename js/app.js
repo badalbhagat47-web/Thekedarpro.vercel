@@ -293,30 +293,61 @@ class AppController {
         </div>
       `;
     } else {
-      // COMPANY ADMIN MENU
-      const isAct = (v) => active === v ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 border border-amber-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white';
+      // COMPANY ADMIN MENU (Full 3D Visual System)
+      const isActClass = (v) => active === v ? 'nav-link-3d-active' : 'nav-link-3d-inactive';
+      
       sidebar.innerHTML = `
-        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">${t('navDashboard')} Menu</div>
-        <a href="#" onclick="appController.navigate('dashboard')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('dashboard')}">
-          <i class="fa-solid fa-chart-pie text-amber-400"></i> <span>${t('navDashboard')}</span>
+        <div class="px-3 py-2 text-[11px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-slate-800/80 mb-3">
+          <i class="fa-solid fa-compass text-amber-400 text-xs"></i> ${t('navDashboard')} Menu
+        </div>
+
+        <a href="#" onclick="appController.navigate('dashboard')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('dashboard')}">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+            <i class="fa-solid fa-chart-pie text-sm"></i>
+          </div>
+          <span>${t('navDashboard')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('workers')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('workers')}">
-          <i class="fa-solid fa-users text-indigo-400"></i> <span>${t('navWorkers')}</span>
+
+        <a href="#" onclick="appController.navigate('workers')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('workers')}">
+          <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30">
+            <i class="fa-solid fa-users text-sm"></i>
+          </div>
+          <span>${t('navWorkers')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('advances')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('advances')}">
-          <i class="fa-solid fa-hand-holding-dollar text-purple-400"></i> <span>${t('navAdvances')}</span>
+
+        <a href="#" onclick="appController.navigate('advances')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('advances')}">
+          <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30">
+            <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
+          </div>
+          <span>${t('navAdvances')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('salary')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('salary')}">
-          <i class="fa-solid fa-calculator text-emerald-400"></i> <span>${t('salaryCalculation')}</span>
+
+        <a href="#" onclick="appController.navigate('salary')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('salary')}">
+          <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+            <i class="fa-solid fa-calculator text-sm"></i>
+          </div>
+          <span>${t('salaryCalculation')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('payslips')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('payslips')}">
-          <i class="fa-solid fa-file-invoice-dollar text-amber-400"></i> <span>${t('salarySlips')}</span>
+
+        <a href="#" onclick="appController.navigate('payslips')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('payslips')}">
+          <div class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center shrink-0 border border-yellow-500/30">
+            <i class="fa-solid fa-file-invoice-dollar text-sm"></i>
+          </div>
+          <span>${t('salarySlips')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('festival-holidays')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('festival-holidays')}">
-          <i class="fa-solid fa-cake-candles text-yellow-400"></i> <span>${t('navFestivalHolidays')}</span>
+
+        <a href="#" onclick="appController.navigate('festival-holidays')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('festival-holidays')}">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+            <i class="fa-solid fa-cake-candles text-sm"></i>
+          </div>
+          <span>${t('navFestivalHolidays')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('settings')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('settings')}">
-          <i class="fa-solid fa-sliders text-slate-400"></i> <span>${t('navSettings')}</span>
+
+        <a href="#" onclick="appController.navigate('settings')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('settings')}">
+          <div class="w-7 h-7 rounded-lg bg-slate-500/20 text-slate-300 flex items-center justify-center shrink-0 border border-slate-500/30">
+            <i class="fa-solid fa-sliders text-sm"></i>
+          </div>
+          <span>${t('navSettings')}</span>
         </a>
       `;
     }

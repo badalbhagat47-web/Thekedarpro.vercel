@@ -307,14 +307,55 @@ button.bg-emerald-600:hover, button.bg-emerald-500:hover, .btn-3d-emerald:hover 
   box-shadow: 0 8px 20px rgba(5, 150, 105, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
-/* Automatic 3D Bevel for Indigo/Blue Buttons */
-button.bg-indigo-600, button.bg-blue-600, button.bg-sky-600 {
-  background: linear-gradient(180deg, #93c5fd 0%, #2563eb 50%, #1e40af 100%) !important;
-  border-bottom: 3.5px solid #1e3a8a !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+/* ==========================================================================
+   3D SIDEBAR NAVIGATION LINKS
+   ========================================================================== */
+.nav-link-3d {
+  position: relative;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  border-radius: 0.875rem;
+  margin-bottom: 0.35rem;
+}
+
+.nav-link-3d-active {
+  background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #d97706 100%) !important;
+  border-bottom: 3.5px solid #92400e !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.7) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+  color: #0f172a !important;
+  font-weight: 900 !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: scale(1.02) translateY(-1px);
+}
+
+.nav-link-3d-active:active {
+  transform: translateY(2px) scale(0.99) !important;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.nav-link-3d-inactive {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 2.5px solid rgba(2, 6, 23, 0.9) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  color: #cbd5e1 !important;
+  font-weight: 700;
+}
+
+.nav-link-3d-inactive:hover {
+  background: linear-gradient(180deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
   color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transform: translateX(4px) translateY(-1px);
+  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.nav-link-3d-inactive:active {
+  transform: translateX(2px) translateY(1.5px) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4) !important;
 }
 
 button.bg-indigo-600:hover, button.bg-blue-600:hover {
