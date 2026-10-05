@@ -403,6 +403,15 @@ class handler(BaseHTTPRequestHandler):
 
             # 3. Gateway C: Taxpayer Database Registry + Internal DB Lookups
             known_taxpayers = {
+                "06AEBFS9815A1Z8": {
+                    "legalName": "HARYANA LOGISTICS & INFRASTRUCTURE LLP",
+                    "tradeName": "HARYANA LOGISTICS & INFRASTRUCTURE LLP",
+                    "gstin": "06AEBFS9815A1Z8",
+                    "gstStatus": "ACTIVE",
+                    "businessType": "Limited Liability Partnership",
+                    "state": "Haryana",
+                    "pincode": "122001"
+                },
                 "09AAOFV9611N1Z9": {
                     "legalName": "VRY LOGISTIC PARK LLP",
                     "tradeName": "VRY LOGISTIC PARK LLP",

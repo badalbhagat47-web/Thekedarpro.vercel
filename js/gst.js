@@ -52,6 +52,16 @@ const ENTITY_TYPES = {
 
 // Official registry of verified GSTIN taxpayer records
 const mockGstRegistry = {
+  "06AEBFS9815A1Z8": {
+    legalName: "HARYANA LOGISTICS & INFRASTRUCTURE LLP",
+    tradeName: "HARYANA LOGISTICS & INFRASTRUCTURE LLP",
+    gstin: "06AEBFS9815A1Z8",
+    registrationDate: "12/05/2018",
+    gstStatus: "ACTIVE",
+    businessType: "Limited Liability Partnership",
+    state: "Haryana",
+    pincode: "122001"
+  },
   "09AAOFV9611N1Z9": {
     legalName: "VRY LOGISTIC PARK LLP",
     tradeName: "VRY LOGISTIC PARK LLP",
