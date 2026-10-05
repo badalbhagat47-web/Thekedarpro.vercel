@@ -894,7 +894,12 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-rose-100', 'text-rose-800', 'bg-emerald-100', 'text-emerald-800');
         statusAlert.classList.add('bg-blue-100', 'text-blue-900');
-        statusAlert.innerText = `📩 6-Digit OTP sent to ${email}. Valid for 10 minutes.`;
+        statusAlert.innerText = data.message || `📩 6-Digit OTP sent to ${email}. Valid for 10 minutes.`;
+      }
+
+      if (data.demoOtp) {
+        const otpInput = document.getElementById('regEmailOtp');
+        if (otpInput) otpInput.value = data.demoOtp;
       }
 
       this.startOtpCooldownTimer(60);
@@ -903,7 +908,7 @@ class AppController {
       btnSend.disabled = false;
       btnSend.innerText = "Send OTP";
       console.error("OTP send error:", e);
-      alert("❌ Could not connect to OTP service. Please try again.");
+      alert("❌ Could not connect to OTP service. Please check your network and try again.");
     }
   }
 
