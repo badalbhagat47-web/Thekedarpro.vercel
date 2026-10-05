@@ -123,7 +123,8 @@ def send_real_email_otp(to_email, otp_code):
         return True, "SENT"
     except Exception as e2:
         print(f"[SMTP STARTTLS 587 Error]: {e2}")
-        return False, f"Could not send email to inbox. Please verify GMAIL_USER and GMAIL_APP_PASSWORD credentials."
+        err_detail = str(e2) if str(e2) else str(e1)
+        return False, f"Gmail SMTP error: {err_detail}. Please verify GMAIL_USER and GMAIL_APP_PASSWORD credentials."
 
 def get_db_state():
     try:
