@@ -468,7 +468,7 @@ class handler(BaseHTTPRequestHandler):
                     "success": False,
                     "whatsappVerified": False,
                     "code": "PROVIDER_NOT_CONFIGURED",
-                    "error": "Official WhatsApp Business API is not configured on the server. Please add WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID environment variables in server settings."
+                    "error": "Wrong number or try again"
                 }, status=501)
                 return
 
@@ -501,7 +501,7 @@ class handler(BaseHTTPRequestHandler):
                             "success": False,
                             "whatsappVerified": False,
                             "mobile": clean_mob,
-                            "error": "This number is not available on WhatsApp"
+                            "error": "Wrong number or try again"
                         }, status=400)
                         return
             except Exception as ex:
@@ -509,7 +509,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_json({
                     "success": False,
                     "whatsappVerified": False,
-                    "error": f"WhatsApp verification service connection error: {str(ex)}"
+                    "error": "Please try again"
                 }, status=502)
                 return
 

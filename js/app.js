@@ -985,13 +985,13 @@ class AppController {
         if (statusAlert) {
           statusAlert.classList.remove('hidden', 'text-rose-600', 'text-emerald-600');
           statusAlert.classList.add('text-amber-600', 'font-bold');
-          statusAlert.innerText = "ℹ️ " + (data.error || "Official WhatsApp API is not configured on server.");
+          statusAlert.innerText = "⚠️ Please try again or enter a valid number.";
         }
       } else {
         if (statusAlert) {
           statusAlert.classList.remove('hidden', 'text-emerald-600', 'text-amber-600');
           statusAlert.classList.add('text-rose-600', 'font-bold');
-          statusAlert.innerText = "❌ " + (data.error || "This number is not available on WhatsApp.");
+          statusAlert.innerText = "❌ " + (data.error || "Wrong number or try again.");
         }
       }
     } catch (e) {
@@ -1003,7 +1003,7 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'text-emerald-600', 'text-amber-600');
         statusAlert.classList.add('text-rose-600', 'font-bold');
-        statusAlert.innerText = "❌ Connection error during WhatsApp validation.";
+        statusAlert.innerText = "❌ Please try again.";
       }
     }
   }
