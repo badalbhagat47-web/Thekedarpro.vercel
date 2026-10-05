@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ठेकेदार Attendance & Salary Management System</title>
+  <title>Thekedar - Official Contractor Management System</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -39,6 +39,9 @@
       }
     })();
   </script>
+  <!-- Official Brand Favicon -->
+  <link rel="icon" type="image/svg+xml" href="brand/thekedar-icon.svg">
+  <link rel="alternate icon" type="image/png" href="brand/thekedar-icon.png">
 </head>
 <body class="h-full flex flex-col font-sans antialiased text-slate-900 bg-slate-100 dark:bg-slate-950 dark:text-slate-100 selection:bg-amber-400 selection:text-slate-950">
 
@@ -46,19 +49,12 @@
   <header id="mainHeader" class="bg-slate-900 text-white sticky top-0 z-50 shadow-md border-b border-slate-800 w-full min-w-0">
     <div class="w-full px-4 sm:px-6">
       <div class="flex items-center justify-between h-16 gap-2">
-        <!-- Logo & Brand (Fixed Left Position) -->
-        <div class="flex items-center space-x-3 cursor-pointer shrink-0 min-w-max" onclick="appController.navigate('dashboard')">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 flex-shrink-0">
-            <i class="fa-solid fa-bolt text-xl"></i>
-          </div>
-          <div class="shrink-0">
-            <h1 class="brand-font text-2xl leading-none font-bold text-amber-400 tracking-wide whitespace-nowrap">
-              THEKEDAR <span class="text-white font-normal text-lg">PRO</span>
-            </h1>
-            <p class="text-[10px] text-slate-400 leading-tight uppercase tracking-wider whitespace-nowrap" id="headerSubTitle">
-              Attendance & Salary System
-            </p>
-          </div>
+        <!-- Official Responsive Thekedar Branding (Fixed Left Position) -->
+        <div class="flex items-center cursor-pointer shrink-0 min-w-max py-1" onclick="appController.navigate('dashboard')" title="Thekedar Home">
+          <!-- Desktop Full Logo -->
+          <img src="brand/thekedar-logo.svg" alt="Thekedar" class="hidden sm:block h-10 w-auto object-contain hover:scale-105 transition" onerror="this.onerror=null; this.src='public/brand/thekedar-logo.svg';">
+          <!-- Mobile Compact Icon -->
+          <img src="brand/thekedar-icon.svg" alt="Thekedar" class="block sm:hidden h-9 w-9 object-contain hover:scale-105 transition" onerror="this.onerror=null; this.src='public/brand/thekedar-icon.svg';">
         </div>
 
         <!-- Right Action Controls (Fixed Right Alignment) -->

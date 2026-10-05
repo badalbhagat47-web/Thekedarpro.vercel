@@ -8,13 +8,8 @@ const AuthModule = {
     return `
       <div class="max-w-5xl mx-auto py-6 sm:py-10 px-4 space-y-6">
         <!-- BRAND HEADER SECTION -->
-        <div class="text-center space-y-2 max-w-3xl mx-auto">
-          <h1 class="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white brand-font tracking-wide leading-none">
-            THEKEDAR <span class="text-amber-500 font-extrabold">PRO</span>
-          </h1>
-          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-semibold tracking-wide uppercase" data-i18n="appSubName">
-            ${t('appSubName')}
-          </p>
+        <div class="text-center space-y-2 max-w-3xl mx-auto flex flex-col items-center">
+          <img src="brand/thekedar-logo.svg" alt="Thekedar Logo" class="h-16 sm:h-20 w-auto object-contain mx-auto my-2 filter drop-shadow-md" onerror="this.onerror=null; this.src='public/brand/thekedar-logo.svg';">
         </div>
 
         <!-- MAIN DUAL-PANEL LOGIN CONTAINER CARD -->
