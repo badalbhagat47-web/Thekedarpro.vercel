@@ -260,167 +260,192 @@ html.dark .custom-table tr:hover {
    PREMIUM 3D VISUAL DESIGN SYSTEM & TACTILE ACCENTS
    ========================================================================== */
 
-/* Universal Button Tactile Interaction */
-button, .btn-3d {
+/* Universal Button 3D Bevel & Tactile Interaction */
+button, .btn-3d, [type="button"], [type="submit"] {
   position: relative;
-  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.12s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s ease;
+  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.12s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease, border-color 0.15s ease;
   user-select: none;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
-button:active:not(:disabled), .btn-3d:active:not(:disabled) {
-  transform: translateY(2px) scale(0.985) !important;
+/* Universal Button Tactile 3D Press Down Effect */
+button:active:not(:disabled), .btn-3d:active:not(:disabled), [type="button"]:active:not(:disabled), [type="submit"]:active:not(:disabled) {
+  transform: translateY(2.5px) scale(0.985) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Automatic 3D Bevel for Standard Amber/Yellow Buttons */
+button.bg-amber-500, button.bg-amber-600, .bg-amber-500 button, button.bg-yellow-500 {
+  background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #d97706 100%) !important;
+  border-bottom: 3.5px solid #92400e !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 5px 15px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  color: #0f172a !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+button.bg-amber-500:hover, button.bg-amber-600:hover, button.bg-yellow-500:hover {
+  background: linear-gradient(180deg, #fde047 0%, #fbbf24 50%, #b45309 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Automatic 3D Bevel for Emerald/Green Buttons (e.g. Save, Verify, Punch) */
+button.bg-emerald-600, button.bg-emerald-500, button.bg-green-600 {
+  background: linear-gradient(180deg, #6ee7b7 0%, #10b981 50%, #047857 100%) !important;
+  border-bottom: 3.5px solid #064e3b !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 5px 15px rgba(5, 150, 105, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+button.bg-emerald-600:hover, button.bg-emerald-500:hover {
+  background: linear-gradient(180deg, #a7f3d0 0%, #34d399 50%, #065f46 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Automatic 3D Bevel for Indigo/Blue Buttons */
+button.bg-indigo-600, button.bg-blue-600, button.bg-sky-600 {
+  background: linear-gradient(180deg, #93c5fd 0%, #2563eb 50%, #1e40af 100%) !important;
+  border-bottom: 3.5px solid #1e3a8a !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+button.bg-indigo-600:hover, button.bg-blue-600:hover {
+  background: linear-gradient(180deg, #bfdbfe 0%, #3b82f6 50%, #1c3d5a 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Automatic 3D Bevel for Rose/Red Cancel/Delete Buttons */
+button.bg-rose-600, button.bg-red-600 {
+  background: linear-gradient(180deg, #fca5a5 0%, #ef4444 50%, #b91c1c 100%) !important;
+  border-bottom: 3.5px solid #7f1d1d !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   3D SIDEBAR NAVIGATION MENU OPTIONS & BUTTONS
+   ========================================================================== */
+
+#desktopSidebar nav a, #desktopSidebar nav button, .sidebar-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+/* Inactive Sidebar 3D Bevel Style */
+#desktopSidebar nav a:not(.bg-amber-500):not(.active),
+#desktopSidebar nav button:not(.bg-amber-500):not(.active) {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 2.5px solid rgba(2, 6, 23, 0.9);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+/* Inactive Sidebar Item Hover 3D Lift */
+#desktopSidebar nav a:not(.bg-amber-500):not(.active):hover,
+#desktopSidebar nav button:not(.bg-amber-500):not(.active):hover {
+  background: linear-gradient(180deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
+  border-color: rgba(245, 158, 11, 0.4);
+  border-bottom: 2.5px solid rgba(245, 158, 11, 0.6);
+  color: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Active Sidebar 3D Pill Option (e.g. Festival Holidays, Worker Roster, Dashboard) */
+#desktopSidebar nav a.bg-amber-500,
+#desktopSidebar nav button.bg-amber-500,
+#desktopSidebar nav a.active,
+#desktopSidebar nav button.active {
+  background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.7) !important;
+  border-bottom: 3.5px solid #92400e !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3), inset 0 1.5px 0 rgba(255, 255, 255, 0.7) !important;
+  color: #0f172a !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+#desktopSidebar nav a.bg-amber-500 i,
+#desktopSidebar nav button.bg-amber-500 i,
+#desktopSidebar nav a.active i,
+#desktopSidebar nav button.active i {
+  color: #0f172a !important;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5));
 }
 
 /* Tactile 3D Input & Select Focus Elevation */
 input[type="text"], input[type="number"], input[type="email"], input[type="password"], input[type="date"], input[type="month"], input[type="time"], select {
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  border-radius: 0.75rem;
 }
 
 input:focus, select:focus {
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3), 0 6px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35), 0 6px 16px rgba(0, 0, 0, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
 }
 
-/* 3D Depth Cards */
-.card-3d {
-  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+/* 3D Depth Cards & Stat Panels (Daily Wage, Payable Days, Overtime, Net Salary) */
+.card-3d, .glass-card, .glass-card-dark {
+  position: relative;
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(226, 232, 240, 0.9);
+  border-bottom: 3px solid rgba(203, 213, 225, 0.9);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 1.25rem;
 }
 
-html.dark .card-3d {
-  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5), 0 4px 8px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+html.dark .card-3d, html.dark .glass-card, html.dark .glass-card-dark {
+  box-shadow: 0 14px 36px -4px rgba(0, 0, 0, 0.6), 0 6px 14px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(51, 65, 85, 0.9);
+  border-bottom: 3.5px solid rgba(15, 23, 42, 0.95);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
 }
 
-.card-3d:hover {
+.card-3d:hover, .glass-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 20px 40px -6px rgba(0, 0, 0, 0.15), 0 8px 12px -2px rgba(0, 0, 0, 0.1);
-}
-
-/* 3D Bevel Tactile Buttons with High Gloss & Depth */
-.btn-3d-amber {
-  background: linear-gradient(180deg, #fcd34d 0%, #fbbf24 45%, #d97706 100%);
-  border-bottom: 3.5px solid #92400e;
-  border-top: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  color: #0f172a;
-}
-.btn-3d-amber:hover {
-  background: linear-gradient(180deg, #fde047 0%, #f59e0b 45%, #b45309 100%);
-  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-.btn-3d-amber:active {
-  transform: translateY(2.5px) !important;
-  border-bottom-width: 1px !important;
-  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25) !important;
-}
-
-.btn-3d-emerald {
-  background: linear-gradient(180deg, #6ee7b7 0%, #34d399 45%, #059669 100%);
-  border-bottom: 3.5px solid #065f46;
-  border-top: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  color: #ffffff;
-}
-.btn-3d-emerald:hover {
-  background: linear-gradient(180deg, #a7f3d0 0%, #10b981 45%, #047857 100%);
-  box-shadow: 0 6px 18px rgba(5, 150, 105, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-.btn-3d-emerald:active {
-  transform: translateY(2.5px) !important;
-  border-bottom-width: 1px !important;
-  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25) !important;
-}
-
-.btn-3d-indigo {
-  background: linear-gradient(180deg, #a5b4fc 0%, #818cf8 45%, #4f46e5 100%);
-  border-bottom: 3.5px solid #3730a3;
-  border-top: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  color: #ffffff;
-}
-.btn-3d-indigo:hover {
-  background: linear-gradient(180deg, #c7d2fe 0%, #6366f1 45%, #4338ca 100%);
-  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-.btn-3d-indigo:active {
-  transform: translateY(2.5px) !important;
-  border-bottom-width: 1px !important;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25) !important;
-}
-
-.btn-3d-purple {
-  background: linear-gradient(180deg, #d8b4fe 0%, #c084fc 45%, #9333ea 100%);
-  border-bottom: 3.5px solid #6b21a8;
-  border-top: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 14px rgba(147, 51, 234, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  color: #ffffff;
-}
-.btn-3d-purple:hover {
-  background: linear-gradient(180deg, #e9d5ff 0%, #a855f7 45%, #7e22ce 100%);
-  box-shadow: 0 6px 18px rgba(147, 51, 234, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-.btn-3d-purple:active {
-  transform: translateY(2.5px) !important;
-  border-bottom-width: 1px !important;
-  box-shadow: 0 2px 6px rgba(147, 51, 234, 0.25) !important;
-}
-
-.btn-3d-rose {
-  background: linear-gradient(180deg, #fca5a5 0%, #f87171 45%, #dc2626 100%);
-  border-bottom: 3.5px solid #991b1b;
-  border-top: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  color: #ffffff;
-}
-.btn-3d-rose:hover {
-  background: linear-gradient(180deg, #fecaca 0%, #ef4444 45%, #b91c1c 100%);
-  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-.btn-3d-rose:active {
-  transform: translateY(2.5px) !important;
-  border-bottom-width: 1px !important;
-  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25) !important;
-}
-
-.btn-3d-slate {
-  background: linear-gradient(180deg, #94a3b8 0%, #64748b 45%, #334155 100%);
-  border-bottom: 3.5px solid #0f172a;
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 14px rgba(51, 65, 85, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  color: #ffffff;
-}
-.btn-3d-slate:hover {
-  background: linear-gradient(180deg, #cbd5e1 0%, #475569 45%, #1e293b 100%);
-  box-shadow: 0 6px 18px rgba(51, 65, 85, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-.btn-3d-slate:active {
-  transform: translateY(2.5px) !important;
-  border-bottom-width: 1px !important;
-  box-shadow: 0 2px 6px rgba(51, 65, 85, 0.25) !important;
+  box-shadow: 0 22px 45px -6px rgba(0, 0, 0, 0.2), 0 10px 18px -2px rgba(0, 0, 0, 0.12);
 }
 
 /* 3D Option Card Utility */
 .option-card-3d {
   background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(248,250,252,0.95));
   border: 1px solid rgba(226, 232, 240, 0.9);
-  border-bottom: 3px solid rgba(203, 213, 225, 0.9);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-  transition: all 0.15s ease;
+  border-bottom: 3.5px solid rgba(203, 213, 225, 0.9);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: all 0.18s ease;
 }
 
 html.dark .option-card-3d {
   background: linear-gradient(145deg, rgba(30,41,59,0.98), rgba(15,23,42,0.95));
   border: 1px solid rgba(51, 65, 85, 0.9);
-  border-bottom: 3px solid rgba(30, 41, 59, 0.9);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-bottom: 3.5px solid rgba(15, 23, 42, 0.95);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .option-card-3d:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15);
 }
 
 /* Chart 3D Container */
