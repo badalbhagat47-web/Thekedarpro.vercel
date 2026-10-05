@@ -6,9 +6,9 @@ import sqlite3
 import hashlib
 import ssl
 import smtplib
-import urllib.request
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import urllib.request
 from urllib.parse import parse_qs, urlparse
 
 # Define persistent DB file path suitable for both local development and Vercel serverless environment
@@ -219,17 +219,13 @@ def set_db_state(data_dict):
 
 def validate_mobile_str(mobile_raw):
     if not mobile_raw:
-        return False, "Please enter a valid phone number."
-    s = str(mobile_raw).strip()
-    # Check valid international characters: optional leading +, then digits, spaces, hyphens
-    has_plus = s.startswith('+')
-    clean = (s[1:] if has_plus else s).replace(" ", "").replace("-", "")
-    
-    if not clean.isdigit() or len(clean) < 7 or len(clean) > 15:
-        return False, "Please enter a valid phone number."
-    
-    formatted = ("+" if has_plus else "") + clean
-    return True, formatted
+        return False, "Mobile number is required."
+    clean = str(mobile_raw).strip().replace(" ", "").replace("-", "")
+    if clean.startswith("+91"):
+        clean = clean[3:]
+    if len(clean) != 10 or not clean.isdigit():
+        return False, "Mobile number must be exactly 10 digits."
+    return True, clean
 
 class handler(BaseHTTPRequestHandler):
     def send_json(self, data, status=200):
@@ -314,35 +310,98 @@ class handler(BaseHTTPRequestHandler):
                 self.send_json({"success": False, "verified": False, "error": "Invalid GSTIN format. Must be 15 characters."}, status=400)
                 return
 
-            # 1. Check if GST_API_KEY is configured in environment variables for live GSP lookup
-            gst_api_key = os.environ.get('GST_API_KEY') or os.environ.get('GSTIN_API_KEY')
-            if gst_api_key:
-                try:
-                    gsp_url = f"https://sheet.gstincheck.co.in/check/{gst_api_key}/{gstin_raw}"
-                    req = urllib.request.Request(gsp_url, headers={'User-Agent': 'Mozilla/5.0'})
-                    with urllib.request.urlopen(req, timeout=5) as resp:
-                        gsp_res = json.loads(resp.read().decode('utf-8'))
-                        if gsp_res.get('flag') and gsp_res.get('data'):
-                            d = gsp_res['data']
+            print(f"[GST_VERIFY_REQUEST] Processing GSTIN: {gstin_raw}")
+
+            # 1. Environment Variable API Keys (supports GST_API_KEY, GSTIN_API_KEY, GSP_API_KEY, CLEAR_API_KEY)
+            raw_keys = (
+                os.environ.get('GST_API_KEY') or 
+                os.environ.get('GSTIN_API_KEY') or 
+                os.environ.get('GSP_API_KEY') or 
+                os.environ.get('CLEAR_API_KEY') or ''
+            ).strip()
+
+            if raw_keys:
+                api_keys = [k.strip() for k in raw_keys.replace(';', ',').split(',') if k.strip()]
+                print(f"[GST_VERIFY_KEY_FOUND] Loaded {len(api_keys)} API key(s) from environment variables.")
+                
+                for k in api_keys:
+                    # Gateway A: GSTINCheck GSP API
+                    try:
+                        gsp_url = f"https://sheet.gstincheck.co.in/check/{k}/{gstin_raw}"
+                        req = urllib.request.Request(gsp_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+                        with urllib.request.urlopen(req, timeout=5) as resp:
+                            gsp_res = json.loads(resp.read().decode('utf-8'))
+                            if gsp_res.get('flag') and gsp_res.get('data'):
+                                d = gsp_res['data']
+                                legal_name = d.get('lgnm') or d.get('tradeNam') or d.get('legalName') or d.get('tradeName')
+                                trade_name = d.get('tradeNam') or d.get('lgnm') or d.get('tradeName') or legal_name
+                                st_name = d.get('pradr', {}).get('addr', {}).get('stcd') or d.get('state') or 'India'
+                                b_type = d.get('ctb') or d.get('businessType') or 'Registered Business'
+                                status_str = d.get('sts') or d.get('gstStatus') or 'ACTIVE'
+
+                                print(f"[GST_VERIFY_SUCCESS] GSP API matched: {legal_name}")
+                                self.send_json({
+                                    "success": True,
+                                    "verified": True,
+                                    "hasKnownName": True,
+                                    "source": "LIVE_GSP_API",
+                                    "data": {
+                                        "legalName": legal_name,
+                                        "tradeName": trade_name,
+                                        "gstin": gstin_raw,
+                                        "gstStatus": status_str,
+                                        "businessType": b_type,
+                                        "state": st_name
+                                    }
+                                })
+                                return
+                            else:
+                                print(f"[GST_VERIFY_WARN] Key '{k[:4]}...' response flag false: {gsp_res.get('message')}")
+                    except Exception as ex:
+                        print(f"[GST_VERIFY_ERROR] Key '{k[:4]}...' lookup exception: {ex}")
+
+            # 2. Gateway B: ClearTax Live Scraping Gateway
+            try:
+                ct_url = f"https://cleartax.in/gst-number-search/{gstin_raw.lower()}/"
+                ctx_ssl = ssl._create_unverified_context()
+                ct_req = urllib.request.Request(ct_url, headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+                })
+                with urllib.request.urlopen(ct_req, context=ctx_ssl, timeout=6) as ct_resp:
+                    ct_html = ct_resp.read().decode('utf-8', errors='ignore')
+                    idx = ct_html.find('__NEXT_DATA__')
+                    if idx != -1:
+                        s_idx = ct_html.find('>', idx) + 1
+                        e_idx = ct_html.find('</script>', s_idx)
+                        ct_data = json.loads(ct_html[s_idx:e_idx])
+                        gst_details = ct_data.get('props', {}).get('pageProps', {}).get('gstinData', {})
+                        if gst_details and (gst_details.get('legalName') or gst_details.get('tradeNam') or gst_details.get('lgnm')):
+                            l_name = gst_details.get('legalName') or gst_details.get('lgnm') or gst_details.get('tradeNam')
+                            t_name = gst_details.get('tradeName') or gst_details.get('tradeNam') or l_name
+                            st_val = gst_details.get('state') or gst_details.get('pradr', {}).get('addr', {}).get('stcd') or 'India'
+                            b_val = gst_details.get('businessType') or gst_details.get('ctb') or 'Registered Enterprise'
+                            
+                            print(f"[GST_VERIFY_SUCCESS] ClearTax Gateway matched: {l_name}")
                             self.send_json({
                                 "success": True,
                                 "verified": True,
                                 "hasKnownName": True,
-                                "source": "LIVE_GST_PORTAL",
+                                "source": "CLEARTAX_GATEWAY",
                                 "data": {
-                                    "legalName": d.get('lgnm') or d.get('tradeNam'),
-                                    "tradeName": d.get('tradeNam') or d.get('lgnm'),
+                                    "legalName": l_name,
+                                    "tradeName": t_name,
                                     "gstin": gstin_raw,
-                                    "gstStatus": d.get('sts', 'ACTIVE'),
-                                    "businessType": d.get('ctb', 'Registered Business'),
-                                    "state": d.get('pradr', {}).get('addr', {}).get('stcd', 'India')
+                                    "gstStatus": "ACTIVE",
+                                    "businessType": b_val,
+                                    "state": st_val
                                 }
                             })
                             return
-                except Exception as ex:
-                    print("Live GST API lookup error:", ex)
+            except Exception as ct_ex:
+                print(f"[GST_VERIFY_INFO] ClearTax gateway bypass: {ct_ex}")
 
-            # 2. Check taxpayer registry or if company with this GSTIN is already registered in internal SQLite DB
+            # 3. Gateway C: Taxpayer Database Registry + Internal DB Lookups
             known_taxpayers = {
                 "09AAOFV9611N1Z9": {
                     "legalName": "VRY LOGISTIC PARK LLP",
@@ -361,11 +420,20 @@ class handler(BaseHTTPRequestHandler):
                     "gstStatus": "ACTIVE",
                     "businessType": "Proprietorship",
                     "state": "Delhi / NCR"
+                },
+                "27AAACR1234F1Z1": {
+                    "legalName": "MAHARASHTRA ELECTRICAL WORKS",
+                    "tradeName": "MAHA POWER SERVICES",
+                    "gstin": "27AAACR1234F1Z1",
+                    "gstStatus": "ACTIVE",
+                    "businessType": "Partnership",
+                    "state": "Maharashtra"
                 }
             }
 
             if gstin_raw in known_taxpayers:
                 tax_data = known_taxpayers[gstin_raw]
+                print(f"[GST_VERIFY_SUCCESS] Registry matched: {tax_data['legalName']}")
                 self.send_json({
                     "success": True,
                     "verified": True,
@@ -380,6 +448,7 @@ class handler(BaseHTTPRequestHandler):
             matching_comp = next((c for c in companies if c.get('gstin', '').upper() == gstin_raw), None)
 
             if matching_comp:
+                print(f"[GST_VERIFY_SUCCESS] Internal DB matched: {matching_comp.get('name')}")
                 self.send_json({
                     "success": True,
                     "verified": True,
@@ -396,7 +465,7 @@ class handler(BaseHTTPRequestHandler):
                 })
                 return
 
-            # 3. Decode state and entity type for active GSTIN validation
+            # 4. Gateway D: State & Entity Type Decoder for valid active GSTINs
             state_codes = {
                 "01": "Jammu & Kashmir", "02": "Himachal Pradesh", "03": "Punjab", "04": "Chandigarh",
                 "05": "Uttarakhand", "06": "Haryana", "07": "Delhi / NCR", "08": "Rajasthan",
@@ -418,10 +487,12 @@ class handler(BaseHTTPRequestHandler):
             st_name = state_codes.get(st_code, "India")
             ent_type = entity_types.get(pan_type, "Registered Enterprise")
 
+            print(f"[GST_VERIFY_ACTIVE] Decoded GSTIN: {st_name} | {ent_type}")
             self.send_json({
                 "success": True,
                 "verified": True,
                 "hasKnownName": False,
+                "source": "GSTIN_ACTIVE_FORMAT",
                 "data": {
                     "gstin": gstin_raw,
                     "gstStatus": "ACTIVE",
@@ -565,111 +636,32 @@ class handler(BaseHTTPRequestHandler):
             self.send_json({"success": True, "email": email, "verified": verified})
             return
 
-        elif path == '/api/whatsapp/verify-number':
-            mobile_raw = payload.get('mobile', '')
-            valid_fmt, clean_mob = validate_mobile_str(mobile_raw)
-
-            if not valid_fmt:
-                self.send_json({"success": False, "whatsappVerified": False, "error": clean_mob}, status=400)
-                return
-
-            # Check duplicate numbers in existing companies
-            current_data = get_db_state() or {}
-            companies = current_data.get('companies', [])
-            for c in companies:
-                if c.get('mobile') == clean_mob:
-                    self.send_json({"success": False, "whatsappVerified": False, "error": "This phone number cannot be used. Please check the number and try again."}, status=400)
-                    return
-
-            # Read WhatsApp Provider / Meta Cloud API credentials from environment variables
-            wa_token = os.environ.get("WHATSAPP_ACCESS_TOKEN") or os.environ.get("META_WHATSAPP_TOKEN") or os.environ.get("WHATSAPP_API_KEY")
-            wa_phone_id = os.environ.get("WHATSAPP_PHONE_NUMBER_ID") or os.environ.get("META_PHONE_ID")
-
-            if not wa_token or not wa_phone_id:
-                # Security Requirement: Do NOT fake validation results when provider is not configured.
-                self.send_json({
-                    "success": False,
-                    "whatsappVerified": False,
-                    "code": "PROVIDER_NOT_CONFIGURED",
-                    "error": "Wrong number or try again"
-                }, status=501)
-                return
-
-            # Background Lookup via official Meta WhatsApp Graph API contacts endpoint
-            try:
-                url = f"https://graph.facebook.com/v17.0/{wa_phone_id.strip()}/contacts"
-                body_data = json.dumps({
-                    "blocking": "wait",
-                    "contacts": [f"+91{clean_mob}"]
-                }).encode('utf-8')
-
-                req = urllib.request.Request(url, data=body_data, headers={
-                    "Authorization": f"Bearer {wa_token.strip()}",
-                    "Content-Type": "application/json"
-                }, method="POST")
-
-                with urllib.request.urlopen(req, timeout=10) as resp:
-                    res_json = json.loads(resp.read().decode('utf-8'))
-                    contacts = res_json.get('contacts', [])
-                    if contacts and len(contacts) > 0 and contacts[0].get('status') == 'valid':
-                        self.send_json({
-                            "success": True,
-                            "whatsappVerified": True,
-                            "mobile": clean_mob,
-                            "message": "✓ WhatsApp number verified"
-                        })
-                        return
-                    else:
-                        self.send_json({
-                            "success": False,
-                            "whatsappVerified": False,
-                            "mobile": clean_mob,
-                            "error": "Wrong number or try again"
-                        }, status=400)
-                        return
-            except Exception as ex:
-                print(f"[WhatsApp API Exception]: {ex}")
-                self.send_json({
-                    "success": False,
-                    "whatsappVerified": False,
-                    "error": "Please try again"
-                }, status=502)
-                return
-
         elif path == '/api/auth/register-company':
             current_data = get_db_state() or {}
             companies = current_data.get('companies', [])
             
             email = payload.get('email', '').strip().lower()
-            mobile_raw = payload.get('mobile', '').strip()
-            
-            valid_fmt, mobile = validate_mobile_str(mobile_raw)
-            if not valid_fmt:
-                self.send_json({"success": False, "error": f"❌ {mobile}"}, status=400)
-                return
-
-            raw_gstin = payload.get('gstin', '')
-            gstin = raw_gstin.strip().upper() if raw_gstin and str(raw_gstin).strip() else None
-            gst_type = payload.get('gstStatus') or ('GST_VERIFIED' if gstin else 'NON_GST_REGISTERED')
+            mobile = payload.get('mobile', '').strip()
+            gstin = payload.get('gstin', '').strip().upper() if payload.get('gstin') else None
 
             # Check duplicates
             for c in companies:
                 if c.get('email', '').lower() == email:
-                    self.send_json({"success": False, "error": "❌ This email address cannot be used. Please check the address and try again."}, status=400)
+                    self.send_json({"success": False, "error": "❌ A company with this email address is already registered."}, status=400)
                     return
                 if c.get('mobile') == mobile:
-                    self.send_json({"success": False, "error": "❌ This phone number cannot be used. Please check the number and try again."}, status=400)
+                    self.send_json({"success": False, "error": "❌ A company with this mobile number is already registered."}, status=400)
                     return
                 if gstin and c.get('gstin') and c.get('gstin').upper() == gstin:
                     self.send_json({"success": False, "error": "❌ This GSTIN is already registered."}, status=400)
                     return
 
-            company_id = f"GST-{gstin[:6]}-{mobile[-4:]}" if gstin else f"COMP-{hashlib.sha256(email.encode()).hexdigest()[:6].upper()}-{mobile[-4:]}"
+            company_id = f"COMP-{hashlib.sha256(email.encode()).hexdigest()[:6].upper()}-{mobile[-4:]}"
             new_comp = {
                 "id": company_id,
                 "name": payload.get('name'),
                 "legalName": payload.get('legalName') or payload.get('name'),
-                "gstStatus": gst_type,
+                "gstStatus": payload.get('gstStatus') or ('GST_VERIFIED' if gstin else 'NON_GST_REGISTERED'),
                 "gstin": gstin,
                 "businessType": payload.get('businessType') or 'Proprietorship',
                 "ownerName": payload.get('ownerName'),
@@ -699,26 +691,6 @@ class handler(BaseHTTPRequestHandler):
             current_data['companies'] = companies
             set_db_state(current_data)
             self.send_json({"success": True, "company": new_comp})
-            return
-
-        elif path == '/api/admin/delete-company':
-            current_data = get_db_state() or {}
-            target_id = payload.get('companyId', '').strip()
-            if not target_id:
-                self.send_json({"success": False, "error": "Company ID is required"}, status=400)
-                return
-
-            companies = current_data.get('companies', [])
-            updated_comps = [c for c in companies if c.get('id') != target_id]
-
-            workers = current_data.get('workers', [])
-            updated_workers = [w for w in workers if w.get('companyId') != target_id]
-
-            current_data['companies'] = updated_comps
-            current_data['workers'] = updated_workers
-            set_db_state(current_data)
-
-            self.send_json({"success": True, "message": f"Company {target_id} permanently deleted"})
             return
 
         self.send_json({"error": "Endpoint not found"}, status=404)
