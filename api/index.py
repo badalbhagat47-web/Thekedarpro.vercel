@@ -99,6 +99,49 @@ def send_real_email_otp(to_email, otp_code):
     """
     msg.attach(MIMEText(html_body, 'html'))
 
+    # METHOD 0: Check for HTTP Email APIs (Resend / Brevo / SendGrid) which use HTTPS (Port 443) and never get blocked on Vercel
+    resend_key = os.environ.get("RESEND_API_KEY")
+    brevo_key = os.environ.get("BREVO_API_KEY") or os.environ.get("SENDINBLUE_API_KEY")
+
+    if resend_key:
+        try:
+            req_data = json.dumps({
+                "from": os.environ.get("EMAIL_FROM", "THEKEDAR PRO <onboarding@resend.dev>"),
+                "to": [to_email],
+                "subject": f"🔒 {otp_code} is your THEKEDAR Verification Code",
+                "html": html_body
+            }).encode('utf-8')
+            req = urllib.request.Request("https://api.resend.com/emails", data=req_data, headers={
+                "Authorization": f"Bearer {resend_key.strip()}",
+                "Content-Type": "application/json"
+            }, method="POST")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status in (200, 201):
+                    print(f"[HTTP API SUCCESS] Real Email OTP dispatched via Resend API to {to_email}")
+                    return True, "SENT"
+        except Exception as er:
+            print(f"[HTTP Resend API Warning]: {er}")
+
+    if brevo_key:
+        try:
+            req_data = json.dumps({
+                "sender": {"name": "THEKEDAR PRO", "email": gmail_user or "no-reply@thekedarpro.com"},
+                "to": [{"email": to_email}],
+                "subject": f"🔒 {otp_code} is your THEKEDAR Verification Code",
+                "htmlContent": html_body
+            }).encode('utf-8')
+            req = urllib.request.Request("https://api.brevo.com/v3/smtp/email", data=req_data, headers={
+                "api-key": brevo_key.strip(),
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }, method="POST")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status in (200, 201):
+                    print(f"[HTTP API SUCCESS] Real Email OTP dispatched via Brevo API to {to_email}")
+                    return True, "SENT"
+        except Exception as eb:
+            print(f"[HTTP Brevo API Warning]: {eb}")
+
     # Create SSL contexts (standard + cloud unverified fallback)
     context_std = ssl.create_default_context()
     context_unv = ssl._create_unverified_context()
