@@ -266,30 +266,54 @@ const CompanyAdminModule = {
             </span>
           </div>
 
-          <!-- 1. SUMMARY SALARY & ADVANCE METRIC CARDS -->
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-emerald-500 shadow-sm space-y-1">
-              <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Total Gross Salary</span>
-              <div class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white" id="analyticsTotalGross">₹0</div>
-              <span class="text-[10px] text-slate-400 font-semibold block">Gross Payable (${window.appController ? window.appController.selectedMonth : ''})</span>
+          <!-- 1. SUMMARY BUSINESS & PAYROLL METRIC CARDS -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+            <div class="glass-card card-3d p-3.5 rounded-2xl border-l-4 border-slate-700 shadow-sm space-y-1">
+              <span class="text-[10px] font-black uppercase text-slate-500 tracking-wider block">Total Workers</span>
+              <div class="text-lg sm:text-xl font-black text-slate-900 dark:text-white" id="analyticsTotalWorkers">${activeWorkers.length}</div>
+              <span class="text-[9px] text-slate-400 font-semibold block">Registered Roster</span>
             </div>
 
-            <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-rose-500 shadow-sm space-y-1">
-              <span class="text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 tracking-wider">Total Advances</span>
-              <div class="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400" id="analyticsTotalAdvances">₹0</div>
-              <span class="text-[10px] text-slate-400 font-semibold block">Advances Granted</span>
+            <div class="glass-card card-3d p-3.5 rounded-2xl border-l-4 border-emerald-500 shadow-sm space-y-1">
+              <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider block">Present</span>
+              <div class="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400" id="analyticsPresent">${fullDayCount}</div>
+              <span class="text-[9px] text-slate-400 font-semibold block">Full Days Today</span>
             </div>
 
-            <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-purple-500 shadow-sm space-y-1">
-              <span class="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider">Total Deductions</span>
-              <div class="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400" id="analyticsTotalDeductions">₹0</div>
-              <span class="text-[10px] text-slate-400 font-semibold block">Advance Deducted</span>
+            <div class="glass-card card-3d p-3.5 rounded-2xl border-l-4 border-blue-500 shadow-sm space-y-1">
+              <span class="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider block">Half Day</span>
+              <div class="text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400" id="analyticsHalfDay">${halfDayCount}</div>
+              <span class="text-[9px] text-slate-400 font-semibold block">Half Shift Today</span>
             </div>
 
-            <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-amber-500 shadow-sm space-y-1">
-              <span class="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">Net Salary Payable</span>
-              <div class="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400" id="analyticsTotalNet">₹0</div>
-              <span class="text-[10px] text-slate-400 font-semibold block">Final Net Pay</span>
+            <div class="glass-card card-3d p-3.5 rounded-2xl border-l-4 border-amber-500 shadow-sm space-y-1">
+              <span class="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider block">Pending</span>
+              <div class="text-lg sm:text-xl font-black text-amber-600 dark:text-amber-400" id="analyticsPending">${pendingCount}</div>
+              <span class="text-[9px] text-slate-400 font-semibold block">Punch Awaiting</span>
+            </div>
+
+            <div class="glass-card card-3d p-3.5 rounded-2xl border-l-4 border-rose-500 shadow-sm space-y-1">
+              <span class="text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 tracking-wider block">Absent</span>
+              <div class="text-lg sm:text-xl font-black text-rose-600 dark:text-rose-400" id="analyticsAbsent">${absentCount}</div>
+              <span class="text-[9px] text-slate-400 font-semibold block">Off Duty Today</span>
+            </div>
+
+            <div class="glass-card card-3d p-3.5 rounded-2xl border-l-4 border-indigo-500 shadow-sm space-y-1">
+              <span class="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-wider block">Attendance %</span>
+              <div class="text-lg sm:text-xl font-black text-indigo-600 dark:text-indigo-400" id="analyticsAttendanceRate">${activeWorkers.length > 0 ? Math.round(((fullDayCount + (halfDayCount * 0.5)) / activeWorkers.length) * 100) : 0}%</div>
+              <span class="text-[9px] text-slate-400 font-semibold block">Turnout Rate</span>
+            </div>
+
+            <div class="glass-card card-3d p-3.5 rounded-2xl border-l-4 border-purple-500 shadow-sm space-y-1">
+              <span class="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider block">Total Advances</span>
+              <div class="text-lg sm:text-xl font-black text-purple-600 dark:text-purple-400" id="analyticsTotalAdvances">₹0</div>
+              <span class="text-[9px] text-slate-400 font-semibold block">Advances Issued</span>
+            </div>
+
+            <div class="glass-card card-3d p-3.5 rounded-2xl border-l-4 border-amber-500 shadow-sm space-y-1">
+              <span class="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider block">Net Pay</span>
+              <div class="text-lg sm:text-xl font-black text-amber-600 dark:text-amber-400" id="analyticsTotalNet">₹0</div>
+              <span class="text-[9px] text-slate-400 font-semibold block">Final Net Salary</span>
             </div>
           </div>
 
