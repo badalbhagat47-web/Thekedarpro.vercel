@@ -62,57 +62,44 @@
           <!-- Theme Switcher (Light / Dark Only) -->
           <div class="relative inline-block text-left">
             <button onclick="appController.toggleThemeDropdown()" id="themeBtn" title="Select Theme" 
-                    class="px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 text-amber-400 border border-slate-700/80 rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-md whitespace-nowrap active:scale-95">
-              <i id="themeIcon" class="fa-solid fa-sun text-sm"></i>
+                    class="px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm whitespace-nowrap">
+              <i id="themeIcon" class="fa-solid fa-sun text-sm text-amber-400"></i>
               <span id="themeBtnText" class="hidden sm:inline">Light</span>
             </button>
             <div id="themeDropdownMenu" class="hidden absolute right-0 mt-2 w-32 bg-slate-900 border border-slate-700 rounded-xl shadow-xl z-50 text-xs py-1">
               <button onclick="appController.setTheme('light')" class="w-full text-left px-3 py-2 text-slate-300 hover:bg-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-sun text-yellow-400"></i> Light
+                <i class="fa-solid fa-sun text-amber-400"></i> Light
               </button>
               <button onclick="appController.setTheme('dark')" class="w-full text-left px-3 py-2 text-slate-300 hover:bg-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-moon text-indigo-400"></i> Dark
+                <i class="fa-solid fa-moon text-blue-400"></i> Dark
               </button>
             </div>
           </div>
 
           <!-- Language Toggle Button -->
           <button onclick="i18n.setLang(i18n.currentLang === 'hi' ? 'en' : 'hi')" 
-                  class="px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 text-amber-400 border border-slate-700/80 rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-md whitespace-nowrap active:scale-95">
+                  class="px-3 py-1.5 bg-slate-800/90 hover:bg-slate-700 text-blue-400 border border-slate-700/80 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm whitespace-nowrap">
             <i class="fa-solid fa-language text-sm"></i>
             <span id="langBtnText">English</span>
           </button>
 
-          <!-- Notifications Bell Icon -->
-          <button id="headerNotificationBtn" title="System Notifications" 
-                  class="hidden sm:flex relative p-2 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-amber-400 border border-slate-700/80 rounded-xl text-xs transition items-center justify-center shadow-md active:scale-95">
-            <i class="fa-solid fa-bell text-sm"></i>
-            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-slate-950 animate-pulse"></span>
-          </button>
-
           <!-- User Badge / Role Switcher -->
-          <div id="userHeaderBadge" class="hidden sm:flex items-center space-x-2 bg-slate-900/90 border border-slate-700/80 px-3.5 py-1.5 rounded-2xl text-xs whitespace-nowrap shadow-inner">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            <span id="headerUserName" class="font-bold text-slate-100">Bhagat Ji (Platform Owner)</span>
-            <span id="headerUserRole" class="bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider shadow-sm">SUPER ADMIN</span>
+          <div id="userHeaderBadge" class="hidden sm:flex items-center space-x-2 bg-slate-800/90 border border-slate-700/80 px-3.5 py-1.5 rounded-xl text-xs whitespace-nowrap">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="headerUserName" class="font-semibold text-slate-100">Bhagat Ji (Platform Owner)</span>
+            <span id="headerUserRole" class="bg-blue-600 text-white font-bold px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider">SUPER ADMIN</span>
           </div>
-
-          <!-- Quick Seed Data Demo Reset (Hidden on Pre-Login) -->
-          <button id="resetDemoBtn" onclick="appController.resetDemoData()" title="Reset Seed Data" 
-                  class="hidden p-2 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs transition border border-slate-700/80 whitespace-nowrap shadow-md active:scale-95">
-            <i class="fa-solid fa-rotate-right"></i>
-          </button>
 
           <!-- Login Button (Visible when logged out or on login screen) -->
           <button id="loginNavBtn" onclick="appController.navigate('login')" 
-                  class="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/30 whitespace-nowrap border-b-2 border-emerald-800 active:translate-y-0.5">
+                  class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm whitespace-nowrap">
             <i class="fa-solid fa-right-to-bracket"></i>
             <span id="loginNavText">Login</span>
           </button>
 
           <!-- Logout Button (Visible when logged in) -->
           <button id="logoutBtn" onclick="appController.logout()" 
-                  class="hidden px-4 py-1.5 bg-gradient-to-r from-rose-600 to-red-500 hover:from-rose-500 hover:to-red-400 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-lg shadow-rose-900/30 whitespace-nowrap border-b-2 border-rose-800 active:translate-y-0.5">
+                  class="hidden px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm whitespace-nowrap">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span id="logoutText">Logout</span>
           </button>

@@ -1,9 +1,10 @@
-/* Custom Styling for Contractor Attendance & Salary Management System */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Teko:wght@500;600;700&display=swap');
+/* Custom Styling for Contractor Attendance & Salary Management System (THEKEDAR PRO) */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --primary-amber: #f59e0b;
-  --primary-dark: #0f172a;
+  --primary-navy: #0f172a;
+  --primary-blue: #2563eb;
+  --primary-blue-hover: #1d4ed8;
   --bg-slate: #f8fafc;
 }
 
@@ -13,39 +14,43 @@ html.dark body {
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #f1f5f9;
-  color: #1e293b;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .brand-font {
-  font-family: 'Teko', sans-serif;
-  letter-spacing: 0.5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-/* Glassmorphism Cards & Contrast System */
-.glass-card {
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+/* Glassmorphism Cards & Clean Container System */
+.glass-card, .card-3d, .glass-card-dark, .option-card-3d {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
+  border-radius: 1rem;
   color: #0f172a;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-html.dark .glass-card {
-  background: rgba(15, 23, 42, 0.96);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 65, 85, 0.8);
+html.dark .glass-card, html.dark .card-3d, html.dark .glass-card-dark, html.dark .option-card-3d {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
   color: #f8fafc;
 }
 
-.glass-card-dark {
-  background: rgba(15, 23, 42, 0.96);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 65, 85, 0.8);
-  color: #f8fafc;
+.glass-card:hover, .card-3d:hover, .option-card-3d:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+}
+
+html.dark .glass-card:hover, html.dark .card-3d:hover, html.dark .option-card-3d:hover {
+  border-color: #334155;
 }
 
 /* Custom Scrollbars */
@@ -72,13 +77,13 @@ html.dark ::-webkit-scrollbar-thumb {
 
 /* Attendance Check-in Button Pulse */
 @keyframes pulse-ring {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-  70% { transform: scale(1.02); box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+  100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
 }
 
 .pulse-checkin {
-  animation: pulse-ring 2s infinite;
+  animation: pulse-ring 2.5s infinite;
 }
 
 /* Printable Payslip A4 Styling */
@@ -98,7 +103,6 @@ html.dark ::-webkit-scrollbar-thumb {
     overflow: visible !important;
   }
 
-  /* Hide app header, sidebars, backgrounds, modals containers */
   body > *:not(#modalOverlay) {
     display: none !important;
   }
@@ -163,33 +167,29 @@ html.dark ::-webkit-scrollbar-thumb {
   }
 }
 
-/* Badge Glows & Raised 3D Badges */
+/* Status Badges */
 .badge-present {
-  background-color: #dcfce7;
-  color: #15803d;
-  border: 1px solid #86efac;
-  box-shadow: 0 2px 4px rgba(22, 163, 74, 0.15);
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
 }
 
 .badge-absent {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border: 1px solid #fca5a5;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
+  background-color: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
 }
 
 .badge-holiday {
-  background-color: #e0e7ff;
-  color: #4338ca;
-  border: 1px solid #a5b4fc;
-  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.15);
+  background-color: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
 }
 
 .badge-late {
-  background-color: #fef3c7;
+  background-color: #fffbeb;
   color: #b45309;
-  border: 1px solid #fde047;
-  box-shadow: 0 2px 4px rgba(217, 119, 6, 0.15);
+  border: 1px solid #fde68a;
 }
 
 /* Bottom Navigation Bar for Mobile */
@@ -200,15 +200,15 @@ html.dark ::-webkit-scrollbar-thumb {
   right: 0;
   z-index: 50;
   background: #0f172a;
-  border-top: 1px solid #334155;
-  box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
+  border-top: 1px solid #1e293b;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .nav-item-active {
-  color: #f59e0b !important;
+  color: #3b82f6 !important;
 }
 
-/* Table styling with explicit high contrast */
+/* Clean SaaS Table Styling */
 .custom-table {
   width: 100%;
   border-collapse: collapse;
@@ -220,25 +220,25 @@ html.dark .custom-table {
 }
 
 .custom-table th {
-  background-color: #f1f5f9;
-  color: #334155;
-  font-weight: 800;
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.725rem;
+  font-size: 0.7rem;
   letter-spacing: 0.05em;
   padding: 0.75rem 1rem;
-  border-bottom: 2px solid #cbd5e1;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 html.dark .custom-table th {
   background-color: #0f172a;
-  color: #cbd5e1;
-  border-bottom: 2px solid #1e293b;
+  color: #94a3b8;
+  border-bottom: 1px solid #1e293b;
 }
 
 .custom-table td {
   padding: 0.875rem 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
   color: #0f172a;
 }
@@ -253,258 +253,136 @@ html.dark .custom-table td {
 }
 
 html.dark .custom-table tr:hover {
-  background-color: rgba(30, 41, 59, 0.6);
+  background-color: rgba(30, 41, 59, 0.5);
 }
 
-/* ==========================================================================
-   PREMIUM 3D VISUAL DESIGN SYSTEM & TACTILE ACCENTS
-   ========================================================================== */
-
-/* Universal Button 3D Bevel & Tactile Interaction */
+/* Clean Professional Buttons */
 button, .btn-3d, [type="button"], [type="submit"] {
   position: relative;
-  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.12s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease, border-color 0.15s ease;
+  transition: all 0.15s ease;
   user-select: none;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: none;
+  border-radius: 0.75rem;
 }
 
-/* Universal Button Tactile 3D Press Down Effect */
 button:active:not(:disabled), .btn-3d:active:not(:disabled), [type="button"]:active:not(:disabled), [type="submit"]:active:not(:disabled) {
-  transform: translateY(2.5px) scale(0.985) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(1px);
 }
 
-/* Automatic 3D Bevel for Standard Amber/Yellow Buttons */
-button.bg-amber-500, button.bg-amber-600, .bg-amber-500 button, button.bg-yellow-500, .btn-3d-amber {
-  background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #d97706 100%) !important;
-  border-bottom: 3.5px solid #92400e !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 0 5px 15px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+/* Primary Amber Button */
+button.bg-amber-500, button.bg-amber-600, .btn-3d-amber {
+  background-color: #f59e0b !important;
   color: #0f172a !important;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid #d97706 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  text-shadow: none !important;
 }
 
-button.bg-amber-500:hover, button.bg-amber-600:hover, button.bg-yellow-500:hover, .btn-3d-amber:hover {
-  background: linear-gradient(180deg, #fde047 0%, #fbbf24 50%, #b45309 100%) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
-}
-
-/* Automatic 3D Bevel for Emerald/Green Buttons (e.g. Save, Verify, Punch) */
-button.bg-emerald-600, button.bg-emerald-500, button.bg-green-600, .btn-3d-emerald {
-  background: linear-gradient(180deg, #6ee7b7 0%, #10b981 50%, #047857 100%) !important;
-  border-bottom: 3.5px solid #064e3b !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 5px 15px rgba(5, 150, 105, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+button.bg-amber-500:hover, button.bg-amber-600:hover, .btn-3d-amber:hover {
+  background-color: #d97706 !important;
   color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transform: none !important;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1) !important;
 }
 
-button.bg-emerald-600:hover, button.bg-emerald-500:hover, .btn-3d-emerald:hover {
-  background: linear-gradient(180deg, #a7f3d0 0%, #34d399 50%, #065f46 100%) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
-}
-
-/* ==========================================================================
-   3D SIDEBAR NAVIGATION LINKS
-   ========================================================================== */
-.nav-link-3d {
-  position: relative;
-  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
-  border-radius: 0.875rem;
-  margin-bottom: 0.35rem;
-}
-
-.nav-link-3d-active {
-  background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #d97706 100%) !important;
-  border-bottom: 3.5px solid #92400e !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.7) !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
-  color: #0f172a !important;
-  font-weight: 900 !important;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-  transform: scale(1.02) translateY(-1px);
-}
-
-.nav-link-3d-active:active {
-  transform: translateY(2px) scale(0.99) !important;
-  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-}
-
-.nav-link-3d-inactive {
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-bottom: 2.5px solid rgba(2, 6, 23, 0.9) !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-  color: #cbd5e1 !important;
-  font-weight: 700;
-}
-
-.nav-link-3d-inactive:hover {
-  background: linear-gradient(180deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
-  border-color: rgba(245, 158, 11, 0.3) !important;
+/* Primary Blue Button */
+button.bg-indigo-600, button.bg-blue-600 {
+  background-color: #2563eb !important;
   color: #ffffff !important;
-  transform: translateX(4px) translateY(-1px);
-  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-}
-
-.nav-link-3d-inactive:active {
-  transform: translateX(2px) translateY(1.5px) !important;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid #1d4ed8 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  text-shadow: none !important;
 }
 
 button.bg-indigo-600:hover, button.bg-blue-600:hover {
-  background: linear-gradient(180deg, #bfdbfe 0%, #3b82f6 50%, #1c3d5a 100%) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+  background-color: #1d4ed8 !important;
+  transform: none !important;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Automatic 3D Bevel for Rose/Red Cancel/Delete Buttons */
+/* Emerald Success Button */
+button.bg-emerald-600, button.bg-emerald-500, .btn-3d-emerald {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+  border: 1px solid #047857 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  text-shadow: none !important;
+}
+
+button.bg-emerald-600:hover, button.bg-emerald-500:hover, .btn-3d-emerald:hover {
+  background-color: #047857 !important;
+  transform: none !important;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Danger Red Button */
 button.bg-rose-600, button.bg-red-600 {
-  background: linear-gradient(180deg, #fca5a5 0%, #ef4444 50%, #b91c1c 100%) !important;
-  border-bottom: 3.5px solid #7f1d1d !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+  border: 1px solid #b91c1c !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  text-shadow: none !important;
+}
+
+button.bg-rose-600:hover, button.bg-red-600:hover {
+  background-color: #b91c1c !important;
+  transform: none !important;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Clean Sidebar Nav Links */
+.nav-link-3d {
+  position: relative;
+  transition: all 0.15s ease;
+  user-select: none;
+  border-radius: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.nav-link-3d-active {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid #1d4ed8 !important;
+  box-shadow: 0 1px 3px 0 rgba(37, 99, 235, 0.3) !important;
+  text-shadow: none !important;
+  transform: none !important;
+}
+
+.nav-link-3d-active i {
   color: #ffffff !important;
 }
 
-/* ==========================================================================
-   3D SIDEBAR NAVIGATION MENU OPTIONS & BUTTONS
-   ========================================================================== */
-
-#desktopSidebar nav a, #desktopSidebar nav button, .sidebar-nav-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.875rem;
-  font-weight: 700;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-sizing: border-box;
+.nav-link-3d-inactive {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: #94a3b8 !important;
+  font-weight: 500;
+  box-shadow: none !important;
 }
 
-/* Inactive Sidebar 3D Bevel Style */
-#desktopSidebar nav a:not(.bg-amber-500):not(.active),
-#desktopSidebar nav button:not(.bg-amber-500):not(.active) {
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 2.5px solid rgba(2, 6, 23, 0.9);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
+.nav-link-3d-inactive:hover {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* Inactive Sidebar Item Hover 3D Lift */
-#desktopSidebar nav a:not(.bg-amber-500):not(.active):hover,
-#desktopSidebar nav button:not(.bg-amber-500):not(.active):hover {
-  background: linear-gradient(180deg, rgba(51, 65, 85, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
-  border-color: rgba(245, 158, 11, 0.4);
-  border-bottom: 2.5px solid rgba(245, 158, 11, 0.6);
-  color: #f8fafc;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-/* Active Sidebar 3D Pill Option (e.g. Festival Holidays, Worker Roster, Dashboard) */
-#desktopSidebar nav a.bg-amber-500,
-#desktopSidebar nav button.bg-amber-500,
-#desktopSidebar nav a.active,
-#desktopSidebar nav button.active {
-  background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.7) !important;
-  border-bottom: 3.5px solid #92400e !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3), inset 0 1.5px 0 rgba(255, 255, 255, 0.7) !important;
-  color: #0f172a !important;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-  transform: translateY(-1px);
-}
-
-#desktopSidebar nav a.bg-amber-500 i,
-#desktopSidebar nav button.bg-amber-500 i,
-#desktopSidebar nav a.active i,
-#desktopSidebar nav button.active i {
-  color: #0f172a !important;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5));
-}
-
-/* Tactile 3D Input & Select Focus Elevation */
+/* Inputs & Form Controls */
 input[type="text"], input[type="number"], input[type="email"], input[type="password"], input[type="date"], input[type="month"], input[type="time"], select {
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
   border-radius: 0.75rem;
 }
 
 input:focus, select:focus {
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35), 0 6px 16px rgba(0, 0, 0, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-1px);
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  transform: none !important;
 }
 
-/* 3D Depth Cards & Stat Panels (Daily Wage, Payable Days, Overtime, Net Salary) */
-.card-3d, .glass-card, .glass-card-dark {
-  position: relative;
-  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-bottom: 3px solid rgba(203, 213, 225, 0.9);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  border-radius: 1.25rem;
-}
-
-html.dark .card-3d, html.dark .glass-card, html.dark .glass-card-dark {
-  box-shadow: 0 14px 36px -4px rgba(0, 0, 0, 0.6), 0 6px 14px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(51, 65, 85, 0.9);
-  border-bottom: 3.5px solid rgba(15, 23, 42, 0.95);
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-}
-
-.card-3d:hover, .glass-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 22px 45px -6px rgba(0, 0, 0, 0.2), 0 10px 18px -2px rgba(0, 0, 0, 0.12);
-}
-
-/* 3D Option Card Utility */
-.option-card-3d {
-  background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(248,250,252,0.95));
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-bottom: 3.5px solid rgba(203, 213, 225, 0.9);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: all 0.18s ease;
-}
-
-html.dark .option-card-3d {
-  background: linear-gradient(145deg, rgba(30,41,59,0.98), rgba(15,23,42,0.95));
-  border: 1px solid rgba(51, 65, 85, 0.9);
-  border-bottom: 3.5px solid rgba(15, 23, 42, 0.95);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.option-card-3d:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15);
-}
-
-/* Chart 3D Container */
-.graph-container-3d {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-top: 3px solid #f59e0b;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-html.dark .graph-container-3d {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(2, 6, 23, 0.95) 100%);
-  border: 1px solid rgba(51, 65, 85, 0.9);
-  border-top: 3px solid #f59e0b;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-/* Explicit Light & Dark Contrast Overrides */
 select option {
   background-color: #ffffff;
   color: #0f172a;
@@ -515,7 +393,6 @@ html.dark select option {
   color: #f8fafc;
 }
 
-/* High Contrast Input Placeholders */
 ::placeholder {
   color: #94a3b8;
   opacity: 1;
@@ -526,32 +403,16 @@ html.dark ::placeholder {
   opacity: 1;
 }
 
-/* ==========================================================================
-   MOBILE RESPONSIVENESS & BREAKPOINT SYSTEM (320px - 430px & UP)
-   ========================================================================== */
-
-/* Strict Containment against unintended Horizontal Body Scroll */
+/* Mobile Responsiveness Rules */
 html, body {
   overflow-x: hidden !important;
   max-width: 100vw;
 }
 
-/* Brand Logo Vibrant Drop Shadow Glow */
-#headerBrandLogo, #headerBrandIcon, .brand-logo-img {
-  filter: drop-shadow(0 2px 10px rgba(14, 165, 233, 0.55));
-  transition: filter 0.3s ease;
-}
-
-#headerBrandLogo:hover, #headerBrandIcon:hover, .brand-logo-img:hover {
-  filter: drop-shadow(0 4px 16px rgba(56, 189, 248, 0.8));
-}
-
-/* Responsive Media & Form Element Limits */
 img, svg, video, canvas, input, select, textarea, button {
   max-width: 100%;
 }
 
-/* Smooth Touch-Momentum Table Scrolling Wrapper */
 .table-responsive-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -559,7 +420,6 @@ img, svg, video, canvas, input, select, textarea, button {
   margin-bottom: 0.75rem;
 }
 
-/* Responsive Modal Dialog Container */
 #modalOverlay #modalContent {
   max-width: 95vw;
   max-height: 90vh;
@@ -567,12 +427,10 @@ img, svg, video, canvas, input, select, textarea, button {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Targeted Mobile Viewport Optimizations (<640px) */
 @media (max-width: 639px) {
-  /* Compact Table Cells for 320px - 430px screens */
   .custom-table th {
     padding: 0.5rem 0.5rem;
-    font-size: 0.7rem;
+    font-size: 0.675rem;
     white-space: nowrap;
   }
 
@@ -580,48 +438,9 @@ img, svg, video, canvas, input, select, textarea, button {
     padding: 0.625rem 0.5rem;
     font-size: 0.75rem;
   }
-
-  /* Compact 3D Action Buttons */
-  .btn-3d, [class*="btn-3d-"] {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    font-size: 0.775rem;
-  }
-
-  /* Ensure card headings & text don't overflow */
-  .brand-font {
-    letter-spacing: 0.25px;
-  }
-
-  /* Chart Containers height optimization on small mobile */
-  .graph-container-3d {
-    padding: 0.75rem !important;
-  }
 }
-
-/* Extra Small Viewports (320px - 360px) */
-@media (max-width: 360px) {
-  .btn-3d, [class*="btn-3d-"] {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    font-size: 0.725rem;
-  }
-
-  h1 {
-    font-size: 1.25rem !important;
-  }
-
-  h2 {
-    font-size: 1.1rem !important;
-  }
-}
-
-/* ==========================================================================
-   STRICT MOBILE BREAKPOINT RULES (< 768px / md: breakpoint)
-   ========================================================================== */
 
 @media (max-width: 767px) {
-  /* 1. STRICT MOBILE SIDEBAR HIDING: Never show desktop sidebar on mobile */
   #desktopSidebar, aside#desktopSidebar {
     display: none !important;
     width: 0 !important;
@@ -630,7 +449,6 @@ img, svg, video, canvas, input, select, textarea, button {
     visibility: hidden !important;
   }
 
-  /* 2. FULL 100% AVAILABLE CONTENT WIDTH: No left margin or squeezing */
   #mainContainer, main#mainContainer {
     width: 100% !important;
     max-width: 100vw !important;
@@ -638,11 +456,10 @@ img, svg, video, canvas, input, select, textarea, button {
     margin-right: 0 !important;
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
-    padding-bottom: 5.5rem !important; /* Clearance for fixed mobile bottom nav */
+    padding-bottom: 5.5rem !important;
     box-sizing: border-box !important;
   }
 
-  /* 3. FIXED MOBILE BOTTOM NAVIGATION BAR */
   #mobileBottomNav, nav#mobileBottomNav {
     display: block !important;
     position: fixed !important;
@@ -651,16 +468,13 @@ img, svg, video, canvas, input, select, textarea, button {
     right: 0 !important;
     width: 100% !important;
     z-index: 50 !important;
-    background: rgba(15, 23, 42, 0.95) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: #0f172a !important;
+    border-top: 1px solid #1e293b !important;
     padding-top: 0.5rem !important;
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2) !important;
   }
 
-  /* 4. HEADER LOGOUT & BADGE SCALING FOR MOBILE */
   #userHeaderBadge {
     padding: 0.25rem 0.5rem !important;
     font-size: 0.7rem !important;
@@ -672,10 +486,8 @@ img, svg, video, canvas, input, select, textarea, button {
   }
 }
 
-/* DESKTOP SIDEBAR DISPLAY (>= 768px) */
 @media (min-width: 768px) {
   #mobileBottomNav {
     display: none !important;
   }
 }
-

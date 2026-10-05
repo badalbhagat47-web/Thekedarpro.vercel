@@ -513,9 +513,11 @@ class Store {
   // --- DUPLICATE COMPANY PREVENTION & REGISTRATION ---
   registerCompany(companyInput) {
     const isGst = companyInput.gstStatus === 'GST_VERIFIED';
+    const hasGstin = isGst && companyInput.gstin && companyInput.gstin.trim().length > 0;
+    const cleanGstin = hasGstin ? companyInput.gstin.trim().toUpperCase() : null;
     
-    if (isGst && companyInput.gstin) {
-      const existing = this.data.companies.find(c => c.gstin && c.gstin.trim().toUpperCase() === companyInput.gstin.trim().toUpperCase());
+    if (cleanGstin) {
+      const existing = this.data.companies.find(c => c.gstin && c.gstin.trim().toUpperCase() === cleanGstin);
       if (existing) return { success: false, error: '❌ This GSTIN is already registered.' };
     }
 
@@ -527,8 +529,8 @@ class Store {
       return { success: false, error: '❌ A company with this email or mobile number is already registered.' };
     }
 
-    const companyId = isGst 
-      ? `GST-${companyInput.gstin.substring(0, 6)}-${Math.floor(100 + Math.random()*900)}`
+    const companyId = cleanGstin 
+      ? `GST-${cleanGstin.substring(0, 6)}-${Math.floor(100 + Math.random()*900)}`
       : `COMP-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.floor(100 + Math.random()*900)}`;
 
     const newCompany = {
@@ -536,8 +538,8 @@ class Store {
       name: companyInput.name,
       legalName: companyInput.legalName || companyInput.name,
       tradeName: companyInput.tradeName || companyInput.name,
-      gstStatus: companyInput.gstStatus || 'NON_GST_REGISTERED',
-      gstin: companyInput.gstin || null,
+      gstStatus: companyInput.gstStatus || (cleanGstin ? 'GST_VERIFIED' : 'NON_GST_REGISTERED'),
+      gstin: cleanGstin,
       businessType: companyInput.businessType || 'Proprietorship',
       ownerName: companyInput.ownerName,
       mobile: companyInput.mobile,

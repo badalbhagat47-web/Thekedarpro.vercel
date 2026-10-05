@@ -156,8 +156,6 @@ class AppController {
       }
       if (loginNavBtn) loginNavBtn.classList.remove('hidden');
       if (logoutBtn) logoutBtn.classList.add('hidden');
-      if (resetDemoBtn) resetDemoBtn.classList.add('hidden');
-      if (notificationBtn) notificationBtn.classList.add('hidden');
       return;
     }
 
@@ -169,23 +167,6 @@ class AppController {
     if (logoutBtn) logoutBtn.classList.remove('hidden');
 
     const isSuperAdmin = this.currentUser && this.currentUser.role === 'SUPER_ADMIN';
-
-    if (notificationBtn) {
-      if (isSuperAdmin) {
-        notificationBtn.classList.remove('hidden');
-      } else {
-        notificationBtn.classList.add('hidden');
-      }
-    }
-    
-    // RESTRICT RESET DEMO DATA BUTTON EXCLUSIVELY TO SUPER_ADMIN ROLE
-    if (resetDemoBtn) {
-      if (isSuperAdmin) {
-        resetDemoBtn.classList.remove('hidden');
-      } else {
-        resetDemoBtn.classList.add('hidden');
-      }
-    }
 
     if (userNameEl) {
       userNameEl.innerText = isSuperAdmin ? 'Bhagat Ji (Platform Owner)' : (this.currentUser.name || this.currentUser.companyName || 'User');
@@ -319,54 +300,44 @@ class AppController {
       const isActClass = (v) => currentTab === v ? 'nav-link-3d-active' : 'nav-link-3d-inactive';
 
       sidebar.innerHTML = `
-        <div class="px-3 py-2 text-[11px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5 border-b border-slate-800/80 mb-3">
-          <i class="fa-solid fa-crown text-amber-400 text-xs"></i> Master Super Admin
+        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-slate-800 mb-3">
+          <i class="fa-solid fa-shield-halved text-blue-400 text-xs"></i> Master Super Admin
         </div>
 
-        <a href="#" onclick="SuperAdminModule.switchTab('overview')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('overview')}">
-          <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
-            <i class="fa-solid fa-chart-pie text-sm"></i>
-          </div>
+        <a href="#" onclick="SuperAdminModule.switchTab('overview')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('overview')}">
+          <i class="fa-solid fa-chart-pie text-sm w-5"></i>
           <span>Overview</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('companies');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('companies')}">
-          <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30">
-            <i class="fa-solid fa-building text-sm"></i>
-          </div>
+        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('companies');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('companies')}">
+          <i class="fa-solid fa-building text-sm w-5"></i>
           <span>All Companies</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('workers');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('workers')}">
-          <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30">
-            <i class="fa-solid fa-users text-sm"></i>
-          </div>
+        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('workers');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('workers')}">
+          <i class="fa-solid fa-users text-sm w-5"></i>
           <span>Platform Workers</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('subscriptions');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('subscriptions')}">
-          <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
-            <i class="fa-solid fa-receipt text-sm"></i>
-          </div>
+        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('subscriptions');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('subscriptions')}">
+          <i class="fa-solid fa-receipt text-sm w-5"></i>
           <span>Subscriptions</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('payments');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('payments')}">
-          <div class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center shrink-0 border border-yellow-500/30">
-            <i class="fa-solid fa-wallet text-sm"></i>
-          </div>
+        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('payments');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('payments')}">
+          <i class="fa-solid fa-wallet text-sm w-5"></i>
           <span>Revenue & Payments</span>
         </a>
 
         <div class="pt-4 mt-auto border-t border-slate-800 space-y-2">
-          <button onclick="appController.logout()" class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white rounded-xl text-xs font-bold transition-all card-3d">
+          <button onclick="appController.logout()" class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white rounded-xl text-xs font-semibold transition-all border border-rose-500/20">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>Logout</span>
           </button>
         </div>
       `;
     } else if (role === 'WORKER') {
-      const isAct = (v) => active === v ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 scale-[1.02] border border-amber-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white hover:translate-x-1';
+      const isAct = (v) => active === v ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white';
 
       sidebar.innerHTML = `
         <div class="px-3 py-2 text-[11px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5 border-b border-slate-800/80 mb-2">
@@ -740,6 +711,7 @@ class AppController {
 
   openCompanyRegistrationModal() {
     this.regEmailVerified = false;
+    this.regWhatsappVerified = false;
 
     const modal = document.getElementById('modalOverlay');
     const content = document.getElementById('modalContent');
@@ -762,7 +734,7 @@ class AppController {
           </div>
 
           <div id="gstinFieldGroup">
-            <label class="block text-xs font-bold text-slate-700 mb-1">GSTIN Number *</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">GSTIN Number <span class="text-slate-400 font-normal">(Optional)</span></label>
             <div class="flex gap-2">
               <input type="text" id="regGstin" placeholder="e.g. 07AAACR8821F1Z5" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-mono font-bold uppercase">
               <button type="button" onclick="appController.verifyGstinClick()" class="px-3 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs whitespace-nowrap">Verify GST</button>
@@ -775,17 +747,29 @@ class AppController {
             <input type="text" id="regCompName" required placeholder="e.g. Power Solutions" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Owner / Contractor Name *</label>
-              <input type="text" id="regOwnerName" required placeholder="e.g. Rajesh Sharma" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Owner / Contractor Name *</label>
+            <input type="text" id="regOwnerName" required placeholder="e.g. Rajesh Sharma" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+          </div>
+
+          <!-- MOBILE NUMBER WITH WHATSAPP VERIFICATION -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-xs font-bold text-slate-700">10-Digit Mobile Number *</label>
+              <span id="waVerifiedBadge" class="hidden text-[11px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <i class="fa-brands fa-whatsapp text-emerald-600"></i> WhatsApp Verified
+              </span>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Mobile Number *</label>
+            <div class="flex gap-2">
               <input type="text" id="regMobile" required placeholder="e.g. 9876543210" maxlength="10" 
                      oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
-                     class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+                     class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold font-mono">
+              <button type="button" id="btnVerifyWhatsapp" onclick="appController.verifyCompanyWhatsappMobile()" 
+                      class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm flex items-center gap-1.5">
+                <i class="fa-brands fa-whatsapp text-sm"></i> Verify WhatsApp
+              </button>
             </div>
+            <p id="waStatusAlert" class="text-[11px] mt-1 hidden"></p>
           </div>
 
           <!-- EMAIL WITH OTP VERIFICATION FIELD -->
@@ -950,6 +934,79 @@ class AppController {
     }
   }
 
+  async verifyCompanyWhatsappMobile() {
+    const mobileInput = document.getElementById('regMobile');
+    const mobile = mobileInput ? mobileInput.value.trim() : '';
+    const statusAlert = document.getElementById('waStatusAlert');
+    const badge = document.getElementById('waVerifiedBadge');
+    const btnVerify = document.getElementById('btnVerifyWhatsapp');
+
+    if (!mobile || mobile.length !== 10 || !/^[6-9]\d{9}$/.test(mobile)) {
+      if (statusAlert) {
+        statusAlert.classList.remove('hidden', 'text-emerald-600', 'text-amber-600');
+        statusAlert.classList.add('text-rose-600', 'font-bold');
+        statusAlert.innerText = "⚠️ Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.";
+      } else {
+        alert("⚠️ Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
+      }
+      return;
+    }
+
+    if (btnVerify) {
+      btnVerify.disabled = true;
+      btnVerify.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Checking...`;
+    }
+
+    try {
+      const res = await fetch('/api/whatsapp/verify-number', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile: mobile })
+      });
+
+      const data = await res.json();
+
+      if (btnVerify) {
+        btnVerify.disabled = false;
+        btnVerify.innerHTML = `<i class="fa-brands fa-whatsapp text-sm"></i> Verify WhatsApp`;
+      }
+
+      if (data.whatsappVerified) {
+        this.regWhatsappVerified = true;
+        if (badge) badge.classList.remove('hidden');
+        if (statusAlert) {
+          statusAlert.classList.remove('hidden', 'text-rose-600', 'text-amber-600');
+          statusAlert.classList.add('text-emerald-600', 'font-bold');
+          statusAlert.innerText = "✓ WhatsApp number verified successfully!";
+        }
+        if (mobileInput) mobileInput.readOnly = true;
+      } else if (data.code === 'PROVIDER_NOT_CONFIGURED') {
+        if (statusAlert) {
+          statusAlert.classList.remove('hidden', 'text-rose-600', 'text-emerald-600');
+          statusAlert.classList.add('text-amber-600', 'font-bold');
+          statusAlert.innerText = "ℹ️ " + (data.error || "Official WhatsApp API is not configured on server.");
+        }
+      } else {
+        if (statusAlert) {
+          statusAlert.classList.remove('hidden', 'text-emerald-600', 'text-amber-600');
+          statusAlert.classList.add('text-rose-600', 'font-bold');
+          statusAlert.innerText = "❌ " + (data.error || "This number is not available on WhatsApp.");
+        }
+      }
+    } catch (e) {
+      if (btnVerify) {
+        btnVerify.disabled = false;
+        btnVerify.innerHTML = `<i class="fa-brands fa-whatsapp text-sm"></i> Verify WhatsApp`;
+      }
+      console.error("WhatsApp verification error:", e);
+      if (statusAlert) {
+        statusAlert.classList.remove('hidden', 'text-emerald-600', 'text-amber-600');
+        statusAlert.classList.add('text-rose-600', 'font-bold');
+        statusAlert.innerText = "❌ Connection error during WhatsApp validation.";
+      }
+    }
+  }
+
   toggleRegGstField(isGst) {
     const group = document.getElementById('gstinFieldGroup');
     if (group) {
@@ -962,8 +1019,8 @@ class AppController {
     const gstin = document.getElementById('regGstin').value;
     const alertEl = document.getElementById('gstinStatusAlert');
     if (!gstin) {
-      alertEl.innerText = "⚠️ Please enter GSTIN first.";
-      alertEl.className = "text-[11px] text-amber-600 font-bold mt-1";
+      alertEl.innerText = "ℹ️ GSTIN is optional. You can proceed with registration or verify if available.";
+      alertEl.className = "text-[11px] text-blue-600 font-bold mt-1";
       return;
     }
 
@@ -981,6 +1038,14 @@ class AppController {
   async submitCompanyRegistrationForm(e) {
     e.preventDefault();
 
+    const mobileInput = document.getElementById('regMobile');
+    const mobile = mobileInput ? mobileInput.value.trim() : '';
+
+    if (!mobile || mobile.length !== 10 || !/^[6-9]\d{9}$/.test(mobile)) {
+      alert("⚠️ Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
+      return;
+    }
+
     if (!this.regEmailVerified) {
       const errEl = document.getElementById('companyRegErrorAlert');
       if (errEl) {
@@ -992,18 +1057,39 @@ class AppController {
       return;
     }
 
-    const isGst = document.querySelector('input[name="regGstType"]:checked').value === 'GST';
+    const isGstRadio = document.querySelector('input[name="regGstType"]:checked');
+    const isGst = isGstRadio ? isGstRadio.value === 'GST' : false;
 
-    const res = window.appStore.registerCompany({
-      gstStatus: isGst ? 'GST_VERIFIED' : 'NON_GST_REGISTERED',
-      gstin: isGst ? document.getElementById('regGstin').value : null,
-      name: document.getElementById('regCompName').value,
-      ownerName: document.getElementById('regOwnerName').value,
-      mobile: document.getElementById('regMobile').value,
-      email: document.getElementById('regEmail').value,
+    const rawGstin = isGst ? (document.getElementById('regGstin') ? document.getElementById('regGstin').value.trim() : '') : null;
+    const gstin = rawGstin && rawGstin.length > 0 ? rawGstin.toUpperCase() : null;
+
+    const registrationPayload = {
+      gstStatus: isGst ? (gstin ? 'GST_VERIFIED' : 'GST_REGISTERED_OPTIONAL') : 'NON_GST_REGISTERED',
+      gstin: gstin,
+      name: document.getElementById('regCompName').value.trim(),
+      ownerName: document.getElementById('regOwnerName').value.trim(),
+      mobile: mobile,
+      email: document.getElementById('regEmail').value.trim(),
       password: document.getElementById('regPassword').value
-    });
+    };
 
+    // Attempt backend server registration
+    try {
+      const apiRes = await fetch('/api/auth/register-company', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registrationPayload)
+      });
+      const apiData = await apiRes.json();
+      if (!apiData.success) {
+        alert(apiData.error || "Registration failed.");
+        return;
+      }
+    } catch(err) {
+      console.log("Backend API deferred, saving locally:", err);
+    }
+
+    const res = window.appStore.registerCompany(registrationPayload);
 
     if (!res.success) {
       alert(res.error);

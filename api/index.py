@@ -6,6 +6,7 @@ import sqlite3
 import hashlib
 import ssl
 import smtplib
+import urllib.request
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from urllib.parse import parse_qs, urlparse
@@ -224,6 +225,8 @@ def validate_mobile_str(mobile_raw):
         clean = clean[3:]
     if len(clean) != 10 or not clean.isdigit():
         return False, "Mobile number must be exactly 10 digits."
+    if clean[0] not in ('6', '7', '8', '9'):
+        return False, "Mobile number must start with 6, 7, 8, or 9."
     return True, clean
 
 class handler(BaseHTTPRequestHandler):
@@ -437,13 +440,92 @@ class handler(BaseHTTPRequestHandler):
             self.send_json({"success": True, "email": email, "verified": verified})
             return
 
+        elif path == '/api/whatsapp/verify-number':
+            mobile_raw = payload.get('mobile', '')
+            valid_fmt, clean_mob = validate_mobile_str(mobile_raw)
+
+            if not valid_fmt:
+                self.send_json({"success": False, "whatsappVerified": False, "error": clean_mob}, status=400)
+                return
+
+            # Check duplicate numbers in existing companies
+            current_data = get_db_state() or {}
+            companies = current_data.get('companies', [])
+            for c in companies:
+                if c.get('mobile') == clean_mob:
+                    self.send_json({"success": False, "whatsappVerified": False, "error": "❌ A company with this mobile number is already registered."}, status=400)
+                    return
+
+            # Read WhatsApp Provider / Meta Cloud API credentials from environment variables
+            wa_token = os.environ.get("WHATSAPP_ACCESS_TOKEN") or os.environ.get("META_WHATSAPP_TOKEN") or os.environ.get("WHATSAPP_API_KEY")
+            wa_phone_id = os.environ.get("WHATSAPP_PHONE_NUMBER_ID") or os.environ.get("META_PHONE_ID")
+
+            if not wa_token or not wa_phone_id:
+                # Security Requirement: Do NOT fake validation results when provider is not configured.
+                self.send_json({
+                    "success": False,
+                    "whatsappVerified": False,
+                    "code": "PROVIDER_NOT_CONFIGURED",
+                    "error": "Official WhatsApp Business API is not configured on the server. Please add WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID environment variables in server settings."
+                }, status=501)
+                return
+
+            # Background Lookup via official Meta WhatsApp Graph API contacts endpoint
+            try:
+                url = f"https://graph.facebook.com/v17.0/{wa_phone_id.strip()}/contacts"
+                body_data = json.dumps({
+                    "blocking": "wait",
+                    "contacts": [f"+91{clean_mob}"]
+                }).encode('utf-8')
+
+                req = urllib.request.Request(url, data=body_data, headers={
+                    "Authorization": f"Bearer {wa_token.strip()}",
+                    "Content-Type": "application/json"
+                }, method="POST")
+
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    res_json = json.loads(resp.read().decode('utf-8'))
+                    contacts = res_json.get('contacts', [])
+                    if contacts and len(contacts) > 0 and contacts[0].get('status') == 'valid':
+                        self.send_json({
+                            "success": True,
+                            "whatsappVerified": True,
+                            "mobile": clean_mob,
+                            "message": "✓ WhatsApp number verified"
+                        })
+                        return
+                    else:
+                        self.send_json({
+                            "success": False,
+                            "whatsappVerified": False,
+                            "mobile": clean_mob,
+                            "error": "This number is not available on WhatsApp"
+                        }, status=400)
+                        return
+            except Exception as ex:
+                print(f"[WhatsApp API Exception]: {ex}")
+                self.send_json({
+                    "success": False,
+                    "whatsappVerified": False,
+                    "error": f"WhatsApp verification service connection error: {str(ex)}"
+                }, status=502)
+                return
+
         elif path == '/api/auth/register-company':
             current_data = get_db_state() or {}
             companies = current_data.get('companies', [])
             
             email = payload.get('email', '').strip().lower()
-            mobile = payload.get('mobile', '').strip()
-            gstin = payload.get('gstin', '').strip().upper() if payload.get('gstin') else None
+            mobile_raw = payload.get('mobile', '').strip()
+            
+            valid_fmt, mobile = validate_mobile_str(mobile_raw)
+            if not valid_fmt:
+                self.send_json({"success": False, "error": f"❌ {mobile}"}, status=400)
+                return
+
+            raw_gstin = payload.get('gstin', '')
+            gstin = raw_gstin.strip().upper() if raw_gstin and str(raw_gstin).strip() else None
+            gst_type = payload.get('gstStatus') or ('GST_VERIFIED' if gstin else 'NON_GST_REGISTERED')
 
             # Check duplicates
             for c in companies:
@@ -457,12 +539,12 @@ class handler(BaseHTTPRequestHandler):
                     self.send_json({"success": False, "error": "❌ This GSTIN is already registered."}, status=400)
                     return
 
-            company_id = f"COMP-{hashlib.sha256(email.encode()).hexdigest()[:6].upper()}-{mobile[-4:]}"
+            company_id = f"GST-{gstin[:6]}-{mobile[-4:]}" if gstin else f"COMP-{hashlib.sha256(email.encode()).hexdigest()[:6].upper()}-{mobile[-4:]}"
             new_comp = {
                 "id": company_id,
                 "name": payload.get('name'),
                 "legalName": payload.get('legalName') or payload.get('name'),
-                "gstStatus": payload.get('gstStatus') or ('GST_VERIFIED' if gstin else 'NON_GST_REGISTERED'),
+                "gstStatus": gst_type,
                 "gstin": gstin,
                 "businessType": payload.get('businessType') or 'Proprietorship',
                 "ownerName": payload.get('ownerName'),
