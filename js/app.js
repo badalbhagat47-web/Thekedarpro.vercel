@@ -533,7 +533,23 @@ class AppController {
     // Sync to mobile drawer container as well
     const mobileLinksContainer = document.getElementById('mobileNavLinksContainer');
     if (mobileLinksContainer) {
-      mobileLinksContainer.innerHTML = sidebar.innerHTML;
+      let userInfoHtml = '';
+      if (this.currentUser) {
+        const isSA = this.currentUser.role === 'SUPER_ADMIN';
+        const isCA = this.currentUser.role === 'COMPANY_ADMIN';
+        const roleLabel = isSA ? 'SUPER ADMIN' : (isCA ? 'CONTRACTOR ADMIN' : 'WORKER');
+        const roleBg = isSA ? 'bg-amber-500 text-slate-950 font-black' : (isCA ? 'bg-indigo-600 text-white font-extrabold' : 'bg-slate-700 text-slate-200');
+        userInfoHtml = `
+          <div class="p-3 mb-3 bg-slate-850/80 rounded-2xl border border-slate-800 space-y-1">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Logged In User</div>
+            <div class="text-xs font-black text-white truncate">${this.currentUser.name || this.currentUser.companyName || 'User'}</div>
+            <span class="inline-block px-2 py-0.5 rounded text-[9px] uppercase ${roleBg}">${roleLabel}</span>
+          </div>
+        `;
+      }
+
+      mobileLinksContainer.innerHTML = userInfoHtml + sidebar.innerHTML;
+      
       // Add auto-close on mobile drawer link click
       const links = mobileLinksContainer.querySelectorAll('a, button');
       links.forEach(el => {
