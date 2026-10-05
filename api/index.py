@@ -65,7 +65,7 @@ def send_real_email_otp(to_email, otp_code):
     gmail_pass = os.environ.get("GMAIL_APP_PASSWORD")
 
     smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com" if gmail_user else None)
-    smtp_port = int(os.environ.get("SMTP_PORT", 465 if (gmail_user or os.environ.get("SMTP_HOST") == "smtp.gmail.com") else 587))
+    smtp_port = int(os.environ.get("SMTP_PORT", 587))
     smtp_user = gmail_user or os.environ.get("SMTP_USER")
     smtp_pass = gmail_pass or os.environ.get("SMTP_PASS")
     smtp_from = os.environ.get("SMTP_FROM", smtp_user or "noreply@thekedar.com")
@@ -79,41 +79,60 @@ def send_real_email_otp(to_email, otp_code):
         print(f"[SMTP NOTICE] Email credentials (GMAIL_USER/GMAIL_APP_PASSWORD) not set on server yet. Using demo fallback mode.")
         return True, "DEV_FALLBACK"
 
-    try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = f"🔒 {otp_code} is your THEKEDAR Verification Code"
-        msg['From'] = f"THEKEDAR Verification <{smtp_from}>"
-        msg['To'] = to_email
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = f"🔒 {otp_code} is your THEKEDAR Verification Code"
+    msg['From'] = f"THEKEDAR Verification <{smtp_from}>"
+    msg['To'] = to_email
 
-        html_body = f"""
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #0f172a; color: #f8fafc;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #38bdf8; margin: 0; font-size: 24px;">THEKEDAR PRO</h1>
-                <p style="color: #94a3b8; font-size: 14px; margin-top: 4px;">Contractor & Workforce Management</p>
-            </div>
-            <div style="background-color: #1e293b; padding: 20px; border-radius: 8px; text-align: center;">
-                <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 12px;">Your Email Verification Code:</p>
-                <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #f59e0b; margin: 15px 0;">{otp_code}</div>
-                <p style="font-size: 12px; color: #94a3b8;">This code is valid for <strong>10 minutes</strong>. Do not share this code with anyone.</p>
-            </div>
-            <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 20px;">If you did not request this code, please ignore this email.</p>
+    html_body = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #0f172a; color: #f8fafc;">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #38bdf8; margin: 0; font-size: 24px;">THEKEDAR PRO</h1>
+            <p style="color: #94a3b8; font-size: 14px; margin-top: 4px;">Contractor & Workforce Management</p>
         </div>
-        """
-        msg.attach(MIMEText(html_body, 'html'))
+        <div style="background-color: #1e293b; padding: 20px; border-radius: 8px; text-align: center;">
+            <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 12px;">Your Email Verification Code:</p>
+            <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #f59e0b; margin: 15px 0;">{otp_code}</div>
+            <p style="font-size: 12px; color: #94a3b8;">This code is valid for <strong>10 minutes</strong>. Do not share this code with anyone.</p>
+        </div>
+        <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 20px;">If you did not request this code, please ignore this email.</p>
+    </div>
+    """
+    msg.attach(MIMEText(html_body, 'html'))
 
+    # Try Port 587 (STARTTLS) first, fallback to Port 465 (SSL)
+    try:
         if smtp_port == 465:
-            server = smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10)
+            server = smtplib.SMTP_SSL(smtp_host, 465, timeout=10)
         else:
-            server = smtplib.SMTP(smtp_host, smtp_port, timeout=10)
+            server = smtplib.SMTP(smtp_host, 587, timeout=10)
+            server.ehlo()
             server.starttls()
+            server.ehlo()
         
         server.login(smtp_user, smtp_pass)
         server.sendmail(smtp_from, [to_email], msg.as_string())
         server.quit()
         return True, "SENT"
-    except Exception as e:
-        print(f"SMTP Error sending to {to_email}: {e}")
-        return False, str(e)
+    except Exception as e1:
+        print(f"SMTP Primary Port {smtp_port} failed: {e1}. Trying alternate port...")
+        try:
+            alt_port = 465 if smtp_port != 465 else 587
+            if alt_port == 465:
+                server = smtplib.SMTP_SSL(smtp_host, 465, timeout=10)
+            else:
+                server = smtplib.SMTP(smtp_host, 587, timeout=10)
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+            
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_from, [to_email], msg.as_string())
+            server.quit()
+            return True, "SENT"
+        except Exception as e2:
+            print(f"SMTP Alternate Port failed: {e2}")
+            return False, f"SMTP delivery failed: {e1} / {e2}"
 
 def get_db_state():
     try:
