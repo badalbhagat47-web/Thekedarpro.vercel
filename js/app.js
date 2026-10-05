@@ -874,87 +874,95 @@ class AppController {
     const content = document.getElementById('modalContent');
 
     content.innerHTML = `
-      <div class="bg-white rounded-3xl p-6 shadow-2xl max-w-xl mx-auto space-y-4">
-        <div class="flex justify-between items-center border-b pb-3">
-          <h3 class="text-xl font-extrabold text-slate-900 brand-font">Register Contractor Company</h3>
-          <button onclick="appController.closeModal()" class="text-slate-400 font-bold text-xl"><i class="fa-solid fa-xmark"></i></button>
+      <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-100 shadow-2xl max-w-lg w-full mx-auto space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="text-xl font-black text-slate-900 brand-font tracking-tight">Register Contractor Company</h3>
+            <p class="text-xs text-slate-500 font-medium">Create your company workspace in seconds</p>
+          </div>
+          <button onclick="appController.closeModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
         </div>
 
-        <form onsubmit="appController.submitCompanyRegistrationForm(event)" class="space-y-3">
-          <div class="flex gap-4 p-2 bg-slate-100 rounded-xl text-xs font-extrabold text-slate-800">
-            <label class="flex items-center gap-1.5 cursor-pointer">
-              <input type="radio" name="regGstType" value="GST" checked onchange="appController.toggleRegGstField(true)"> GST Registered
+        <form onsubmit="appController.submitCompanyRegistrationForm(event)" class="space-y-3.5">
+          <!-- REGISTRATION TYPE SEGMENTED TOGGLE -->
+          <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100 rounded-2xl text-xs font-bold">
+            <label id="lblGstOption" class="flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold">
+              <input type="radio" name="regGstType" value="GST" checked class="hidden" onchange="appController.toggleRegGstField(true)">
+              <i class="fa-solid fa-building-circle-check"></i>
+              <span>GST Registered</span>
             </label>
-            <label class="flex items-center gap-1.5 cursor-pointer">
-              <input type="radio" name="regGstType" value="NON_GST" onchange="appController.toggleRegGstField(false)"> Non-GST
+            <label id="lblNonGstOption" class="flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700">
+              <input type="radio" name="regGstType" value="NON_GST" class="hidden" onchange="appController.toggleRegGstField(false)">
+              <i class="fa-solid fa-store"></i>
+              <span>Non-GST</span>
             </label>
           </div>
 
-          <div id="gstinFieldGroup">
-            <label id="gstinLabel" class="block text-xs font-bold text-slate-700 mb-1">GSTIN Number *</label>
+          <!-- GSTIN INPUT ROW -->
+          <div id="gstinFieldGroup" class="space-y-1">
+            <label id="gstinLabel" class="block text-xs font-bold text-slate-700">GSTIN Number <span class="text-rose-500">*</span></label>
             <div class="flex gap-2">
-              <input type="text" id="regGstin" required placeholder="e.g. 07AAACR8821F1Z5" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-mono font-bold uppercase">
-              <button type="button" onclick="appController.verifyGstinClick()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm">Verify GST</button>
+              <input type="text" id="regGstin" required placeholder="e.g. 07AAACR8821F1Z5" 
+                     class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold uppercase focus:bg-white focus:border-blue-500 focus:outline-none transition">
+              <button type="button" onclick="appController.verifyGstinClick()" 
+                      class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved"></i> Verify GST
+              </button>
             </div>
             <p id="gstinStatusAlert" class="text-[11px] text-slate-500 mt-1"></p>
           </div>
 
+          <!-- COMPANY NAME -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Company Name *</label>
-            <input type="text" id="regCompName" required placeholder="e.g. Power Solutions" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Company Name <span class="text-rose-500">*</span></label>
+            <input type="text" id="regCompName" required placeholder="e.g. Power Solutions" 
+                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-blue-500 focus:outline-none transition">
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Owner / Contractor Name *</label>
-            <input type="text" id="regOwnerName" required placeholder="e.g. Rajesh Sharma" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
-          </div>
-
-          <!-- MOBILE NUMBER WITH WHATSAPP VERIFICATION -->
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs font-bold text-slate-700">Phone Number *</label>
-              <span id="waVerifiedBadge" class="hidden text-[11px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                <i class="fa-brands fa-whatsapp text-emerald-600"></i> WhatsApp Verified
-              </span>
+          <!-- BALANCED 2-COLUMN ROW FOR OWNER NAME & PHONE -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Owner / Contractor Name <span class="text-rose-500">*</span></label>
+              <input type="text" id="regOwnerName" required placeholder="e.g. Rajesh Sharma" 
+                     class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-blue-500 focus:outline-none transition">
             </div>
-            <div class="flex gap-2">
-              <input type="text" id="regMobile" required placeholder="e.g. +91 9876543210 or 9876543210" maxlength="18" 
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number <span class="text-rose-500">*</span></label>
+              <input type="tel" id="regMobile" required placeholder="e.g. +91 9876543210" maxlength="18"
                      oninput="this.value = this.value.replace(/[^0-9+\s-]/g, '').slice(0, 18)"
-                     class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold font-mono">
-              <button type="button" id="btnVerifyWhatsapp" onclick="appController.verifyCompanyWhatsappMobile()" 
-                      class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm flex items-center gap-1.5">
-                <i class="fa-brands fa-whatsapp text-sm"></i> Verify WhatsApp
-              </button>
+                     class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold font-mono focus:bg-white focus:border-blue-500 focus:outline-none transition">
             </div>
-            <p id="waStatusAlert" class="text-[11px] mt-1 hidden"></p>
           </div>
 
           <!-- EMAIL WITH OTP VERIFICATION FIELD -->
           <div>
             <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs font-bold text-slate-700">Company Email Address *</label>
-              <span id="emailVerifiedBadge" class="hidden text-[11px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                <i class="fa-solid fa-circle-check"></i> Email Verified
+              <label class="block text-xs font-bold text-slate-700">Company Email Address <span class="text-rose-500">*</span></label>
+              <span id="emailVerifiedBadge" class="hidden text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                <i class="fa-solid fa-circle-check text-emerald-600"></i> Email Verified
               </span>
             </div>
             <div class="flex gap-2">
               <input type="email" id="regEmail" required placeholder="owner@company.com" 
-                     class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+                     class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-blue-500 focus:outline-none transition">
               <button type="button" id="btnSendEmailOtp" onclick="appController.sendCompanyEmailOtp()" 
-                      class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs whitespace-nowrap shadow-sm">
+                      class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
                 Send OTP
               </button>
             </div>
 
             <!-- OTP INPUT GROUP (Hidden until Send OTP clicked) -->
-            <div id="emailOtpGroup" class="hidden mt-2 p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-              <label class="block text-xs font-bold text-slate-800">Enter 6-Digit OTP *</label>
+            <div id="emailOtpGroup" class="hidden mt-2 p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <label class="block text-xs font-bold text-slate-800">Enter 6-Digit Verification Code</label>
               <div class="flex gap-2">
                 <input type="text" id="regEmailOtp" placeholder="123456" maxlength="6" 
                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
-                       class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-sm font-mono font-bold text-center tracking-widest text-slate-900">
+                       class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-mono font-bold text-center tracking-widest text-slate-900 focus:border-blue-500 focus:outline-none">
                 <button type="button" id="btnVerifyEmailOtp" onclick="appController.verifyCompanyEmailOtp()" 
-                        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs whitespace-nowrap shadow-md">
+                        class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-md transition">
                   Verify OTP
                 </button>
               </div>
@@ -962,30 +970,71 @@ class AppController {
             </div>
           </div>
 
+          <!-- PASSWORD -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password <span class="text-rose-500">*</span></label>
             <div class="relative">
-              <input type="password" id="regPassword" required placeholder="••••••••" class="w-full p-2.5 pr-9 bg-slate-50 border rounded-xl text-xs">
-              <button type="button" onclick="AuthModule.togglePasswordVisibility('regPassword', 'eyeIconReg')" class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-xs p-1 focus:outline-none">
+              <input type="password" id="regPassword" required placeholder="••••••••" 
+                     class="w-full px-3.5 py-2.5 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-blue-500 focus:outline-none transition">
+              <button type="button" onclick="AuthModule.togglePasswordVisibility('regPassword', 'eyeIconReg')" 
+                      class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs p-1 focus:outline-none">
                 <i id="eyeIconReg" class="fa-solid fa-eye"></i>
               </button>
             </div>
           </div>
 
-          <div id="companyRegErrorAlert" class="hidden p-3 bg-rose-100 text-rose-800 rounded-xl text-xs font-bold"></div>
+          <div id="companyRegErrorAlert" class="hidden p-3 bg-rose-50 text-rose-700 rounded-xl text-xs font-bold border border-rose-200"></div>
 
-          <div class="pt-2 flex justify-end gap-2">
-            <button type="button" onclick="appController.closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">Cancel</button>
-            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-md">Register & Create Account</button>
+          <!-- ACTIONS -->
+          <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+            <button type="button" onclick="appController.closeModal()" 
+                    class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+              Cancel
+            </button>
+            <button type="submit" 
+                    class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center gap-2">
+              <span>Register & Create Account</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
           </div>
         </form>
       </div>
     `;
 
-    if (!history.state || !history.state.isModal) {
-      history.pushState({ view: this.currentView, isModal: true }, '', '#' + this.currentView + '-modal');
-    }
     modal.classList.remove('hidden');
+  }
+
+  toggleRegGstField(isGst) {
+    const group = document.getElementById('gstinFieldGroup');
+    const gstinInput = document.getElementById('regGstin');
+    const alertEl = document.getElementById('gstinStatusAlert');
+    const lblGst = document.getElementById('lblGstOption');
+    const lblNonGst = document.getElementById('lblNonGstOption');
+
+    if (isGst) {
+      if (lblGst) {
+        lblGst.className = "flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold";
+      }
+      if (lblNonGst) {
+        lblNonGst.className = "flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700 font-bold";
+      }
+      if (group) group.classList.remove('hidden');
+      if (gstinInput) gstinInput.required = true;
+    } else {
+      if (lblGst) {
+        lblGst.className = "flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700 font-bold";
+      }
+      if (lblNonGst) {
+        lblNonGst.className = "flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold";
+      }
+      if (group) group.classList.add('hidden');
+      if (alertEl) alertEl.innerHTML = '';
+      if (gstinInput) {
+        gstinInput.value = '';
+        gstinInput.required = false;
+        gstinInput.classList.remove('border-emerald-500', 'bg-emerald-50');
+      }
+    }
   }
 
   async sendCompanyEmailOtp() {
