@@ -422,9 +422,10 @@ const CompanyAdminModule = {
       }
     });
 
-    // Render Chart 1: Attendance Breakdown
+    // Render Chart 1: Attendance Breakdown (3D Donut with Gloss Gradient Effects)
     const attCtx = document.getElementById('attendanceOverviewChart');
     if (attCtx) {
+      const isDark = document.documentElement.classList.contains('dark');
       this._charts.attendance = new Chart(attCtx, {
         type: 'doughnut',
         data: {
@@ -433,22 +434,36 @@ const CompanyAdminModule = {
             : ['Full Day', 'Half Day', 'Pending', 'Absent', 'Checked Out'],
           datasets: [{
             data: [fullDayCount, halfDayCount, pendingCount, absentCount, checkedOutCount],
-            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#6366f1'],
-            borderWidth: 2,
-            borderColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'],
+            hoverBackgroundColor: ['#34d399', '#60a5fa', '#fbbf24', '#f87171', '#a78bfa'],
+            borderWidth: 3,
+            borderColor: isDark ? '#0f172a' : '#ffffff',
+            hoverOffset: 6
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          cutout: '68%',
           plugins: {
             legend: {
               position: 'bottom',
               labels: {
-                boxWidth: 10,
+                boxWidth: 12,
+                padding: 12,
                 font: { size: 10, weight: 'bold' },
-                color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155'
+                color: isDark ? '#cbd5e1' : '#334155'
               }
+            },
+            tooltip: {
+              backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+              titleColor: isDark ? '#f8fafc' : '#0f172a',
+              bodyColor: isDark ? '#cbd5e1' : '#334155',
+              borderColor: '#f59e0b',
+              borderWidth: 1.5,
+              padding: 10,
+              boxPadding: 4,
+              usePointStyle: true
             }
           }
         }
@@ -480,38 +495,68 @@ const CompanyAdminModule = {
 
     const payCtx = document.getElementById('payrollOverviewChart');
     if (payCtx) {
+      const ctx = payCtx.getContext('2d');
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      // Multi-stop 3D Canvas Gradients for Bar Chart
+      const gGross = ctx.createLinearGradient(0, 0, 0, 200);
+      gGross.addColorStop(0, '#34d399');
+      gGross.addColorStop(1, '#059669');
+
+      const gAdv = ctx.createLinearGradient(0, 0, 0, 200);
+      gAdv.addColorStop(0, '#f87171');
+      gAdv.addColorStop(1, '#dc2626');
+
+      const gNet = ctx.createLinearGradient(0, 0, 0, 200);
+      gNet.addColorStop(0, '#fcd34d');
+      gNet.addColorStop(1, '#d97706');
+
       this._charts.payroll = new Chart(payCtx, {
         type: 'bar',
         data: {
           labels: isHi 
-            ? ['सकल वेतन', 'अग्रिम कटौती', 'शुद्ध देय']
+            ? ['सकल वेतन (Gross)', 'अग्रिम (Advances)', 'शुद्ध देय (Net Pay)']
             : ['Gross Salary', 'Advances', 'Net Payable'],
           datasets: [{
             label: isHi ? 'राशि (₹)' : 'Amount (₹)',
             data: [totalGross, totalAdvances, totalNet],
-            backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
-            borderRadius: 8
+            backgroundColor: [gGross, gAdv, gNet],
+            borderRadius: 10,
+            borderSkipped: false,
+            barThickness: 32
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+              titleColor: isDark ? '#f8fafc' : '#0f172a',
+              bodyColor: isDark ? '#cbd5e1' : '#334155',
+              borderColor: '#10b981',
+              borderWidth: 1.5,
+              padding: 10,
+              callbacks: {
+                label: (ctx) => ' ₹' + ctx.raw.toLocaleString('en-IN')
+              }
+            }
           },
           scales: {
             x: {
               grid: { display: false },
               ticks: {
                 font: { size: 10, weight: 'bold' },
-                color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155'
+                color: isDark ? '#cbd5e1' : '#334155'
               }
             },
             y: {
               beginAtZero: true,
+              grid: { color: isDark ? 'rgba(51, 65, 85, 0.3)' : 'rgba(226, 232, 240, 0.6)' },
               ticks: {
                 font: { size: 10, weight: 'bold' },
-                color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155',
+                color: isDark ? '#cbd5e1' : '#334155',
                 callback: (v) => '₹' + v.toLocaleString('en-IN')
               }
             }
@@ -520,7 +565,7 @@ const CompanyAdminModule = {
       });
     }
 
-    // 3. WORKFORCE STATUS DATA
+    // 3. WORKFORCE STATUS DATA (3D Donut Chart)
     const allWorkers = window.appStore.data.workers.filter(w => w.companyId === companyId);
     const activeCount = allWorkers.filter(w => w.status === 'ACTIVE' || !w.status).length;
     const pendingStatusCount = allWorkers.filter(w => w.status === 'PENDING').length;
@@ -528,6 +573,7 @@ const CompanyAdminModule = {
 
     const wfCtx = document.getElementById('workforceStatusChart');
     if (wfCtx) {
+      const isDark = document.documentElement.classList.contains('dark');
       this._charts.workforce = new Chart(wfCtx, {
         type: 'pie',
         data: {
@@ -537,8 +583,9 @@ const CompanyAdminModule = {
           datasets: [{
             data: [activeCount, pendingStatusCount, inactiveCount],
             backgroundColor: ['#10b981', '#f59e0b', '#64748b'],
-            borderWidth: 2,
-            borderColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+            borderWidth: 3,
+            borderColor: isDark ? '#0f172a' : '#ffffff',
+            hoverOffset: 6
           }]
         },
         options: {
@@ -548,9 +595,10 @@ const CompanyAdminModule = {
             legend: {
               position: 'bottom',
               labels: {
-                boxWidth: 10,
+                boxWidth: 12,
+                padding: 10,
                 font: { size: 10, weight: 'bold' },
-                color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155'
+                color: isDark ? '#cbd5e1' : '#334155'
               }
             }
           }
@@ -558,7 +606,7 @@ const CompanyAdminModule = {
       });
     }
 
-    // 4. MONTHLY SALARY TREND (LAST 6 MONTHS)
+    // 4. MONTHLY SALARY TREND (LAST 6 MONTHS) - Vibrant Gradient Line Chart
     const monthLabels = [];
     const trendGross = [];
     const trendNet = [];
@@ -582,6 +630,17 @@ const CompanyAdminModule = {
 
     const stCtx = document.getElementById('salaryTrendChart');
     if (stCtx) {
+      const ctx = stCtx.getContext('2d');
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      const gAreaGross = ctx.createLinearGradient(0, 0, 0, 200);
+      gAreaGross.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+      gAreaGross.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+      const gAreaNet = ctx.createLinearGradient(0, 0, 0, 200);
+      gAreaNet.addColorStop(0, 'rgba(245, 158, 11, 0.35)');
+      gAreaNet.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+
       this._charts.salaryTrend = new Chart(stCtx, {
         type: 'line',
         data: {
@@ -591,17 +650,25 @@ const CompanyAdminModule = {
               label: isHi ? 'सकल वेतन (Gross)' : 'Gross Salary',
               data: trendGross,
               borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 3,
+              pointBackgroundColor: '#10b981',
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              backgroundColor: gAreaGross,
               fill: true,
-              tension: 0.3
+              tension: 0.35
             },
             {
               label: isHi ? 'शुद्ध देय (Net)' : 'Net Payable',
               data: trendNet,
               borderColor: '#f59e0b',
-              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              borderWidth: 3,
+              pointBackgroundColor: '#f59e0b',
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              backgroundColor: gAreaNet,
               fill: true,
-              tension: 0.3
+              tension: 0.35
             }
           ]
         },
@@ -612,20 +679,22 @@ const CompanyAdminModule = {
             legend: {
               position: 'bottom',
               labels: {
-                boxWidth: 10,
+                boxWidth: 12,
+                padding: 10,
                 font: { size: 10, weight: 'bold' },
-                color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155'
+                color: isDark ? '#cbd5e1' : '#334155'
               }
             }
           },
           scales: {
             x: {
               grid: { display: false },
-              ticks: { font: { size: 9, weight: 'bold' }, color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155' }
+              ticks: { font: { size: 9, weight: 'bold' }, color: isDark ? '#cbd5e1' : '#334155' }
             },
             y: {
               beginAtZero: true,
-              ticks: { font: { size: 9, weight: 'bold' }, color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155', callback: (v) => '₹' + v }
+              grid: { color: isDark ? 'rgba(51, 65, 85, 0.3)' : 'rgba(226, 232, 240, 0.6)' },
+              ticks: { font: { size: 9, weight: 'bold' }, color: isDark ? '#cbd5e1' : '#334155', callback: (v) => '₹' + v.toLocaleString('en-IN') }
             }
           }
         }
@@ -652,6 +721,13 @@ const CompanyAdminModule = {
 
     const atCtx = document.getElementById('attendanceTrendChart');
     if (atCtx) {
+      const ctx = atCtx.getContext('2d');
+      const isDark = document.documentElement.classList.contains('dark');
+      
+      const gAreaAtt = ctx.createLinearGradient(0, 0, 0, 200);
+      gAreaAtt.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+      gAreaAtt.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
       this._charts.attendanceTrend = new Chart(atCtx, {
         type: 'line',
         data: {
@@ -660,9 +736,12 @@ const CompanyAdminModule = {
             label: isHi ? 'उपस्थित मजदूर' : 'Present Workers',
             data: dailyPresentCounts,
             borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.15)',
+            borderWidth: 3,
+            pointBackgroundColor: '#3b82f6',
+            pointRadius: 3,
+            backgroundColor: gAreaAtt,
             fill: true,
-            tension: 0.2
+            tension: 0.3
           }]
         },
         options: {
@@ -672,20 +751,21 @@ const CompanyAdminModule = {
             legend: {
               position: 'bottom',
               labels: {
-                boxWidth: 10,
+                boxWidth: 12,
                 font: { size: 10, weight: 'bold' },
-                color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155'
+                color: isDark ? '#cbd5e1' : '#334155'
               }
             }
           },
           scales: {
             x: {
               grid: { display: false },
-              ticks: { font: { size: 9, weight: 'bold' }, color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155' }
+              ticks: { font: { size: 9, weight: 'bold' }, color: isDark ? '#cbd5e1' : '#334155' }
             },
             y: {
               beginAtZero: true,
-              ticks: { precision: 0, font: { size: 9, weight: 'bold' }, color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155' }
+              grid: { color: isDark ? 'rgba(51, 65, 85, 0.3)' : 'rgba(226, 232, 240, 0.6)' },
+              ticks: { precision: 0, font: { size: 9, weight: 'bold' }, color: isDark ? '#cbd5e1' : '#334155' }
             }
           }
         }
@@ -704,6 +784,7 @@ const CompanyAdminModule = {
 
     const deptCtx = document.getElementById('departmentDistributionChart');
     if (deptCtx) {
+      const isDark = document.documentElement.classList.contains('dark');
       this._charts.department = new Chart(deptCtx, {
         type: 'bar',
         data: {
@@ -712,7 +793,8 @@ const CompanyAdminModule = {
             label: isHi ? 'कर्मचारी संख्या' : 'Worker Count',
             data: deptCounts.length > 0 ? deptCounts : [activeWorkers.length],
             backgroundColor: ['#14b8a6', '#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6'],
-            borderRadius: 6
+            borderRadius: 8,
+            borderSkipped: false
           }]
         },
         options: {
@@ -724,11 +806,12 @@ const CompanyAdminModule = {
           scales: {
             x: {
               grid: { display: false },
-              ticks: { font: { size: 10, weight: 'bold' }, color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155' }
+              ticks: { font: { size: 10, weight: 'bold' }, color: isDark ? '#cbd5e1' : '#334155' }
             },
             y: {
               beginAtZero: true,
-              ticks: { precision: 0, font: { size: 10, weight: 'bold' }, color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155' }
+              grid: { color: isDark ? 'rgba(51, 65, 85, 0.3)' : 'rgba(226, 232, 240, 0.6)' },
+              ticks: { precision: 0, font: { size: 10, weight: 'bold' }, color: isDark ? '#cbd5e1' : '#334155' }
             }
           }
         }
