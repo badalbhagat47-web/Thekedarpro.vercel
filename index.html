@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full bg-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ठेकेदार Attendance & Salary Management System</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/custom.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            amber: {
+              450: '#f7ab0a',
+            },
+            slate: {
+              950: '#020617',
+            }
+          }
+        }
+      }
+    };
+    (function() {
+      const savedTheme = localStorage.getItem('thekedar_theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+</head>
+<body class="h-full flex flex-col font-sans antialiased text-slate-900 bg-slate-100 dark:bg-slate-950 dark:text-slate-100 selection:bg-amber-400 selection:text-slate-950">
+
+  <!-- TOP APP HEADER -->
+  <header id="mainHeader" class="bg-slate-900 text-white sticky top-0 z-50 shadow-md border-b border-slate-800 w-full min-w-0">
+    <div class="w-full px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16 gap-2">
+        <!-- Logo & Brand (Fixed Left Position) -->
+        <div class="flex items-center space-x-3 cursor-pointer shrink-0 min-w-max" onclick="appController.navigate('dashboard')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 flex-shrink-0">
+            <i class="fa-solid fa-bolt text-xl"></i>
+          </div>
+          <div class="shrink-0">
+            <h1 class="brand-font text-2xl leading-none font-bold text-amber-400 tracking-wide whitespace-nowrap">
+              THEKEDAR <span class="text-white font-normal text-lg">PRO</span>
+            </h1>
+            <p class="text-[10px] text-slate-400 leading-tight uppercase tracking-wider whitespace-nowrap" id="headerSubTitle">
+              Attendance & Salary System
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Action Controls (Fixed Right Alignment) -->
+        <div class="flex items-center space-x-2 sm:space-x-3 shrink-0 ml-auto justify-end">
+          <!-- Theme Switcher (Light / Dark Only) -->
+          <div class="relative inline-block text-left">
+            <button onclick="appController.toggleThemeDropdown()" id="themeBtn" title="Select Theme" 
+                    class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm whitespace-nowrap">
+              <i id="themeIcon" class="fa-solid fa-sun text-sm"></i>
+              <span id="themeBtnText" class="hidden sm:inline">Light</span>
+            </button>
+            <div id="themeDropdownMenu" class="hidden absolute right-0 mt-2 w-32 bg-slate-900 border border-slate-700 rounded-xl shadow-xl z-50 text-xs py-1">
+              <button onclick="appController.setTheme('light')" class="w-full text-left px-3 py-2 text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-sun text-yellow-400"></i> Light
+              </button>
+              <button onclick="appController.setTheme('dark')" class="w-full text-left px-3 py-2 text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-moon text-indigo-400"></i> Dark
+              </button>
+            </div>
+          </div>
+
+          <!-- Language Toggle Button -->
+          <button onclick="i18n.setLang(i18n.currentLang === 'hi' ? 'en' : 'hi')" 
+                  class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm whitespace-nowrap">
+            <i class="fa-solid fa-language text-sm"></i>
+            <span id="langBtnText">English</span>
+          </button>
+
+          <!-- User Badge / Role Switcher -->
+          <div id="userHeaderBadge" class="hidden sm:flex items-center space-x-2 bg-slate-800/90 border border-slate-700/80 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span id="headerUserName" class="font-semibold text-slate-200">RLV Power Solution</span>
+            <span id="headerUserRole" class="bg-amber-500 text-slate-950 font-extrabold px-1.5 py-0.5 rounded text-[10px] uppercase">Admin</span>
+          </div>
+
+          <!-- Quick Seed Data Demo Reset (Hidden on Pre-Login) -->
+          <button id="resetDemoBtn" onclick="appController.resetDemoData()" title="Reset Seed Data" 
+                  class="hidden px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition border border-slate-700 whitespace-nowrap">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+
+          <!-- Logout Button -->
+          <button id="logoutBtn" onclick="appController.logout()" 
+                  class="hidden px-3 py-1.5 bg-rose-600/90 hover:bg-rose-600 text-white rounded-lg text-xs font-semibold transition items-center gap-1.5 whitespace-nowrap">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span id="logoutText">Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP WRAPPER -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- DESKTOP SIDEBAR NAVIGATION (Hidden on mobile & login) -->
+    <aside id="desktopSidebar" class="hidden flex-col w-64 bg-slate-900 border-r border-slate-800 text-slate-300 p-4 space-y-1">
+      <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-500" id="navHeaderLabel">Navigation</div>
+
+      <a href="#" onclick="appController.navigate('dashboard')" id="sideNav-dashboard"
+         class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <i class="fa-solid fa-chart-pie w-5 text-amber-400"></i>
+        <span data-i18n="navDashboard">Dashboard</span>
+      </a>
+
+      <a href="#" onclick="appController.navigate('workers')" id="sideNav-workers"
+         class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <i class="fa-solid fa-users w-5 text-indigo-400"></i>
+        <span data-i18n="navWorkers">Worker Roster</span>
+      </a>
+
+      <a href="#" onclick="appController.navigate('advances')" id="sideNav-advances"
+         class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <i class="fa-solid fa-hand-holding-dollar w-5 text-purple-400"></i>
+        <span data-i18n="navAdvances">Advances & Payments</span>
+      </a>
+
+      <a href="#" onclick="appController.navigate('salary')" id="sideNav-salary"
+         class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <i class="fa-solid fa-calculator w-5 text-emerald-400"></i>
+        <span data-i18n="navSalary">Salary Engine</span>
+      </a>
+
+      <a href="#" onclick="appController.navigate('payslips')" id="sideNav-payslips"
+         class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <i class="fa-solid fa-file-invoice-dollar w-5 text-amber-400"></i>
+        <span data-i18n="navSalaryPayslips">Salary Slips</span>
+      </a>
+
+      <a href="#" onclick="appController.navigate('festival-holidays')" id="sideNav-festival-holidays"
+         class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <i class="fa-solid fa-cake-candles w-5 text-yellow-400"></i>
+        <span data-i18n="navFestivalHolidays">Festival Holidays</span>
+      </a>
+
+      <a href="#" onclick="appController.navigate('settings')" id="sideNav-settings"
+         class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <i class="fa-solid fa-sliders w-5 text-slate-400"></i>
+        <span data-i18n="navSettings">Company Settings</span>
+      </a>
+
+      <!-- Quick Banner Info in Sidebar -->
+      <div class="mt-auto bg-slate-800/70 p-3.5 rounded-xl border border-slate-700/60 text-xs text-slate-400">
+        <p class="font-bold text-amber-400 mb-1 flex items-center gap-1">
+          <i class="fa-solid fa-shield-halved"></i> Salary Rule Active
+        </p>
+        <p class="text-[11px] leading-tight">Company Fixed Holidays are <strong>PAID</strong> and never deducted from worker salary.</p>
+      </div>
+    </aside>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 mb-16 md:mb-0" id="mainContainer">
+      <!-- Views loaded dynamically via js/app.js -->
+    </main>
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION (Fixed at bottom on small screens) -->
+  <nav id="mobileBottomNav" class="md:hidden mobile-bottom-nav px-2 py-2">
+    <div class="flex justify-around items-center text-slate-400 text-[10px] font-semibold">
+      <button onclick="appController.navigate('dashboard')" id="mobNav-dashboard" class="flex flex-col items-center gap-1 p-1">
+        <i class="fa-solid fa-chart-pie text-base"></i>
+        <span>Home</span>
+      </button>
+      <button onclick="appController.navigate('live-attendance')" id="mobNav-live-attendance" class="flex flex-col items-center gap-1 p-1">
+        <i class="fa-solid fa-user-check text-base"></i>
+        <span>Live</span>
+      </button>
+      <button onclick="appController.navigate('worker-attendance')" id="mobNav-worker-attendance" class="flex flex-col items-center gap-1 p-1 text-amber-400">
+        <div class="w-10 h-10 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center -mt-5 shadow-lg border-2 border-slate-900">
+          <i class="fa-solid fa-fingerprint text-xl"></i>
+        </div>
+        <span>Punch</span>
+      </button>
+      <button onclick="appController.navigate('salary')" id="mobNav-salary" class="flex flex-col items-center gap-1 p-1">
+        <i class="fa-solid fa-calculator text-base"></i>
+        <span>Salary</span>
+      </button>
+      <button onclick="appController.navigate('advances')" id="mobNav-advances" class="flex flex-col items-center gap-1 p-1">
+        <i class="fa-solid fa-hand-holding-dollar text-base"></i>
+        <span>Advance</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MODAL CONTAINER FOR PAYSLIP & DIALOGS -->
+  <div id="modalOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div id="modalContent" class="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl">
+      <!-- Dynamic Modal Content -->
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/i18n.js"></script>
+  <script src="js/gst.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/salary.js"></script>
+  <script src="js/payslip.js"></script>
+  <script src="js/time_service.js"></script>
+  <script src="js/holiday_service.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/superadmin.js"></script>
+  <script src="js/company_admin.js"></script>
+  <script src="js/worker_dashboard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
