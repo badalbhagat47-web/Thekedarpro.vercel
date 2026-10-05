@@ -750,7 +750,6 @@ class AppController {
 
   openCompanyRegistrationModal() {
     this.regEmailVerified = false;
-    if (this.otpTimerInterval) clearInterval(this.otpTimerInterval);
 
     const modal = document.getElementById('modalOverlay');
     const content = document.getElementById('modalContent');
@@ -894,15 +893,11 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-rose-100', 'text-rose-800', 'bg-emerald-100', 'text-emerald-800');
         statusAlert.classList.add('bg-blue-100', 'text-blue-900');
-        statusAlert.innerText = data.message || `📩 6-Digit OTP sent to ${email}. Valid for 10 minutes.`;
+        statusAlert.innerText = `📩 6-digit verification code sent to ${email}. Please check your email inbox (and spam folder).`;
       }
 
-      if (data.demoOtp) {
-        const otpInput = document.getElementById('regEmailOtp');
-        if (otpInput) otpInput.value = data.demoOtp;
-      }
-
-      this.startOtpCooldownTimer(60);
+      btnSend.disabled = false;
+      btnSend.innerText = "Resend OTP";
 
     } catch (e) {
       btnSend.disabled = false;
@@ -910,27 +905,6 @@ class AppController {
       console.error("OTP send error:", e);
       alert("❌ Could not connect to OTP service. Please check your network and try again.");
     }
-  }
-
-  startOtpCooldownTimer(seconds) {
-    const btnSend = document.getElementById('btnSendEmailOtp');
-    if (!btnSend) return;
-
-    let timeLeft = seconds;
-    btnSend.disabled = true;
-
-    if (this.otpTimerInterval) clearInterval(this.otpTimerInterval);
-
-    this.otpTimerInterval = setInterval(() => {
-      if (timeLeft <= 0) {
-        clearInterval(this.otpTimerInterval);
-        btnSend.disabled = false;
-        btnSend.innerText = "Resend OTP";
-      } else {
-        btnSend.innerText = `Resend OTP (${timeLeft}s)`;
-        timeLeft--;
-      }
-    }, 1000);
   }
 
   async verifyCompanyEmailOtp() {

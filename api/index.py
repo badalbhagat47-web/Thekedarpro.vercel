@@ -69,8 +69,8 @@ def send_real_email_otp(to_email, otp_code):
     gmail_pass = os.environ.get("GMAIL_APP_PASSWORD") or os.environ.get("SMTP_PASS") or os.environ.get("EMAIL_PASS") or os.environ.get("MAIL_PASSWORD")
 
     if not gmail_user or not gmail_pass:
-        print(f"[OTP FALLBACK] Email credentials missing. Generated OTP for {to_email}: {otp_code}")
-        return True, f"SENT_DEMO (OTP: {otp_code})"
+        print(f"[SMTP ERROR] Missing email credentials (GMAIL_USER / GMAIL_APP_PASSWORD) on server.")
+        return False, "Email service is not configured. Please set GMAIL_USER and GMAIL_APP_PASSWORD in server environment variables."
 
     # Clean user and password (remove spaces from 16-character App Password)
     smtp_user = gmail_user.strip()
@@ -102,10 +102,10 @@ def send_real_email_otp(to_email, otp_code):
     # Method 1: Try Port 465 SSL
     try:
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(smtp_host, 465, context=context, timeout=8) as server:
+        with smtplib.SMTP_SSL(smtp_host, 465, context=context, timeout=10) as server:
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_from, [to_email], msg.as_string())
-        print(f"[SMTP SUCCESS] Email OTP successfully sent via SSL port 465 to {to_email}")
+        print(f"[SMTP SUCCESS] Real Email OTP successfully dispatched via SSL port 465 to {to_email}")
         return True, "SENT"
     except Exception as e1:
         print(f"[SMTP SSL 465 Warning]: {e1}. Trying STARTTLS 587...")
@@ -113,20 +113,17 @@ def send_real_email_otp(to_email, otp_code):
     # Method 2: Try Port 587 STARTTLS
     try:
         context = ssl.create_default_context()
-        with smtplib.SMTP(smtp_host, 587, timeout=8) as server:
+        with smtplib.SMTP(smtp_host, 587, timeout=10) as server:
             server.ehlo()
             server.starttls(context=context)
             server.ehlo()
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_from, [to_email], msg.as_string())
-        print(f"[SMTP SUCCESS] Email OTP successfully sent via STARTTLS port 587 to {to_email}")
+        print(f"[SMTP SUCCESS] Real Email OTP successfully dispatched via STARTTLS port 587 to {to_email}")
         return True, "SENT"
     except Exception as e2:
-        print(f"[SMTP STARTTLS 587 Warning]: {e2}")
-
-    # Fallback to prevent blocking user registration
-    print(f"[SMTP FALLBACK ACTIVATED] SMTP failed on server. OTP code for {to_email}: {otp_code}")
-    return True, f"SENT_DEMO (OTP: {otp_code})"
+        print(f"[SMTP STARTTLS 587 Error]: {e2}")
+        return False, f"Could not send email to inbox. Please verify GMAIL_USER and GMAIL_APP_PASSWORD credentials."
 
 def get_db_state():
     try:
@@ -295,28 +292,21 @@ class handler(BaseHTTPRequestHandler):
             conn.commit()
             conn.close()
 
-            # Dispatch Email
+            # Dispatch Email via Gmail SMTP
             sent_ok, msg_res = send_real_email_otp(email, otp_code)
 
             if not sent_ok:
                 self.send_json({
                     "success": False,
-                    "error": f"Failed to send email OTP: {msg_res}"
-                }, status=500)
+                    "error": msg_res
+                }, status=400)
                 return
 
-            resp_payload = {
+            self.send_json({
                 "success": True,
-                "message": f"6-digit OTP sent to {email}. Valid for 10 minutes.",
+                "message": f"6-digit verification code sent to {email}. Valid for 10 minutes.",
                 "cooldown": 60
-            }
-
-            if "SENT_DEMO" in msg_res:
-                resp_payload["isDemo"] = True
-                resp_payload["demoOtp"] = otp_code
-                resp_payload["message"] = f"📩 OTP code for {email}: {otp_code} (Valid for 10 minutes)"
-
-            self.send_json(resp_payload)
+            })
             return
 
         elif path == '/api/otp/verify':
