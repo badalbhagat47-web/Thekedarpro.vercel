@@ -152,17 +152,89 @@ class AppController {
     if (!sidebar || !mobileNav) return;
 
     if (!this.currentUser || this.currentView === 'login') {
-      sidebar.classList.add('hidden');
-      sidebar.classList.remove('md:flex', 'flex');
-      mobileNav.classList.add('hidden');
+      sidebar.className = 'hidden flex-col w-64 bg-slate-900 border-r border-slate-800 text-slate-300 p-4 space-y-1 shrink-0';
+      mobileNav.className = 'hidden md:hidden mobile-bottom-nav px-2 py-2';
       return;
     }
 
-    sidebar.classList.remove('hidden');
-    sidebar.classList.add('md:flex');
-    mobileNav.classList.remove('hidden');
+    // STRICT MOBILE SIDEBAR HIDING (<768px): enforce hidden md:flex
+    sidebar.className = 'hidden md:flex flex-col w-64 bg-slate-900 border-r border-slate-800 text-slate-300 p-4 space-y-1 shrink-0';
+    mobileNav.className = 'md:hidden fixed bottom-0 left-0 right-0 z-50 mobile-bottom-nav px-2 py-2';
 
     const role = this.currentUser.role;
+    const active = this.currentView;
+    const t = (k) => window.i18n.t(k);
+
+    // RENDER DYNAMIC MOBILE BOTTOM NAV (Home, Roster/Live, +Worker/Punch, Salary, Advance)
+    let mobHtml = '';
+    const isActMob = (v) => active === v ? 'text-amber-400 font-black' : 'text-slate-400 hover:text-slate-200';
+
+    if (role === 'COMPANY_ADMIN') {
+      mobHtml = `
+        <div class="flex justify-around items-center text-slate-400 text-[10px] font-semibold">
+          <button onclick="appController.navigate('dashboard')" class="flex flex-col items-center gap-1 p-1 ${isActMob('dashboard')}">
+            <i class="fa-solid fa-chart-pie text-base"></i>
+            <span>Home</span>
+          </button>
+          <button onclick="appController.navigate('workers')" class="flex flex-col items-center gap-1 p-1 ${isActMob('workers')}">
+            <i class="fa-solid fa-users text-base"></i>
+            <span>Roster</span>
+          </button>
+          <button onclick="appController.openCreateProfileModal()" class="flex flex-col items-center gap-1 p-1 text-amber-400">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center -mt-5 shadow-xl border-2 border-slate-900 active:scale-95 transition">
+              <i class="fa-solid fa-user-plus text-base"></i>
+            </div>
+            <span>+Worker</span>
+          </button>
+          <button onclick="appController.navigate('salary')" class="flex flex-col items-center gap-1 p-1 ${isActMob('salary')}">
+            <i class="fa-solid fa-calculator text-base"></i>
+            <span>Salary</span>
+          </button>
+          <button onclick="appController.navigate('advances')" class="flex flex-col items-center gap-1 p-1 ${isActMob('advances')}">
+            <i class="fa-solid fa-hand-holding-dollar text-base"></i>
+            <span>Advance</span>
+          </button>
+        </div>
+      `;
+    } else if (role === 'WORKER') {
+      mobHtml = `
+        <div class="flex justify-around items-center text-slate-400 text-[10px] font-semibold">
+          <button onclick="appController.navigate('worker-dashboard')" class="flex flex-col items-center gap-1 p-1 ${isActMob('worker-dashboard')}">
+            <i class="fa-solid fa-house text-base"></i>
+            <span>Home</span>
+          </button>
+          <button onclick="appController.navigate('worker-attendance')" class="flex flex-col items-center gap-1 p-1 ${isActMob('worker-attendance')}">
+            <i class="fa-solid fa-calendar-check text-base"></i>
+            <span>Live</span>
+          </button>
+          <button onclick="appController.navigate('worker-attendance')" class="flex flex-col items-center gap-1 p-1 text-amber-400">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center -mt-5 shadow-xl border-2 border-slate-900 active:scale-95 transition">
+              <i class="fa-solid fa-fingerprint text-lg"></i>
+            </div>
+            <span>Punch</span>
+          </button>
+          <button onclick="appController.navigate('worker-salary')" class="flex flex-col items-center gap-1 p-1 ${isActMob('worker-salary')}">
+            <i class="fa-solid fa-calculator text-base"></i>
+            <span>Salary</span>
+          </button>
+          <button onclick="appController.navigate('worker-advances')" class="flex flex-col items-center gap-1 p-1 ${isActMob('worker-advances')}">
+            <i class="fa-solid fa-hand-holding-dollar text-base"></i>
+            <span>Advance</span>
+          </button>
+        </div>
+      `;
+    } else {
+      mobHtml = `
+        <div class="flex justify-around items-center text-slate-400 text-[10px] font-semibold">
+          <button onclick="appController.navigate('superadmin-dashboard')" class="flex flex-col items-center gap-1 p-1 ${isActMob('superadmin-dashboard')}">
+            <i class="fa-solid fa-crown text-base text-amber-400"></i>
+            <span>SuperAdmin</span>
+          </button>
+        </div>
+      `;
+    }
+
+    mobileNav.innerHTML = mobHtml;
 
     if (role === 'SUPER_ADMIN') {
       sidebar.innerHTML = `
@@ -173,8 +245,6 @@ class AppController {
         </a>
       `;
     } else if (role === 'WORKER') {
-      const active = this.currentView;
-      const t = (k) => window.i18n.t(k);
       const isAct = (v) => active === v ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 scale-[1.02] border border-amber-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white hover:translate-x-1';
 
       sidebar.innerHTML = `
@@ -221,28 +291,28 @@ class AppController {
       `;
     } else {
       // COMPANY ADMIN MENU
-      const t = (k) => window.i18n.t(k);
+      const isAct = (v) => active === v ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 border border-amber-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white';
       sidebar.innerHTML = `
         <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">${t('navDashboard')} Menu</div>
-        <a href="#" onclick="appController.navigate('dashboard')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <a href="#" onclick="appController.navigate('dashboard')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('dashboard')}">
           <i class="fa-solid fa-chart-pie text-amber-400"></i> <span>${t('navDashboard')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('workers')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <a href="#" onclick="appController.navigate('workers')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('workers')}">
           <i class="fa-solid fa-users text-indigo-400"></i> <span>${t('navWorkers')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('advances')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <a href="#" onclick="appController.navigate('advances')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('advances')}">
           <i class="fa-solid fa-hand-holding-dollar text-purple-400"></i> <span>${t('navAdvances')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('salary')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <a href="#" onclick="appController.navigate('salary')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('salary')}">
           <i class="fa-solid fa-calculator text-emerald-400"></i> <span>${t('salaryCalculation')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('payslips')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <a href="#" onclick="appController.navigate('payslips')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('payslips')}">
           <i class="fa-solid fa-file-invoice-dollar text-amber-400"></i> <span>${t('salarySlips')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('festival-holidays')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <a href="#" onclick="appController.navigate('festival-holidays')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('festival-holidays')}">
           <i class="fa-solid fa-cake-candles text-yellow-400"></i> <span>${t('navFestivalHolidays')}</span>
         </a>
-        <a href="#" onclick="appController.navigate('settings')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 hover:text-white">
+        <a href="#" onclick="appController.navigate('settings')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition ${isAct('settings')}">
           <i class="fa-solid fa-sliders text-slate-400"></i> <span>${t('navSettings')}</span>
         </a>
       `;
