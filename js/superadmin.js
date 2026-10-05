@@ -49,43 +49,25 @@ const SuperAdminModule = {
 
     return `
       <div class="space-y-6 pb-12">
-        <!-- PLATFORM TOP HEADER BANNER -->
+        <!-- PLATFORM TOP EXECUTIVE HEADER BANNER -->
         <div class="glass-card-dark p-6 sm:p-8 rounded-3xl relative overflow-hidden shadow-2xl border border-slate-800">
           <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-400 text-xs font-black mb-2">
                 <i class="fa-solid fa-crown text-sm"></i> Master Super Admin Control Center
               </div>
-              <h2 class="text-2xl sm:text-3xl font-black text-white brand-font tracking-wide">
-                Platform Overview & Executive Control
+              <h2 class="text-2xl sm:text-3xl font-black text-white brand-font tracking-wide flex items-center gap-3">
+                <span>Platform Overview & Executive Control</span>
               </h2>
               <p class="text-xs text-slate-400 mt-1">Real-time database statistics & multi-tenant SaaS administration</p>
             </div>
-          </div>
-        </div>
 
-        <!-- 3D SUB-TAB NAVIGATION SYSTEM -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-3 border-b border-slate-200 dark:border-slate-800">
-          <button onclick="SuperAdminModule.switchTab('overview')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'overview' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
-            <i class="fa-solid fa-chart-pie"></i> Overview
-          </button>
-          <button onclick="SuperAdminModule.switchTab('companies')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'companies' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
-            <i class="fa-solid fa-building"></i> All Companies (${stats.totalCompanies})
-          </button>
-          <button onclick="SuperAdminModule.switchTab('workers')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'workers' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
-            <i class="fa-solid fa-users"></i> Platform Workers (${stats.totalWorkers})
-          </button>
-          <button onclick="SuperAdminModule.switchTab('subscriptions')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'subscriptions' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
-            <i class="fa-solid fa-receipt"></i> Subscriptions
-          </button>
-          <button onclick="SuperAdminModule.switchTab('payments')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'payments' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
-            <i class="fa-solid fa-wallet"></i> Revenue & Payments
-          </button>
+            <div class="flex items-center gap-3">
+              <span class="px-3.5 py-1.5 bg-slate-900 border border-slate-700/80 rounded-2xl text-xs font-mono font-bold text-emerald-400 flex items-center gap-2 shadow-inner">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live System Engine
+              </span>
+            </div>
+          </div>
         </div>
 
         ${this.renderActiveTabContent(stats, companies, allWorkers)}
@@ -111,7 +93,7 @@ const SuperAdminModule = {
   // 1. OVERVIEW VIEW
   renderOverviewSection(stats, companies) {
     return `
-      <!-- 10 MASTER SUPER ADMIN KPI METRIC CARDS -->
+      <!-- TOP 5 PRIMARY KPI METRIC CARDS -->
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-amber-500 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">Total Companies</span>
@@ -125,54 +107,55 @@ const SuperAdminModule = {
           <span class="text-[9px] text-slate-400 font-semibold block">Platform Workforce</span>
         </div>
 
+        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-blue-500 shadow-sm space-y-1">
+          <span class="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider">Active Subscriptions</span>
+          <div class="text-2xl font-black text-blue-600 dark:text-blue-400">${stats.activeSubscriptions}</div>
+          <span class="text-[9px] text-slate-400 font-semibold block">Paid Active Plans</span>
+        </div>
+
+        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-purple-500 shadow-sm space-y-1">
+          <span class="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider">Expired Subscriptions</span>
+          <div class="text-2xl font-black text-purple-600 dark:text-purple-400">${stats.expiredSubscriptions}</div>
+          <span class="text-[9px] text-slate-400 font-semibold block">Renewal Overdue</span>
+        </div>
+
+        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-emerald-600 shadow-sm space-y-1">
+          <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Total Revenue</span>
+          <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400">₹${stats.totalRevenue.toLocaleString()}</div>
+          <span class="text-[9px] text-slate-400 font-semibold block">Gross SaaS Collection</span>
+        </div>
+      </div>
+
+      <!-- SECONDARY OPERATIONAL METRIC CARDS -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-emerald-500 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Active Companies</span>
-          <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400">${stats.activeCompanies}</div>
+          <div class="text-xl font-black text-emerald-600 dark:text-emerald-400">${stats.activeCompanies}</div>
           <span class="text-[9px] text-slate-400 font-semibold block">Operational</span>
         </div>
 
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-rose-500 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 tracking-wider">Suspended Companies</span>
-          <div class="text-2xl font-black text-rose-600 dark:text-rose-400">${stats.suspendedCompanies}</div>
+          <div class="text-xl font-black text-rose-600 dark:text-rose-400">${stats.suspendedCompanies}</div>
           <span class="text-[9px] text-slate-400 font-semibold block">Blocked Access</span>
         </div>
 
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-teal-500 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-teal-600 dark:text-teal-400 tracking-wider">With Subscription</span>
-          <div class="text-2xl font-black text-teal-600 dark:text-teal-400">${stats.companiesWithSub}</div>
+          <div class="text-xl font-black text-teal-600 dark:text-teal-400">${stats.companiesWithSub}</div>
           <span class="text-[9px] text-slate-400 font-semibold block">Paid or Active Trial</span>
         </div>
-      </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-slate-600 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Without Sub</span>
           <div class="text-xl font-black text-slate-800 dark:text-slate-200">${stats.companiesWithoutSub}</div>
           <span class="text-[9px] text-slate-400 font-semibold block">Expired / Unsubscribed</span>
         </div>
 
-        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-blue-500 shadow-sm space-y-1">
-          <span class="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 tracking-wider">Active Subs</span>
-          <div class="text-xl font-black text-blue-600 dark:text-blue-400">${stats.activeSubscriptions}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Paid Active Plans</span>
-        </div>
-
-        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-purple-500 shadow-sm space-y-1">
-          <span class="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider">Expired Subs</span>
-          <div class="text-xl font-black text-purple-600 dark:text-purple-400">${stats.expiredSubscriptions}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Renewal Overdue</span>
-        </div>
-
         <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-amber-600 shadow-sm space-y-1">
           <span class="text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">Trial Companies</span>
           <div class="text-xl font-black text-amber-600 dark:text-amber-400">${stats.trialCompanies}</div>
           <span class="text-[9px] text-slate-400 font-semibold block">14-Day Free Access</span>
-        </div>
-
-        <div class="glass-card card-3d p-4 rounded-2xl border-l-4 border-emerald-600 shadow-sm space-y-1">
-          <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">Total Revenue</span>
-          <div class="text-xl font-black text-emerald-600 dark:text-emerald-400">₹${stats.totalRevenue.toLocaleString()}</div>
-          <span class="text-[9px] text-slate-400 font-semibold block">Gross SaaS Collection</span>
         </div>
       </div>
 

@@ -261,11 +261,29 @@ class AppController {
         </div>
       `;
     } else {
+      const currentTab = window.SuperAdminModule ? window.SuperAdminModule.activeTab : 'overview';
+      const isActMobSA = (v) => currentTab === v ? 'text-amber-400 font-bold scale-105' : 'hover:text-white';
       mobHtml = `
         <div class="flex justify-around items-center text-slate-400 text-[10px] font-semibold">
-          <button onclick="appController.navigate('superadmin-dashboard')" class="flex flex-col items-center gap-1 p-1 ${isActMob('superadmin-dashboard')}">
-            <i class="fa-solid fa-crown text-base text-amber-400"></i>
-            <span>SuperAdmin</span>
+          <button onclick="SuperAdminModule.switchTab('overview')" class="flex flex-col items-center gap-1 p-1 ${isActMobSA('overview')}">
+            <i class="fa-solid fa-chart-pie text-base"></i>
+            <span>Overview</span>
+          </button>
+          <button onclick="SuperAdminModule.switchTab('companies')" class="flex flex-col items-center gap-1 p-1 ${isActMobSA('companies')}">
+            <i class="fa-solid fa-building text-base"></i>
+            <span>Companies</span>
+          </button>
+          <button onclick="SuperAdminModule.switchTab('workers')" class="flex flex-col items-center gap-1 p-1 ${isActMobSA('workers')}">
+            <i class="fa-solid fa-users text-base"></i>
+            <span>Workers</span>
+          </button>
+          <button onclick="SuperAdminModule.switchTab('subscriptions')" class="flex flex-col items-center gap-1 p-1 ${isActMobSA('subscriptions')}">
+            <i class="fa-solid fa-receipt text-base"></i>
+            <span>Subs</span>
+          </button>
+          <button onclick="SuperAdminModule.switchTab('payments')" class="flex flex-col items-center gap-1 p-1 ${isActMobSA('payments')}">
+            <i class="fa-solid fa-wallet text-base"></i>
+            <span>Revenue</span>
           </button>
         </div>
       `;
@@ -274,12 +292,55 @@ class AppController {
     mobileNav.innerHTML = mobHtml;
 
     if (role === 'SUPER_ADMIN') {
+      const currentTab = window.SuperAdminModule ? window.SuperAdminModule.activeTab : 'overview';
+      const isActClass = (v) => currentTab === v ? 'nav-link-3d-active' : 'nav-link-3d-inactive';
+
       sidebar.innerHTML = `
-        <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-amber-500">Super Admin Menu</div>
-        <a href="#" onclick="appController.navigate('superadmin-dashboard')" 
-           class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-extrabold text-sm text-amber-400 bg-slate-800">
-          <i class="fa-solid fa-crown text-amber-400"></i> Platform Companies
+        <div class="px-3 py-2 text-[11px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5 border-b border-slate-800/80 mb-3">
+          <i class="fa-solid fa-crown text-amber-400 text-xs"></i> Master Super Admin
+        </div>
+
+        <a href="#" onclick="SuperAdminModule.switchTab('overview')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('overview')}">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+            <i class="fa-solid fa-chart-pie text-sm"></i>
+          </div>
+          <span>Overview</span>
         </a>
+
+        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('companies');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('companies')}">
+          <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30">
+            <i class="fa-solid fa-building text-sm"></i>
+          </div>
+          <span>All Companies</span>
+        </a>
+
+        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('workers');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('workers')}">
+          <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30">
+            <i class="fa-solid fa-users text-sm"></i>
+          </div>
+          <span>Platform Workers</span>
+        </a>
+
+        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('subscriptions');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('subscriptions')}">
+          <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+            <i class="fa-solid fa-receipt text-sm"></i>
+          </div>
+          <span>Subscriptions</span>
+        </a>
+
+        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('payments');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('payments')}">
+          <div class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center shrink-0 border border-yellow-500/30">
+            <i class="fa-solid fa-wallet text-sm"></i>
+          </div>
+          <span>Revenue & Payments</span>
+        </a>
+
+        <div class="pt-4 mt-auto border-t border-slate-800 space-y-2">
+          <button onclick="appController.logout()" class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white rounded-xl text-xs font-bold transition-all card-3d">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </div>
       `;
     } else if (role === 'WORKER') {
       const isAct = (v) => active === v ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 scale-[1.02] border border-amber-400' : 'text-slate-300 hover:bg-slate-800 hover:text-white hover:translate-x-1';
