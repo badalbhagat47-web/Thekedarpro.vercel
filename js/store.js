@@ -618,19 +618,61 @@ class Store {
 
   // --- SUPER ADMIN MANAGEMENT METHODS ---
   getSuperAdminStats() {
-    const totalCompanies = this.data.companies.length;
-    const activeCompanies = this.data.companies.filter(c => c.status !== 'BLOCKED').length;
-    const blockedCompanies = this.data.companies.filter(c => c.status === 'BLOCKED').length;
-    const totalWorkers = this.data.workers.length;
-    return { totalCompanies, activeCompanies, blockedCompanies, totalWorkers };
+    const companies = this.data.companies || [];
+    const workers = this.data.workers || [];
+
+    const totalCompanies = companies.length;
+    const gstCompanies = companies.filter(c => c.gstStatus === 'GST_VERIFIED').length;
+    const nonGstCompanies = companies.filter(c => c.gstStatus !== 'GST_VERIFIED').length;
+    const activeCompanies = companies.filter(c => c.status !== 'BLOCKED').length;
+    const inactiveCompanies = companies.filter(c => c.status === 'BLOCKED').length;
+    const totalWorkers = workers.length;
+
+    const activeSubscriptions = companies.filter(c => !c.subscription || c.subscription.status === 'ACTIVE').length;
+    const expiredSubscriptions = companies.filter(c => c.subscription && c.subscription.status === 'EXPIRED').length;
+    const trialCompanies = companies.filter(c => c.subscription && c.subscription.status === 'TRIAL').length;
+
+    let totalRevenue = 0;
+    let pendingPayments = 0;
+    companies.forEach(c => {
+      const sub = c.subscription || { amount: 4999, paymentStatus: 'PAID' };
+      if (sub.paymentStatus === 'PAID') {
+        totalRevenue += (sub.amount || 4999);
+      } else if (sub.paymentStatus === 'PENDING') {
+        pendingPayments += (sub.amount || 4999);
+      }
+    });
+
+    return { 
+      totalCompanies, 
+      gstCompanies, 
+      nonGstCompanies, 
+      totalWorkers, 
+      activeCompanies, 
+      inactiveCompanies, 
+      activeSubscriptions, 
+      expiredSubscriptions, 
+      trialCompanies, 
+      totalRevenue, 
+      pendingPayments 
+    };
   }
 
   getSuperAdminCompanyList() {
     return this.data.companies.map(c => {
       const workerCount = this.data.workers.filter(w => w.companyId === c.id).length;
+      const sub = c.subscription || {
+        plan: 'PRO SaaS',
+        status: 'ACTIVE',
+        startDate: c.createdAt ? c.createdAt.substring(0, 10) : '2026-01-01',
+        expiryDate: '2026-12-31',
+        amount: 4999,
+        paymentStatus: 'PAID'
+      };
       return {
         id: c.id,
         name: c.name,
+        legalName: c.legalName || c.name,
         gstStatus: c.gstStatus,
         gstin: c.gstin,
         ownerName: c.ownerName,
@@ -642,9 +684,20 @@ class Store {
         businessType: c.businessType,
         address: c.address,
         logoUrl: c.logoUrl,
-        stampUrl: c.stampUrl
+        stampUrl: c.stampUrl,
+        subscription: sub
       };
     });
+  }
+
+  updateCompanySubscription(companyId, subObj) {
+    const comp = this.data.companies.find(c => c.id === companyId);
+    if (comp) {
+      comp.subscription = { ...comp.subscription, ...subObj };
+      this.saveData();
+      return { success: true, company: comp };
+    }
+    return { success: false, error: 'Company not found' };
   }
 
   toggleCompanyStatus(companyId) {

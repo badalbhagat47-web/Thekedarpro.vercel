@@ -81,7 +81,7 @@ const AuthModule = {
             <div id="loginErrorMsg" class="hidden p-3.5 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 rounded-2xl text-xs font-bold space-y-1"></div>
 
             <button type="submit" 
-                    class="w-full py-3.5 ${this.activeTab === 'COMPANY' ? 'btn-3d-emerald text-white' : 'btn-3d-amber text-slate-950'} font-black text-sm rounded-2xl shadow-xl transition flex items-center justify-center gap-2">
+                    class="w-full py-3.5 ${this.activeTab === 'COMPANY' ? 'bg-emerald-600 text-white btn-3d-emerald' : 'bg-amber-500 text-slate-950 btn-3d-amber'} font-black text-sm rounded-2xl shadow-xl transition flex items-center justify-center gap-2">
               <i class="fa-solid ${this.activeTab === 'COMPANY' ? 'fa-right-to-bracket' : 'fa-hard-hat'} text-base"></i> 
               <span data-i18n="${this.activeTab === 'COMPANY' ? 'logInToCompany' : 'logInToWorker'}">${this.activeTab === 'COMPANY' ? t('logInToCompany') : t('logInToWorker')}</span>
             </button>
