@@ -314,7 +314,35 @@ class handler(BaseHTTPRequestHandler):
                 self.send_json({"success": False, "verified": False, "error": "Invalid GSTIN format. Must be 15 characters."}, status=400)
                 return
 
-            # Check if company with this GSTIN is already registered in DB
+            # 1. Check if GST_API_KEY is configured in environment variables for live GSP lookup
+            gst_api_key = os.environ.get('GST_API_KEY') or os.environ.get('GSTIN_API_KEY')
+            if gst_api_key:
+                try:
+                    gsp_url = f"https://sheet.gstincheck.co.in/check/{gst_api_key}/{gstin_raw}"
+                    req = urllib.request.Request(gsp_url, headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(req, timeout=5) as resp:
+                        gsp_res = json.loads(resp.read().decode('utf-8'))
+                        if gsp_res.get('flag') and gsp_res.get('data'):
+                            d = gsp_res['data']
+                            self.send_json({
+                                "success": True,
+                                "verified": True,
+                                "hasKnownName": True,
+                                "source": "LIVE_GST_PORTAL",
+                                "data": {
+                                    "legalName": d.get('lgnm') or d.get('tradeNam'),
+                                    "tradeName": d.get('tradeNam') or d.get('lgnm'),
+                                    "gstin": gstin_raw,
+                                    "gstStatus": d.get('sts', 'ACTIVE'),
+                                    "businessType": d.get('ctb', 'Registered Business'),
+                                    "state": d.get('pradr', {}).get('addr', {}).get('stcd', 'India')
+                                }
+                            })
+                            return
+                except Exception as ex:
+                    print("Live GST API lookup error:", ex)
+
+            # 2. Check if company with this GSTIN is already registered in internal SQLite DB
             db_state = get_db_state() or {}
             companies = db_state.get('companies', [])
             matching_comp = next((c for c in companies if c.get('gstin', '').upper() == gstin_raw), None)
@@ -324,6 +352,7 @@ class handler(BaseHTTPRequestHandler):
                     "success": True,
                     "verified": True,
                     "hasKnownName": True,
+                    "source": "REGISTERED_DB",
                     "data": {
                         "legalName": matching_comp.get('legalName') or matching_comp.get('name'),
                         "tradeName": matching_comp.get('name'),
@@ -335,7 +364,7 @@ class handler(BaseHTTPRequestHandler):
                 })
                 return
 
-            # State code map
+            # 3. Decode state and entity type for active GSTIN validation
             state_codes = {
                 "01": "Jammu & Kashmir", "02": "Himachal Pradesh", "03": "Punjab", "04": "Chandigarh",
                 "05": "Uttarakhand", "06": "Haryana", "07": "Delhi / NCR", "08": "Rajasthan",
