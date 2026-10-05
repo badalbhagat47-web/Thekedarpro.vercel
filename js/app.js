@@ -440,6 +440,38 @@ class AppController {
         </a>
       `;
     }
+
+    // Sync to mobile drawer container as well
+    const mobileLinksContainer = document.getElementById('mobileNavLinksContainer');
+    if (mobileLinksContainer) {
+      mobileLinksContainer.innerHTML = sidebar.innerHTML;
+      // Add auto-close on mobile drawer link click
+      const links = mobileLinksContainer.querySelectorAll('a, button');
+      links.forEach(el => {
+        el.addEventListener('click', () => this.closeMobileSidebar());
+      });
+    }
+  }
+
+  toggleMobileSidebar() {
+    const backdrop = document.getElementById('mobileSidebarBackdrop');
+    const drawer = document.getElementById('mobileSidebarDrawer');
+    if (!drawer || !backdrop) return;
+
+    const isClosed = drawer.classList.contains('-translate-x-full');
+    if (isClosed) {
+      backdrop.classList.remove('hidden');
+      drawer.classList.remove('-translate-x-full');
+    } else {
+      this.closeMobileSidebar();
+    }
+  }
+
+  closeMobileSidebar() {
+    const backdrop = document.getElementById('mobileSidebarBackdrop');
+    const drawer = document.getElementById('mobileSidebarDrawer');
+    if (drawer) drawer.classList.add('-translate-x-full');
+    if (backdrop) backdrop.classList.add('hidden');
   }
 
   renderCurrentView() {

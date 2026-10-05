@@ -403,10 +403,11 @@ html.dark ::placeholder {
   opacity: 1;
 }
 
-/* Mobile Responsiveness Rules */
+/* Mobile Responsiveness & Viewport Protection Rules */
 html, body {
   overflow-x: hidden !important;
   max-width: 100vw;
+  width: 100%;
 }
 
 img, svg, video, canvas, input, select, textarea, button {
@@ -420,11 +421,22 @@ img, svg, video, canvas, input, select, textarea, button {
   margin-bottom: 0.75rem;
 }
 
-#modalOverlay #modalContent {
-  max-width: 95vw;
-  max-height: 90vh;
-  overflow-y: auto;
+#modalOverlay, .modal-backdrop {
+  padding: 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+#modalOverlay #modalContent, #modalContent, .modal-box {
+  width: 94vw !important;
+  max-width: 520px !important;
+  max-height: 88vh !important;
+  overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
+  margin: auto !important;
+  box-sizing: border-box !important;
 }
 
 @media (max-width: 639px) {
@@ -437,6 +449,28 @@ img, svg, video, canvas, input, select, textarea, button {
   .custom-table td {
     padding: 0.625rem 0.5rem;
     font-size: 0.75rem;
+  }
+
+  /* Responsive Input + Button Flex Container Stack for 320px-430px screens */
+  .flex-mobile-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  
+  .flex-mobile-stack > button, .flex-mobile-stack > input {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Touch Friendly Tap Heights */
+  button, input[type="button"], input[type="submit"], .btn-3d {
+    min-height: 42px;
+  }
+
+  /* Prevent font clipping */
+  h1, h2, h3 {
+    word-break: break-word;
   }
 }
 
