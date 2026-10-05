@@ -882,9 +882,6 @@ class AppController {
       if (!data.success) {
         btnSend.disabled = false;
         btnSend.innerText = "Send OTP";
-        if (data.cooldown) {
-          this.startOtpCooldownTimer(data.cooldown);
-        }
         alert(data.error || "Failed to send OTP.");
         return;
       }
