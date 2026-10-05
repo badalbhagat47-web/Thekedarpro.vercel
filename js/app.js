@@ -1170,9 +1170,21 @@ class AppController {
 
   toggleRegGstField(isGst) {
     const group = document.getElementById('gstinFieldGroup');
+    const gstinInput = document.getElementById('regGstin');
+    const alertEl = document.getElementById('gstinStatusAlert');
+
     if (group) {
-      if (isGst) group.classList.remove('hidden');
-      else group.classList.add('hidden');
+      if (isGst) {
+        group.classList.remove('hidden');
+      } else {
+        group.classList.add('hidden');
+        if (alertEl) alertEl.innerHTML = '';
+        if (gstinInput) {
+          gstinInput.value = '';
+          gstinInput.readOnly = false;
+          gstinInput.classList.remove('border-emerald-500', 'bg-emerald-50');
+        }
+      }
     }
   }
 
@@ -1207,20 +1219,29 @@ class AppController {
     }
 
     if (res && res.verified) {
-      if (res.hasKnownName && res.data && res.data.legalName) {
-        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>Verified Taxpayer:</strong> ${res.data.legalName} (${res.data.businessType} - ${res.data.state})</span>`;
-        alertEl.className = "text-[11px] text-emerald-600 font-bold mt-1 bg-emerald-50 p-2 rounded-xl border border-emerald-200 block";
+      const legalName = (res.data && res.data.legalName) || (res.data && res.data.tradeName) || '';
+      const stateName = (res.data && res.data.state) || 'India';
+      const bType = (res.data && res.data.businessType) || 'Registered Enterprise';
+
+      if (gstinInput) {
+        gstinInput.value = gstin;
+        gstinInput.classList.add('border-emerald-500', 'bg-emerald-50');
+      }
+
+      if (legalName) {
+        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>GST Verified:</strong> ${legalName} (${bType} - ${stateName})</span>`;
+        alertEl.className = "text-[11px] text-emerald-700 font-bold mt-1 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 block";
         
         if (compNameInput) {
-          compNameInput.value = res.data.legalName;
+          compNameInput.value = legalName;
           compNameInput.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50');
           setTimeout(() => {
             compNameInput.classList.remove('ring-2', 'ring-emerald-500');
           }, 2000);
         }
       } else {
-        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>GSTIN Active:</strong> Valid GST Number (${res.data.state} | ${res.data.businessType})</span>`;
-        alertEl.className = "text-[11px] text-emerald-600 font-bold mt-1 bg-emerald-50 p-2 rounded-xl border border-emerald-200 block";
+        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>GST Active:</strong> Valid GST Number (${stateName} | ${bType})</span>`;
+        alertEl.className = "text-[11px] text-emerald-700 font-bold mt-1 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 block";
         if (compNameInput && !compNameInput.value) {
           compNameInput.focus();
         }
