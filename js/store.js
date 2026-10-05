@@ -419,23 +419,15 @@ class Store {
     const trimmedId = loginId.trim();
     const cleanId = trimmedId.toLowerCase();
 
-    // 1. SUPER ADMIN / SPECIAL ADMIN AUTHENTICATION (e.g. bhagat.ji)
-    if (cleanId === 'bhagat.ji' || cleanId === 'bhagat' || cleanId === 'bhagatji' || cleanId === 'superadmin@platform.com' || cleanId === 'admin' || cleanId === 'superadmin') {
-      const primaryCompany = this.data.companies[0] || {
-        id: "RLV-POWER-8821",
-        name: "RLV Power Solution",
-        ownerName: "Bhagat Ji (Contractor Admin)",
-        email: "bhagat.ji@powersolutions.com",
-        mobile: "9876543210"
-      };
-
+    // 1. SUPER ADMIN AUTHENTICATION (e.g. superadmin / master / superadmin@platform.com)
+    if (cleanId === 'superadmin' || cleanId === 'master' || cleanId === 'superadmin@platform.com' || cleanId === 'admin') {
       const adminUser = {
-        role: 'COMPANY_ADMIN',
-        companyId: primaryCompany.id,
-        companyName: primaryCompany.name,
-        name: 'Bhagat Ji (Contractor Admin)',
-        email: primaryCompany.email,
-        mobile: primaryCompany.mobile
+        role: 'SUPER_ADMIN',
+        companyId: 'PLATFORM_SUPER_ADMIN',
+        companyName: 'THEKEDAR PRO Platform',
+        name: 'Master Super Admin',
+        email: 'superadmin@platform.com',
+        mobile: '9999999999'
       };
       this.setCurrentUser(adminUser);
       return { success: true, user: adminUser };
