@@ -139,7 +139,6 @@ class AppController {
     const langBtnText = document.getElementById('langBtnText');
     const headerSubTitle = document.getElementById('headerSubTitle');
 
-    const brandSubTitle = document.getElementById('headerBrandSubTitle');
     const notificationBtn = document.getElementById('headerNotificationBtn');
 
     if (langBtnText) {
@@ -158,7 +157,6 @@ class AppController {
       if (loginNavBtn) loginNavBtn.classList.remove('hidden');
       if (logoutBtn) logoutBtn.classList.add('hidden');
       if (resetDemoBtn) resetDemoBtn.classList.add('hidden');
-      if (brandSubTitle) brandSubTitle.classList.add('hidden');
       if (notificationBtn) notificationBtn.classList.add('hidden');
       return;
     }
@@ -171,14 +169,6 @@ class AppController {
     if (logoutBtn) logoutBtn.classList.remove('hidden');
 
     const isSuperAdmin = this.currentUser && this.currentUser.role === 'SUPER_ADMIN';
-
-    if (brandSubTitle) {
-      if (isSuperAdmin) {
-        brandSubTitle.classList.remove('hidden');
-      } else {
-        brandSubTitle.classList.add('hidden');
-      }
-    }
 
     if (notificationBtn) {
       if (isSuperAdmin) {
