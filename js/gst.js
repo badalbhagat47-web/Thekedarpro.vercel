@@ -52,6 +52,16 @@ const ENTITY_TYPES = {
 
 // Official registry of verified GSTIN taxpayer records
 const mockGstRegistry = {
+  "07ASRPB9910D1ZR": {
+    legalName: "ASR POWER & CONTRACTING SERVICES",
+    tradeName: "ASR POWER SERVICES",
+    gstin: "07ASRPB9910D1ZR",
+    registrationDate: "15/08/2019",
+    gstStatus: "ACTIVE",
+    businessType: "Proprietorship",
+    state: "Delhi / NCR",
+    pincode: "110001"
+  },
   "06AEBFS9815A1Z8": {
     legalName: "HARYANA LOGISTICS & INFRASTRUCTURE LLP",
     tradeName: "HARYANA LOGISTICS & INFRASTRUCTURE LLP",
@@ -66,43 +76,21 @@ const mockGstRegistry = {
     legalName: "VRY LOGISTIC PARK LLP",
     tradeName: "VRY LOGISTIC PARK LLP",
     gstin: "09AAOFV9611N1Z9",
-    registrationDate: "18/04/2018",
+    registrationDate: "05/01/2021",
     gstStatus: "ACTIVE",
     businessType: "Limited Liability Partnership",
     state: "Uttar Pradesh",
     pincode: "203205",
-    natureOfBusiness: "Leasing Business",
-    principalActivity: "Logistics, Warehousing & Leasing Services"
+    natureOfBusiness: "Leasing Business"
   },
   "07AAACR8821F1Z5": {
     legalName: "RLV POWER SOLUTION",
     tradeName: "RLV POWER SOLUTION",
     gstin: "07AAACR8821F1Z5",
-    registrationDate: "15/04/2018",
+    registrationDate: "10/01/2019",
     gstStatus: "ACTIVE",
     businessType: "Proprietorship",
-    state: "Delhi / NCR",
-    principalActivity: "Electrical Contracting & Power Systems"
-  },
-  "27AAACR1234F1Z1": {
-    legalName: "MAHARASHTRA ELECTRICAL WORKS",
-    tradeName: "MAHA POWER SERVICES",
-    gstin: "27AAACR1234F1Z1",
-    registrationDate: "01/08/2019",
-    gstStatus: "ACTIVE",
-    businessType: "Partnership",
-    state: "Maharashtra",
-    principalActivity: "Industrial Wiring & Substation Setup"
-  },
-  "09BBBCD5678E1Z9": {
-    legalName: "UP INFRA CONTRACTORS PVT LTD",
-    tradeName: "UP INFRACONTRACT",
-    gstin: "09BBBCD5678E1Z9",
-    registrationDate: "10/11/2020",
-    gstStatus: "CANCELLED",
-    businessType: "Private Limited Company",
-    state: "Uttar Pradesh",
-    principalActivity: "Civil & Electrical Infrastructure"
+    state: "Delhi / NCR"
   }
 };
 
