@@ -5,7 +5,8 @@ class AppController {
     this.selectedMonth = new Date().toISOString().substring(0, 7);
     this.currentTheme = localStorage.getItem('thekedar_theme') || 'light';
     this.currentView = this.getInitialView();
-    this.viewParams = null;
+    this.viewStates = {}; // Memory map for view scroll & filter preservation
+    this.formDrafts = {}; // Memory map for unsaved form input fields
 
     document.addEventListener('DOMContentLoaded', () => {
       this.init();
@@ -13,8 +14,8 @@ class AppController {
   }
 
   getInitialView() {
-    const hash = (window.location.hash || '').toLowerCase();
-    if (hash === '#super-admin' || hash === '#superadmin' || hash === '#master-admin') {
+    const hash = (window.location.hash || '').replace('#', '').trim().toLowerCase();
+    if (hash === 'super-admin' || hash === 'superadmin' || hash === 'master-admin') {
       let user = window.appStore.getCurrentUser();
       if (!user || user.role !== 'SUPER_ADMIN') {
         const superAdminUser = {
@@ -37,11 +38,12 @@ class AppController {
 
   init() {
     this.applyTheme(this.currentTheme);
+    this.initHistoryState();
     
     // Hash Change Listener for #super-admin route
     window.addEventListener('hashchange', () => {
-      const hash = (window.location.hash || '').toLowerCase();
-      if (hash === '#super-admin' || hash === '#superadmin' || hash === '#master-admin') {
+      const hash = (window.location.hash || '').replace('#', '').trim().toLowerCase();
+      if (hash === 'super-admin' || hash === 'superadmin' || hash === 'master-admin') {
         let user = window.appStore.getCurrentUser();
         if (!user || user.role !== 'SUPER_ADMIN') {
           const superAdminUser = {
@@ -59,6 +61,42 @@ class AppController {
     this.renderHeader();
     this.renderSidebar();
     this.renderCurrentView();
+  }
+
+  initHistoryState() {
+    const initialView = this.currentView || this.getInitialView();
+    if (!history.state) {
+      history.replaceState({ view: initialView, params: this.viewParams }, '', '#' + initialView);
+    }
+
+    window.addEventListener('popstate', (e) => {
+      // 1. Intercept Modal Open: Close modal first if open
+      const modalOverlay = document.getElementById('modalOverlay');
+      if (modalOverlay && !modalOverlay.classList.contains('hidden')) {
+        this.closeModal(true);
+        return;
+      }
+
+      // 2. Intercept Mobile Drawer: Close sidebar first if open
+      const mobileDrawer = document.getElementById('mobileSidebarDrawer');
+      if (mobileDrawer && !mobileDrawer.classList.contains('-translate-x-full')) {
+        this.closeMobileSidebar(true);
+        return;
+      }
+
+      // 3. Handle SPA View Restore
+      const state = e.state;
+      if (state && state.view) {
+        this.navigate(state.view, state.params, true);
+      } else {
+        const hashView = (location.hash || '').replace('#', '').trim();
+        if (hashView) {
+          this.navigate(hashView, null, true);
+        } else {
+          this.navigate(this.getInitialView(), null, true);
+        }
+      }
+    });
   }
 
   applyTheme(theme) {
@@ -91,7 +129,53 @@ class AppController {
     if (menu) menu.classList.toggle('hidden');
   }
 
-  navigate(viewName, params = null) {
+  saveCurrentViewState() {
+    if (!this.currentView) return;
+    const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    
+    let state = { scrollY: scrollY };
+    
+    if (this.currentView === 'superadmin-dashboard' && window.SuperAdminModule) {
+      state.activeTab = window.SuperAdminModule.activeTab;
+      state.searchQuery = window.SuperAdminModule.searchQuery;
+      state.companyFilter = window.SuperAdminModule.companyFilter;
+    }
+
+    if (window.CompanyAdminModule) {
+      state.searchWorker = window.CompanyAdminModule.searchWorkerQuery || '';
+    }
+
+    this.viewStates[this.currentView] = state;
+  }
+
+  restoreSavedViewState(viewName) {
+    const saved = this.viewStates[viewName];
+    if (!saved) return;
+
+    if (viewName === 'superadmin-dashboard' && window.SuperAdminModule) {
+      if (saved.activeTab) window.SuperAdminModule.activeTab = saved.activeTab;
+      if (saved.searchQuery !== undefined) window.SuperAdminModule.searchQuery = saved.searchQuery;
+      if (saved.companyFilter !== undefined) window.SuperAdminModule.companyFilter = saved.companyFilter;
+    }
+
+    if (saved.scrollY !== undefined) {
+      setTimeout(() => {
+        window.scrollTo({ top: saved.scrollY, behavior: 'instant' });
+      }, 50);
+    }
+  }
+
+  navigate(viewName, params = null, isPopState = false) {
+    // Save current view state before navigating
+    this.saveCurrentViewState();
+
+    // Close any open modals or mobile sidebars
+    const modalOverlay = document.getElementById('modalOverlay');
+    if (modalOverlay && !modalOverlay.classList.contains('hidden')) {
+      modalOverlay.classList.add('hidden');
+    }
+    this.closeMobileSidebar(true);
+
     this.currentUser = window.appStore.getCurrentUser();
 
     // AUTHORIZATION GUARDS
@@ -123,10 +207,15 @@ class AppController {
     this.currentView = viewName;
     this.viewParams = params;
 
+    if (!isPopState) {
+      history.pushState({ view: viewName, params: params }, '', '#' + viewName);
+    }
+
     this.renderHeader();
     this.renderSidebar();
     this.renderCurrentView();
-    window.scrollTo(0, 0);
+
+    this.restoreSavedViewState(viewName);
   }
 
   renderHeader() {
@@ -583,9 +672,26 @@ class AppController {
     }
   }
 
-  closeModal() {
+  showModal(contentHtml) {
     const modal = document.getElementById('modalOverlay');
-    if (modal) modal.classList.add('hidden');
+    const content = document.getElementById('modalContent');
+    if (content && modal) {
+      content.innerHTML = contentHtml;
+      modal.classList.remove('hidden');
+      if (!history.state || !history.state.isModal) {
+        history.pushState({ view: this.currentView, isModal: true }, '', '#' + this.currentView + '-modal');
+      }
+    }
+  }
+
+  closeModal(fromPopState = false) {
+    const modal = document.getElementById('modalOverlay');
+    if (modal && !modal.classList.contains('hidden')) {
+      modal.classList.add('hidden');
+      if (!fromPopState && history.state && history.state.isModal) {
+        history.back();
+      }
+    }
   }
 
   // --- MODALS & FORMS ---
@@ -682,6 +788,9 @@ class AppController {
       </div>
     `;
 
+    if (!history.state || !history.state.isModal) {
+      history.pushState({ view: this.currentView, isModal: true }, '', '#' + this.currentView + '-modal');
+    }
     modal.classList.remove('hidden');
   }
 
@@ -857,6 +966,9 @@ class AppController {
       </div>
     `;
 
+    if (!history.state || !history.state.isModal) {
+      history.pushState({ view: this.currentView, isModal: true }, '', '#' + this.currentView + '-modal');
+    }
     modal.classList.remove('hidden');
   }
 
@@ -1097,6 +1209,13 @@ class AppController {
     const rawGstin = isGst ? (document.getElementById('regGstin') ? document.getElementById('regGstin').value.trim() : '') : null;
     const gstin = rawGstin && rawGstin.length > 0 ? rawGstin.toUpperCase() : null;
 
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Registering...`;
+    }
+
     const registrationPayload = {
       gstStatus: isGst ? (gstin ? 'GST_VERIFIED' : 'GST_REGISTERED_OPTIONAL') : 'NON_GST_REGISTERED',
       gstin: gstin,
@@ -1116,6 +1235,10 @@ class AppController {
       });
       const apiData = await apiRes.json();
       if (!apiData.success) {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = origBtnHtml;
+        }
         alert(apiData.error || "Registration failed.");
         return;
       }
