@@ -393,27 +393,27 @@ class AppController {
           <i class="fa-solid fa-shield-halved text-blue-400 text-xs"></i> Master Super Admin
         </div>
 
-        <a href="#" onclick="SuperAdminModule.switchTab('overview')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('overview')}">
+        <a href="javascript:void(0)" onclick="SuperAdminModule.switchTab('overview')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('overview')}">
           <i class="fa-solid fa-chart-pie text-sm w-5"></i>
           <span>Overview</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('companies');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('companies')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('companies');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('companies')}">
           <i class="fa-solid fa-building text-sm w-5"></i>
           <span>All Companies</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('workers');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('workers')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('workers');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('workers')}">
           <i class="fa-solid fa-users text-sm w-5"></i>
           <span>Platform Workers</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('subscriptions');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('subscriptions')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('subscriptions');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('subscriptions')}">
           <i class="fa-solid fa-receipt text-sm w-5"></i>
           <span>Subscriptions</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('payments');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('payments')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('superadmin-dashboard'); SuperAdminModule.switchTab('payments');" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-2.5 text-xs transition ${isActClass('payments')}">
           <i class="fa-solid fa-wallet text-sm w-5"></i>
           <span>Revenue & Payments</span>
         </a>
@@ -433,32 +433,32 @@ class AppController {
           <i class="fa-solid fa-hard-hat text-amber-400 text-xs"></i> Worker Self-Service
         </div>
 
-        <a href="#" onclick="appController.navigate('worker-dashboard')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-dashboard')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('worker-dashboard')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-dashboard')}">
           <i class="fa-solid fa-house text-amber-400 text-sm"></i>
           <span>${t('navDashboard')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('worker-attendance')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-attendance')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('worker-attendance')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-attendance')}">
           <i class="fa-solid fa-calendar-check text-emerald-400 text-sm"></i>
           <span>${t('navMyAttendance')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('worker-salary')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-salary')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('worker-salary')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-salary')}">
           <i class="fa-solid fa-calculator text-blue-400 text-sm"></i>
           <span>${t('navSalaryPayslips')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('worker-advances')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-advances')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('worker-advances')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-advances')}">
           <i class="fa-solid fa-hand-holding-dollar text-purple-400 text-sm"></i>
           <span>${t('myAdvances')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('worker-profile')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-profile')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('worker-profile')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-profile')}">
           <i class="fa-solid fa-user-gear text-teal-400 text-sm"></i>
           <span>${t('personalProfile')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('worker-password')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-password')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('worker-password')" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all duration-200 card-3d ${isAct('worker-password')}">
           <i class="fa-solid fa-shield-halved text-rose-400 text-sm"></i>
           <span>${t('changePassword')}</span>
         </a>
@@ -479,49 +479,49 @@ class AppController {
           <i class="fa-solid fa-compass text-amber-400 text-xs"></i> ${t('navDashboard')} Menu
         </div>
 
-        <a href="#" onclick="appController.navigate('dashboard')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('dashboard')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('dashboard')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('dashboard')}">
           <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
             <i class="fa-solid fa-chart-pie text-sm"></i>
           </div>
           <span>${t('navDashboard')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('workers')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('workers')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('workers')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('workers')}">
           <div class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/30">
             <i class="fa-solid fa-users text-sm"></i>
           </div>
           <span>${t('navWorkers')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('advances')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('advances')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('advances')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('advances')}">
           <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30">
             <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
           </div>
           <span>${t('navAdvances')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('salary')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('salary')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('salary')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('salary')}">
           <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
             <i class="fa-solid fa-calculator text-sm"></i>
           </div>
           <span>${t('salaryCalculation')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('payslips')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('payslips')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('payslips')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('payslips')}">
           <div class="w-7 h-7 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center shrink-0 border border-yellow-500/30">
             <i class="fa-solid fa-file-invoice-dollar text-sm"></i>
           </div>
           <span>${t('salarySlips')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('festival-holidays')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('festival-holidays')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('festival-holidays')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('festival-holidays')}">
           <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
             <i class="fa-solid fa-cake-candles text-sm"></i>
           </div>
           <span>${t('navFestivalHolidays')}</span>
         </a>
 
-        <a href="#" onclick="appController.navigate('settings')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('settings')}">
+        <a href="javascript:void(0)" onclick="appController.navigate('settings')" class="nav-link nav-link-3d flex items-center gap-3 px-3.5 py-3 text-xs transition ${isActClass('settings')}">
           <div class="w-7 h-7 rounded-lg bg-slate-500/20 text-slate-300 flex items-center justify-center shrink-0 border border-slate-500/30">
             <i class="fa-solid fa-sliders text-sm"></i>
           </div>
