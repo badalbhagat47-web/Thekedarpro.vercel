@@ -653,7 +653,6 @@ class AppController {
                 Send OTP
               </button>
             </div>
-            <p id="emailOtpTimerText" class="text-[11px] text-slate-500 mt-1"></p>
 
             <!-- OTP INPUT GROUP (Hidden until Send OTP clicked) -->
             <div id="emailOtpGroup" class="hidden mt-2 p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
@@ -733,11 +732,7 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-rose-100', 'text-rose-800', 'bg-emerald-100', 'text-emerald-800');
         statusAlert.classList.add('bg-blue-100', 'text-blue-900');
-        if (data.demo_mode) {
-          statusAlert.innerText = `📩 6-Digit OTP generated for ${email} (Demo OTP: ${data.demo_otp}). [Note: Configure GMAIL_USER in Vercel for live Gmail delivery]`;
-        } else {
-          statusAlert.innerText = `📩 6-Digit OTP sent to ${email} (Valid for 10 minutes). Please check your email inbox.`;
-        }
+        statusAlert.innerText = `📩 6-Digit OTP sent to ${email}. Valid for 10 minutes.`;
       }
 
       this.startOtpCooldownTimer(60);
@@ -752,7 +747,6 @@ class AppController {
 
   startOtpCooldownTimer(seconds) {
     const btnSend = document.getElementById('btnSendEmailOtp');
-    const timerText = document.getElementById('emailOtpTimerText');
     if (!btnSend) return;
 
     let timeLeft = seconds;
@@ -765,10 +759,8 @@ class AppController {
         clearInterval(this.otpTimerInterval);
         btnSend.disabled = false;
         btnSend.innerText = "Resend OTP";
-        if (timerText) timerText.innerText = "Did not receive OTP? Click Resend OTP.";
       } else {
-        btnSend.innerText = `Resend (${timeLeft}s)`;
-        if (timerText) timerText.innerText = `OTP sent. You can resend OTP in ${timeLeft} seconds.`;
+        btnSend.innerText = `Resend OTP (${timeLeft}s)`;
         timeLeft--;
       }
     }, 1000);

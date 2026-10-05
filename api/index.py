@@ -74,10 +74,8 @@ def send_real_email_otp(to_email, otp_code):
         if os.environ.get("ALLOW_TEST_MODE") == "1":
             print(f"[TEST MODE] Generated OTP for {to_email}: {otp_code}")
             return True, "SENT"
-        # Graceful fallback when Vercel environment variables (GMAIL_USER & GMAIL_APP_PASSWORD) are pending configuration:
-        # Instead of failing with a blocking error alert, return DEV_FALLBACK status so user testing & registration are NEVER broken!
-        print(f"[SMTP NOTICE] Email credentials (GMAIL_USER/GMAIL_APP_PASSWORD) not set on server yet. Using demo fallback mode.")
-        return True, "DEV_FALLBACK"
+        print(f"[SMTP ERROR] Email credentials (GMAIL_USER/GMAIL_APP_PASSWORD) not configured on server.")
+        return False, "Email service is not configured. Please contact administrator."
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f"🔒 {otp_code} is your THEKEDAR Verification Code"
@@ -311,13 +309,9 @@ class handler(BaseHTTPRequestHandler):
                 }, status=500)
                 return
 
-            is_fallback = (msg_res == "DEV_FALLBACK")
-
             self.send_json({
                 "success": True,
                 "message": f"6-digit OTP sent to {email}. Valid for 10 minutes.",
-                "demo_mode": is_fallback,
-                "demo_otp": otp_code if is_fallback else None,
                 "cooldown": 60
             })
             return
