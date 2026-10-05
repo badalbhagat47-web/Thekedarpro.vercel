@@ -219,15 +219,17 @@ def set_db_state(data_dict):
 
 def validate_mobile_str(mobile_raw):
     if not mobile_raw:
-        return False, "Mobile number is required."
-    clean = str(mobile_raw).strip().replace(" ", "").replace("-", "")
-    if clean.startswith("+91"):
-        clean = clean[3:]
-    if len(clean) != 10 or not clean.isdigit():
-        return False, "Mobile number must be exactly 10 digits."
-    if clean[0] not in ('6', '7', '8', '9'):
-        return False, "Mobile number must start with 6, 7, 8, or 9."
-    return True, clean
+        return False, "Please enter a valid phone number."
+    s = str(mobile_raw).strip()
+    # Check valid international characters: optional leading +, then digits, spaces, hyphens
+    has_plus = s.startswith('+')
+    clean = (s[1:] if has_plus else s).replace(" ", "").replace("-", "")
+    
+    if not clean.isdigit() or len(clean) < 7 or len(clean) > 15:
+        return False, "Please enter a valid phone number."
+    
+    formatted = ("+" if has_plus else "") + clean
+    return True, formatted
 
 class handler(BaseHTTPRequestHandler):
     def send_json(self, data, status=200):
@@ -453,7 +455,7 @@ class handler(BaseHTTPRequestHandler):
             companies = current_data.get('companies', [])
             for c in companies:
                 if c.get('mobile') == clean_mob:
-                    self.send_json({"success": False, "whatsappVerified": False, "error": "❌ A company with this mobile number is already registered."}, status=400)
+                    self.send_json({"success": False, "whatsappVerified": False, "error": "This phone number cannot be used. Please check the number and try again."}, status=400)
                     return
 
             # Read WhatsApp Provider / Meta Cloud API credentials from environment variables
@@ -530,10 +532,10 @@ class handler(BaseHTTPRequestHandler):
             # Check duplicates
             for c in companies:
                 if c.get('email', '').lower() == email:
-                    self.send_json({"success": False, "error": "❌ A company with this email address is already registered."}, status=400)
+                    self.send_json({"success": False, "error": "❌ This email address cannot be used. Please check the address and try again."}, status=400)
                     return
                 if c.get('mobile') == mobile:
-                    self.send_json({"success": False, "error": "❌ A company with this mobile number is already registered."}, status=400)
+                    self.send_json({"success": False, "error": "❌ This phone number cannot be used. Please check the number and try again."}, status=400)
                     return
                 if gstin and c.get('gstin') and c.get('gstin').upper() == gstin:
                     self.send_json({"success": False, "error": "❌ This GSTIN is already registered."}, status=400)

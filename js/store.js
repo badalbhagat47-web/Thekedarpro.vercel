@@ -861,12 +861,14 @@ class Store {
   }
 
   validateAndSanitizeMobile(rawMobile) {
-    if (!rawMobile) return { valid: false, error: "Mobile number is required." };
-    let clean = String(rawMobile).trim().replace(/^\+91/, '').replace(/[^0-9]/g, '');
-    if (clean.length !== 10) {
-      return { valid: false, error: "Mobile number must be exactly 10 digits." };
+    if (!rawMobile) return { valid: false, error: "Please enter a valid phone number." };
+    const s = String(rawMobile).trim();
+    const hasPlus = s.startsWith('+');
+    const clean = (hasPlus ? s.substring(1) : s).replace(/[\s-]/g, '');
+    if (!/^\d{7,15}$/.test(clean)) {
+      return { valid: false, error: "Please enter a valid phone number." };
     }
-    return { valid: true, mobile: clean };
+    return { valid: true, mobile: (hasPlus ? '+' : '') + clean };
   }
 
   // --- WORKER ACTIONS ---

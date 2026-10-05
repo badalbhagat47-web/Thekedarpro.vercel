@@ -755,14 +755,14 @@ class AppController {
           <!-- MOBILE NUMBER WITH WHATSAPP VERIFICATION -->
           <div>
             <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs font-bold text-slate-700">10-Digit Mobile Number *</label>
+              <label class="block text-xs font-bold text-slate-700">Phone Number *</label>
               <span id="waVerifiedBadge" class="hidden text-[11px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                 <i class="fa-brands fa-whatsapp text-emerald-600"></i> WhatsApp Verified
               </span>
             </div>
             <div class="flex gap-2">
-              <input type="text" id="regMobile" required placeholder="e.g. 9876543210" maxlength="10" 
-                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+              <input type="text" id="regMobile" required placeholder="e.g. +91 9876543210 or 9876543210" maxlength="18" 
+                     oninput="this.value = this.value.replace(/[^0-9+\s-]/g, '').slice(0, 18)"
                      class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold font-mono">
               <button type="button" id="btnVerifyWhatsapp" onclick="appController.verifyCompanyWhatsappMobile()" 
                       class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm flex items-center gap-1.5">
@@ -941,13 +941,14 @@ class AppController {
     const badge = document.getElementById('waVerifiedBadge');
     const btnVerify = document.getElementById('btnVerifyWhatsapp');
 
-    if (!mobile || mobile.length !== 10 || !/^[6-9]\d{9}$/.test(mobile)) {
+    const digitsOnly = mobile.replace(/\D/g, '');
+    if (!mobile || digitsOnly.length < 7 || digitsOnly.length > 15) {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'text-emerald-600', 'text-amber-600');
         statusAlert.classList.add('text-rose-600', 'font-bold');
-        statusAlert.innerText = "⚠️ Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.";
+        statusAlert.innerText = "Please enter a valid phone number.";
       } else {
-        alert("⚠️ Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
+        alert("Please enter a valid phone number.");
       }
       return;
     }
@@ -1041,8 +1042,9 @@ class AppController {
     const mobileInput = document.getElementById('regMobile');
     const mobile = mobileInput ? mobileInput.value.trim() : '';
 
-    if (!mobile || mobile.length !== 10 || !/^[6-9]\d{9}$/.test(mobile)) {
-      alert("⚠️ Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
+    const digitsOnly = mobile.replace(/\D/g, '');
+    if (!mobile || digitsOnly.length < 7 || digitsOnly.length > 15) {
+      alert("Please enter a valid phone number.");
       return;
     }
 
