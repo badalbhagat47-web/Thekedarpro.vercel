@@ -1177,22 +1177,34 @@ class AppController {
   }
 
   verifyGstinClick() {
-    const gstin = document.getElementById('regGstin').value;
+    const gstinInput = document.getElementById('regGstin');
+    const gstin = gstinInput ? gstinInput.value.trim() : '';
     const alertEl = document.getElementById('gstinStatusAlert');
+    const compNameInput = document.getElementById('regCompName');
+
+    if (!alertEl) return;
+
     if (!gstin) {
-      alertEl.innerText = "ℹ️ GSTIN is optional. You can proceed with registration or verify if available.";
+      alertEl.innerText = "ℹ️ GSTIN is optional. You can enter GSTIN and click Verify to auto-fill company details.";
       alertEl.className = "text-[11px] text-blue-600 font-bold mt-1";
       return;
     }
 
-    const res = window.GSTService.verify(gstin);
+    const res = (window.GSTService || window.GSTVerificationService).verify(gstin);
     if (res.verified) {
-      alertEl.innerText = `✅ Verified: ${res.data.legalName} (${res.data.businessType})`;
-      alertEl.className = "text-[11px] text-emerald-600 font-bold mt-1";
-      document.getElementById('regCompName').value = res.data.legalName;
+      alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>Verified & Auto-Filled:</strong> ${res.data.legalName} (${res.data.businessType} - ${res.data.state})</span>`;
+      alertEl.className = "text-[11px] text-emerald-600 font-bold mt-1 bg-emerald-50 p-2 rounded-xl border border-emerald-200 block";
+      
+      if (compNameInput) {
+        compNameInput.value = res.data.legalName;
+        compNameInput.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50');
+        setTimeout(() => {
+          compNameInput.classList.remove('ring-2', 'ring-emerald-500');
+        }, 2000);
+      }
     } else {
       alertEl.innerText = `ℹ️ ${res.message}`;
-      alertEl.className = "text-[11px] text-blue-600 font-bold mt-1";
+      alertEl.className = "text-[11px] text-rose-600 font-bold mt-1 bg-rose-50 p-2 rounded-xl border border-rose-200 block";
     }
   }
 
