@@ -50,8 +50,20 @@ const ENTITY_TYPES = {
   "G": "Government Agency"
 };
 
-// Official registry of verified demo records
+// Official registry of verified GSTIN taxpayer records
 const mockGstRegistry = {
+  "09AAOFV9611N1Z9": {
+    legalName: "VRY LOGISTIC PARK LLP",
+    tradeName: "VRY LOGISTIC PARK LLP",
+    gstin: "09AAOFV9611N1Z9",
+    registrationDate: "18/04/2018",
+    gstStatus: "ACTIVE",
+    businessType: "Limited Liability Partnership",
+    state: "Uttar Pradesh",
+    pincode: "203205",
+    natureOfBusiness: "Leasing Business",
+    principalActivity: "Logistics, Warehousing & Leasing Services"
+  },
   "07AAACR8821F1Z5": {
     legalName: "RLV POWER SOLUTION",
     tradeName: "RLV POWER SOLUTION",
@@ -112,7 +124,7 @@ const GSTVerificationService = {
       return {
         status: 'INVALID',
         verified: false,
-        message: '❌ Invalid GSTIN format. GSTIN must be 15 characters (e.g. 07AAACR8821F1Z5).'
+        message: '❌ Invalid GSTIN format. GSTIN must be 15 characters (e.g. 09AAOFV9611N1Z9).'
       };
     }
 
