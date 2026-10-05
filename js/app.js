@@ -99,6 +99,7 @@ class AppController {
     const userBadge = document.getElementById('userHeaderBadge');
     const userNameEl = document.getElementById('headerUserName');
     const userRoleEl = document.getElementById('headerUserRole');
+    const loginNavBtn = document.getElementById('loginNavBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const resetDemoBtn = document.getElementById('resetDemoBtn');
     const langBtnText = document.getElementById('langBtnText');
@@ -117,6 +118,7 @@ class AppController {
         userBadge.classList.add('hidden');
         userBadge.classList.remove('sm:flex', 'flex');
       }
+      if (loginNavBtn) loginNavBtn.classList.remove('hidden');
       if (logoutBtn) logoutBtn.classList.add('hidden');
       if (resetDemoBtn) resetDemoBtn.classList.add('hidden');
       return;
@@ -126,6 +128,7 @@ class AppController {
       userBadge.classList.remove('hidden');
       userBadge.classList.add('sm:flex');
     }
+    if (loginNavBtn) loginNavBtn.classList.add('hidden');
     if (logoutBtn) logoutBtn.classList.remove('hidden');
     
     // RESTRICT RESET DEMO DATA BUTTON EXCLUSIVELY TO SUPER_ADMIN ROLE
