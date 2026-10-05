@@ -9,7 +9,7 @@ const AuthModule = {
       <div class="max-w-5xl mx-auto py-6 sm:py-10 px-4 space-y-6">
         <!-- BRAND HEADER SECTION -->
         <div class="text-center space-y-2 max-w-3xl mx-auto flex flex-col items-center">
-          <img src="brand/thekedar-logo.svg" alt="Thekedar Logo" class="h-16 sm:h-20 w-auto object-contain mx-auto my-2 filter drop-shadow-md" onerror="this.onerror=null; this.src='public/brand/thekedar-logo.svg';">
+          <img src="brand/thekedar-logo.png" alt="Thekedar Logo" class="h-20 sm:h-24 max-w-full w-auto object-contain mx-auto my-3 filter drop-shadow-xl hover:scale-105 transition" onerror="this.onerror=null; this.src='public/brand/thekedar-logo.png';">
         </div>
 
         <!-- MAIN DUAL-PANEL LOGIN CONTAINER CARD -->

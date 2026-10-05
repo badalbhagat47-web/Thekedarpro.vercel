@@ -39,22 +39,22 @@
       }
     })();
   </script>
-  <!-- Official Brand Favicon -->
-  <link rel="icon" type="image/svg+xml" href="brand/thekedar-icon.svg">
-  <link rel="alternate icon" type="image/png" href="brand/thekedar-icon.png">
+  <!-- Official Brand Favicon (Icon Symbol Only) -->
+  <link rel="icon" type="image/png" href="brand/thekedar-icon.png">
+  <link rel="alternate icon" type="image/svg+xml" href="brand/thekedar-icon.svg">
 </head>
 <body class="h-full flex flex-col font-sans antialiased text-slate-900 bg-slate-100 dark:bg-slate-950 dark:text-slate-100 selection:bg-amber-400 selection:text-slate-950">
 
   <!-- TOP APP HEADER -->
-  <header id="mainHeader" class="bg-slate-900 text-white sticky top-0 z-50 shadow-md border-b border-slate-800 w-full min-w-0">
+  <header id="mainHeader" class="bg-slate-950 text-white sticky top-0 z-50 shadow-xl border-b border-slate-800/80 w-full min-w-0">
     <div class="w-full px-4 sm:px-6">
       <div class="flex items-center justify-between h-16 gap-2">
         <!-- Official Responsive Thekedar Branding (Fixed Left Position) -->
         <div class="flex items-center cursor-pointer shrink-0 min-w-max py-1" onclick="appController.navigate('dashboard')" title="Thekedar Home">
-          <!-- Desktop Full Logo -->
-          <img src="brand/thekedar-logo.svg" alt="Thekedar" class="hidden sm:block h-10 w-auto object-contain hover:scale-105 transition" onerror="this.onerror=null; this.src='public/brand/thekedar-logo.svg';">
-          <!-- Mobile Compact Icon -->
-          <img src="brand/thekedar-icon.svg" alt="Thekedar" class="block sm:hidden h-9 w-9 object-contain hover:scale-105 transition" onerror="this.onerror=null; this.src='public/brand/thekedar-icon.svg';">
+          <!-- Desktop Full 3D Logo -->
+          <img src="brand/thekedar-logo.png" alt="Thekedar" class="hidden sm:block h-11 sm:h-12 w-auto object-contain hover:scale-105 transition filter drop-shadow-md" onerror="this.onerror=null; this.src='public/brand/thekedar-logo.png';">
+          <!-- Mobile 3D Icon Only -->
+          <img src="brand/thekedar-icon.png" alt="Thekedar" class="block sm:hidden h-9 w-auto object-contain hover:scale-105 transition filter drop-shadow-md" onerror="this.onerror=null; this.src='public/brand/thekedar-icon.png';">
         </div>
 
         <!-- Right Action Controls (Fixed Right Alignment) -->
