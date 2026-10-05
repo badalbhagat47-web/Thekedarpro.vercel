@@ -54,43 +54,36 @@ const SuperAdminModule = {
           <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full text-amber-400 text-xs font-black mb-2">
-                <i class="fa-solid fa-crown text-sm"></i> Platform Super Admin Control Center
+                <i class="fa-solid fa-crown text-sm"></i> Master Super Admin Control Center
               </div>
               <h2 class="text-2xl sm:text-3xl font-black text-white brand-font tracking-wide">
                 Platform Overview & Executive Control
               </h2>
               <p class="text-xs text-slate-400 mt-1">Real-time database statistics & multi-tenant SaaS administration</p>
             </div>
-
-            <div class="flex items-center gap-3">
-              <button onclick="appController.openCompanyRegistrationModal()" 
-                      class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black rounded-2xl text-xs shadow-lg flex items-center gap-2 transition hover:scale-105">
-                <i class="fa-solid fa-building-circle-check text-sm"></i> ${t('registerNewCompany')}
-              </button>
-            </div>
           </div>
         </div>
 
-        <!-- SUB-TAB NAVIGATION SYSTEM -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800">
+        <!-- 3D SUB-TAB NAVIGATION SYSTEM -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-3 border-b border-slate-200 dark:border-slate-800">
           <button onclick="SuperAdminModule.switchTab('overview')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'overview' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-white'}">
+                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'overview' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
             <i class="fa-solid fa-chart-pie"></i> Overview
           </button>
           <button onclick="SuperAdminModule.switchTab('companies')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'companies' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-white'}">
+                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'companies' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
             <i class="fa-solid fa-building"></i> All Companies (${stats.totalCompanies})
           </button>
           <button onclick="SuperAdminModule.switchTab('workers')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'workers' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-white'}">
+                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'workers' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
             <i class="fa-solid fa-users"></i> Platform Workers (${stats.totalWorkers})
           </button>
           <button onclick="SuperAdminModule.switchTab('subscriptions')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'subscriptions' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-white'}">
+                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'subscriptions' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
             <i class="fa-solid fa-receipt"></i> Subscriptions
           </button>
           <button onclick="SuperAdminModule.switchTab('payments')" 
-                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'payments' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-white'}">
+                  class="px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 whitespace-nowrap ${this.activeTab === 'payments' ? 'nav-link-3d-active' : 'nav-link-3d-inactive'}">
             <i class="fa-solid fa-wallet"></i> Revenue & Payments
           </button>
         </div>
