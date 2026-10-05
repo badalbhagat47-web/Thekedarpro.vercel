@@ -99,32 +99,47 @@ def send_real_email_otp(to_email, otp_code):
     """
     msg.attach(MIMEText(html_body, 'html'))
 
-    # Method 1: Try Port 465 SSL
+    # Create SSL contexts (standard + cloud unverified fallback)
+    context_std = ssl.create_default_context()
+    context_unv = ssl._create_unverified_context()
+
+    # Method 1: Try Port 587 STARTTLS (Standard)
     try:
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(smtp_host, 465, context=context, timeout=10) as server:
+        with smtplib.SMTP(smtp_host, 587, timeout=12) as server:
+            server.ehlo()
+            server.starttls(context=context_std)
+            server.ehlo()
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_from, [to_email], msg.as_string())
-        print(f"[SMTP SUCCESS] Real Email OTP successfully dispatched via SSL port 465 to {to_email}")
+        print(f"[SMTP SUCCESS] Real Email OTP dispatched via 587 STARTTLS to {to_email}")
         return True, "SENT"
     except Exception as e1:
-        print(f"[SMTP SSL 465 Warning]: {e1}. Trying STARTTLS 587...")
+        print(f"[SMTP STARTTLS 587 Warning]: {e1}. Trying SSL 465...")
 
-    # Method 2: Try Port 587 STARTTLS
+    # Method 2: Try Port 465 SSL (Standard)
     try:
-        context = ssl.create_default_context()
-        with smtplib.SMTP(smtp_host, 587, timeout=10) as server:
+        with smtplib.SMTP_SSL(smtp_host, 465, context=context_std, timeout=12) as server:
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_from, [to_email], msg.as_string())
+        print(f"[SMTP SUCCESS] Real Email OTP dispatched via SSL 465 to {to_email}")
+        return True, "SENT"
+    except Exception as e2:
+        print(f"[SMTP SSL 465 Warning]: {e2}. Trying 587 with unverified context...")
+
+    # Method 3: Try Port 587 with Unverified Context (Cloud Serverless Container Fix)
+    try:
+        with smtplib.SMTP(smtp_host, 587, timeout=12) as server:
             server.ehlo()
-            server.starttls(context=context)
+            server.starttls(context=context_unv)
             server.ehlo()
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_from, [to_email], msg.as_string())
-        print(f"[SMTP SUCCESS] Real Email OTP successfully dispatched via STARTTLS port 587 to {to_email}")
+        print(f"[SMTP SUCCESS] Real Email OTP dispatched via 587 unverified context to {to_email}")
         return True, "SENT"
-    except Exception as e2:
-        print(f"[SMTP STARTTLS 587 Error]: {e2}")
-        err_detail = str(e2) if str(e2) else str(e1)
-        return False, f"Gmail SMTP error: {err_detail}. Please verify GMAIL_USER and GMAIL_APP_PASSWORD credentials."
+    except Exception as e3:
+        print(f"[SMTP Method 3 Error]: {e3}")
+        err_detail = str(e3) or str(e2) or str(e1)
+        return False, f"Gmail SMTP connection error: {err_detail}. Please verify GMAIL_USER & 16-digit GMAIL_APP_PASSWORD (and ensure 2-Step Verification is ON in Google Account)."
 
 def get_db_state():
     try:
