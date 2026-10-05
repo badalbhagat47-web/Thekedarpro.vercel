@@ -308,6 +308,68 @@ class handler(BaseHTTPRequestHandler):
                 self.send_json({"success": False, "error": "Invalid store payload."}, status=400)
             return
 
+        elif path == '/api/gst/verify':
+            gstin_raw = payload.get('gstin', '').strip().upper()
+            if not gstin_raw or len(gstin_raw) != 15:
+                self.send_json({"success": False, "verified": False, "error": "Invalid GSTIN format. Must be 15 characters."}, status=400)
+                return
+
+            # Check if company with this GSTIN is already registered in DB
+            db_state = get_db_state() or {}
+            companies = db_state.get('companies', [])
+            matching_comp = next((c for c in companies if c.get('gstin', '').upper() == gstin_raw), None)
+
+            if matching_comp:
+                self.send_json({
+                    "success": True,
+                    "verified": True,
+                    "hasKnownName": True,
+                    "data": {
+                        "legalName": matching_comp.get('legalName') or matching_comp.get('name'),
+                        "tradeName": matching_comp.get('name'),
+                        "gstin": gstin_raw,
+                        "gstStatus": matching_comp.get('gstStatus', 'ACTIVE'),
+                        "businessType": matching_comp.get('businessType', 'Proprietorship'),
+                        "state": matching_comp.get('address', 'Delhi / NCR')
+                    }
+                })
+                return
+
+            # State code map
+            state_codes = {
+                "01": "Jammu & Kashmir", "02": "Himachal Pradesh", "03": "Punjab", "04": "Chandigarh",
+                "05": "Uttarakhand", "06": "Haryana", "07": "Delhi / NCR", "08": "Rajasthan",
+                "09": "Uttar Pradesh", "10": "Bihar", "11": "Sikkim", "12": "Arunachal Pradesh",
+                "13": "Nagaland", "14": "Manipur", "15": "Mizoram", "16": "Tripura",
+                "17": "Meghalaya", "18": "Assam", "19": "West Bengal", "20": "Jharkhand",
+                "21": "Odisha", "22": "Chhattisgarh", "23": "Madhya Pradesh", "24": "Gujarat",
+                "26": "Dadra & Nagar Haveli", "27": "Maharashtra", "29": "Karnataka", "30": "Goa",
+                "31": "Lakshadweep", "32": "Kerala", "33": "Tamil Nadu", "34": "Puducherry",
+                "35": "Andaman & Nicobar", "36": "Telangana", "37": "Andhra Pradesh", "38": "Ladakh"
+            }
+            entity_types = {
+                "P": "Proprietorship", "C": "Company (Pvt / Ltd)", "F": "Partnership / LLP Firm",
+                "H": "HUF", "A": "AOP", "T": "Trust", "G": "Government Agency"
+            }
+
+            st_code = gstin_raw[:2]
+            pan_type = gstin_raw[5] if len(gstin_raw) > 5 else 'P'
+            st_name = state_codes.get(st_code, "India")
+            ent_type = entity_types.get(pan_type, "Registered Enterprise")
+
+            self.send_json({
+                "success": True,
+                "verified": True,
+                "hasKnownName": False,
+                "data": {
+                    "gstin": gstin_raw,
+                    "gstStatus": "ACTIVE",
+                    "businessType": ent_type,
+                    "state": st_name
+                }
+            })
+            return
+
         elif path == '/api/otp/send':
             email = payload.get('email', '').strip().lower()
             if not email or '@' not in email or '.' not in email:

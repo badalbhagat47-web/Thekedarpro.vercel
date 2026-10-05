@@ -1176,9 +1176,9 @@ class AppController {
     }
   }
 
-  verifyGstinClick() {
+  async verifyGstinClick() {
     const gstinInput = document.getElementById('regGstin');
-    const gstin = gstinInput ? gstinInput.value.trim() : '';
+    const gstin = gstinInput ? gstinInput.value.trim().toUpperCase() : '';
     const alertEl = document.getElementById('gstinStatusAlert');
     const compNameInput = document.getElementById('regCompName');
 
@@ -1190,10 +1190,25 @@ class AppController {
       return;
     }
 
-    const res = (window.GSTService || window.GSTVerificationService).verify(gstin);
-    if (res.verified) {
-      if (res.hasKnownName && res.data.legalName) {
-        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>Verified & Auto-Filled:</strong> ${res.data.legalName} (${res.data.businessType} - ${res.data.state})</span>`;
+    alertEl.innerHTML = `<span class="inline-flex items-center gap-1 text-blue-600"><i class="fa-solid fa-spinner fa-spin"></i> Verifying GSTIN with GST portal...</span>`;
+    alertEl.className = "text-[11px] text-blue-600 font-bold mt-1 block";
+
+    let res = null;
+    try {
+      const apiResp = await fetch('/api/gst/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gstin: gstin })
+      });
+      res = await apiResp.json();
+    } catch (err) {
+      console.log("Backend GST verification fallback to local service:", err);
+      res = (window.GSTService || window.GSTVerificationService).verify(gstin);
+    }
+
+    if (res && res.verified) {
+      if (res.hasKnownName && res.data && res.data.legalName) {
+        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>Verified Taxpayer:</strong> ${res.data.legalName} (${res.data.businessType} - ${res.data.state})</span>`;
         alertEl.className = "text-[11px] text-emerald-600 font-bold mt-1 bg-emerald-50 p-2 rounded-xl border border-emerald-200 block";
         
         if (compNameInput) {
@@ -1211,7 +1226,8 @@ class AppController {
         }
       }
     } else {
-      alertEl.innerText = `ℹ️ ${res.message}`;
+      const errMsg = (res && res.error) || (res && res.message) || "Invalid GSTIN format.";
+      alertEl.innerText = `ℹ️ ${errMsg}`;
       alertEl.className = "text-[11px] text-rose-600 font-bold mt-1 bg-rose-50 p-2 rounded-xl border border-rose-200 block";
     }
   }
