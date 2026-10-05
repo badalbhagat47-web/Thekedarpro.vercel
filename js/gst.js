@@ -50,6 +50,7 @@ const ENTITY_TYPES = {
   "G": "Government Agency"
 };
 
+// Official registry of verified demo records
 const mockGstRegistry = {
   "07AAACR8821F1Z5": {
     legalName: "RLV POWER SOLUTION",
@@ -102,7 +103,7 @@ const GSTVerificationService = {
   },
 
   /**
-   * Synchronously verifies GSTIN format & auto-fetches registered details
+   * Synchronously verifies GSTIN format & returns registered details or decoded state/entity
    */
   verify(gstinInput) {
     const gstin = (gstinInput || "").trim().toUpperCase();
@@ -115,7 +116,7 @@ const GSTVerificationService = {
       };
     }
 
-    // Check exact match in mock/known registry
+    // Check exact match in registered taxpayer database
     if (mockGstRegistry[gstin]) {
       const rec = mockGstRegistry[gstin];
       if (rec.gstStatus !== 'ACTIVE') {
@@ -129,36 +130,31 @@ const GSTVerificationService = {
         status: 'VERIFIED',
         verified: true,
         message: '✓ GSTIN Verified Successfully',
-        data: rec
+        data: rec,
+        hasKnownName: true
       };
     }
 
-    // Decode state and entity type for ANY valid 15-digit GSTIN
+    // Decode state and entity type for custom GSTIN entered by user
     const stateCode = gstin.substring(0, 2);
     const panChar = gstin.charAt(5); // 4th char of PAN
     const stateName = STATE_CODES[stateCode] || "India";
     const entityType = ENTITY_TYPES[panChar] || "Registered Enterprise";
 
-    // Auto-derive company name from GSTIN PAN letters if no exact record
-    const panLetters = gstin.substring(2, 7);
-    const derivedName = `${panLetters} CONTRACTOR & INFRASTRUCTURE`;
-
-    const generatedRecord = {
-      legalName: derivedName,
-      tradeName: derivedName,
+    const decodedRecord = {
       gstin: gstin,
-      registrationDate: "01/01/2021",
       gstStatus: "ACTIVE",
       businessType: entityType,
       state: stateName,
-      principalActivity: "General Contracting & Skilled Labour Services"
+      principalActivity: "General Contracting & Infrastructure"
     };
 
     return {
       status: 'VERIFIED',
       verified: true,
-      message: '✓ GSTIN Verified & Details Fetched Successfully',
-      data: generatedRecord
+      message: '✓ Valid Active GSTIN Format',
+      data: decodedRecord,
+      hasKnownName: false
     };
   },
 

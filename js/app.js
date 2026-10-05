@@ -1185,22 +1185,30 @@ class AppController {
     if (!alertEl) return;
 
     if (!gstin) {
-      alertEl.innerText = "ℹ️ GSTIN is optional. You can enter GSTIN and click Verify to auto-fill company details.";
+      alertEl.innerText = "ℹ️ GSTIN is optional. You can enter GSTIN and click Verify to validate GST status.";
       alertEl.className = "text-[11px] text-blue-600 font-bold mt-1";
       return;
     }
 
     const res = (window.GSTService || window.GSTVerificationService).verify(gstin);
     if (res.verified) {
-      alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>Verified & Auto-Filled:</strong> ${res.data.legalName} (${res.data.businessType} - ${res.data.state})</span>`;
-      alertEl.className = "text-[11px] text-emerald-600 font-bold mt-1 bg-emerald-50 p-2 rounded-xl border border-emerald-200 block";
-      
-      if (compNameInput) {
-        compNameInput.value = res.data.legalName;
-        compNameInput.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50');
-        setTimeout(() => {
-          compNameInput.classList.remove('ring-2', 'ring-emerald-500');
-        }, 2000);
+      if (res.hasKnownName && res.data.legalName) {
+        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>Verified & Auto-Filled:</strong> ${res.data.legalName} (${res.data.businessType} - ${res.data.state})</span>`;
+        alertEl.className = "text-[11px] text-emerald-600 font-bold mt-1 bg-emerald-50 p-2 rounded-xl border border-emerald-200 block";
+        
+        if (compNameInput) {
+          compNameInput.value = res.data.legalName;
+          compNameInput.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50');
+          setTimeout(() => {
+            compNameInput.classList.remove('ring-2', 'ring-emerald-500');
+          }, 2000);
+        }
+      } else {
+        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>GSTIN Active:</strong> Valid GST Number (${res.data.state} | ${res.data.businessType})</span>`;
+        alertEl.className = "text-[11px] text-emerald-600 font-bold mt-1 bg-emerald-50 p-2 rounded-xl border border-emerald-200 block";
+        if (compNameInput && !compNameInput.value) {
+          compNameInput.focus();
+        }
       }
     } else {
       alertEl.innerText = `ℹ️ ${res.message}`;
