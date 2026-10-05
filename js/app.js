@@ -733,7 +733,11 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-rose-100', 'text-rose-800', 'bg-emerald-100', 'text-emerald-800');
         statusAlert.classList.add('bg-blue-100', 'text-blue-900');
-        statusAlert.innerText = `📩 6-Digit OTP sent to ${email} (Valid for 10 minutes). Please check your email inbox.`;
+        if (data.demo_mode) {
+          statusAlert.innerText = `📩 6-Digit OTP generated for ${email} (Demo OTP: ${data.demo_otp}). [Note: Configure GMAIL_USER in Vercel for live Gmail delivery]`;
+        } else {
+          statusAlert.innerText = `📩 6-Digit OTP sent to ${email} (Valid for 10 minutes). Please check your email inbox.`;
+        }
       }
 
       this.startOtpCooldownTimer(60);
