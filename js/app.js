@@ -733,7 +733,7 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-rose-100', 'text-rose-800', 'bg-emerald-100', 'text-emerald-800');
         statusAlert.classList.add('bg-blue-100', 'text-blue-900');
-        statusAlert.innerText = `📩 6-Digit OTP sent to ${email} (Valid for 10 minutes).` + (data.dev_mode ? ` [DEV OTP: ${data.dev_otp}]` : '');
+        statusAlert.innerText = `📩 6-Digit OTP sent to ${email} (Valid for 10 minutes). Please check your email inbox.`;
       }
 
       this.startOtpCooldownTimer(60);
@@ -1008,6 +1008,10 @@ class AppController {
       return;
     }
 
+    const noteInput = document.getElementById('advReason');
+    const noteVal = noteInput ? noteInput.value.trim() : '';
+    const finalReason = noteVal || 'Salary Advance';
+
     window.appStore.addAdvance({
       id: `ADV-${Date.now()}`,
       companyId: currentUser ? currentUser.companyId : worker.companyId,
@@ -1015,7 +1019,9 @@ class AppController {
       workerName: worker.fullName,
       amount: amountVal,
       date: new Date().toISOString().substring(0, 10),
-      reason: document.getElementById('advReason').value || 'Salary Advance',
+      reason: finalReason,
+      note: finalReason,
+      remarks: finalReason,
       status: 'APPROVED'
     });
 

@@ -1567,7 +1567,7 @@ const CompanyAdminModule = {
                     <td class="py-3 px-4 font-bold text-slate-900 dark:text-white">${a.workerName}</td>
                     <td class="py-3 px-4 font-black text-purple-600 dark:text-purple-400">₹${Number(a.amount).toLocaleString('en-IN')}</td>
                     <td class="py-3 px-4 text-xs text-slate-500 font-mono">${a.date}</td>
-                    <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-300">${a.reason || 'Advance'}</td>
+                    <td class="py-3 px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 max-w-xs break-words">${a.reason || a.note || a.remarks || 'Advance'}</td>
                     <td class="py-3 px-4"><span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 rounded-lg text-xs font-bold">APPROVED</span></td>
                   </tr>
                 `).join('')}

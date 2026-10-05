@@ -61,15 +61,22 @@ def init_db():
         print("DB init warning:", e)
 
 def send_real_email_otp(to_email, otp_code):
-    smtp_host = os.environ.get("SMTP_HOST")
-    smtp_port = int(os.environ.get("SMTP_PORT", 587))
-    smtp_user = os.environ.get("SMTP_USER")
-    smtp_pass = os.environ.get("SMTP_PASS")
+    gmail_user = os.environ.get("GMAIL_USER")
+    gmail_pass = os.environ.get("GMAIL_APP_PASSWORD")
+
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com" if gmail_user else None)
+    smtp_port = int(os.environ.get("SMTP_PORT", 465 if (gmail_user or os.environ.get("SMTP_HOST") == "smtp.gmail.com") else 587))
+    smtp_user = gmail_user or os.environ.get("SMTP_USER")
+    smtp_pass = gmail_pass or os.environ.get("SMTP_PASS")
     smtp_from = os.environ.get("SMTP_FROM", smtp_user or "noreply@thekedar.com")
 
     if not smtp_host or not smtp_user or not smtp_pass:
-        print(f"[DEV OTP MODE] OTP for {to_email} is: {otp_code}")
-        return True, "DEV_MODE"
+        if os.environ.get("ALLOW_TEST_MODE") == "1":
+            print(f"[TEST MODE] Generated OTP for {to_email}: {otp_code}")
+            return True, "SENT"
+        # SMTP credentials not configured yet on server environment
+        print(f"[SMTP WARNING] Email credentials (GMAIL_USER/GMAIL_APP_PASSWORD or SMTP_USER/SMTP_PASS) not set in environment variables.")
+        return False, "SMTP email service credentials not configured on server. Please set GMAIL_USER and GMAIL_APP_PASSWORD in environment variables."
 
     try:
         msg = MIMEMultipart('alternative')
@@ -78,7 +85,7 @@ def send_real_email_otp(to_email, otp_code):
         msg['To'] = to_email
 
         html_body = f"""
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded: 12px; background-color: #0f172a; color: #f8fafc;">
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #0f172a; color: #f8fafc;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h1 style="color: #38bdf8; margin: 0; font-size: 24px;">THEKEDAR PRO</h1>
                 <p style="color: #94a3b8; font-size: 14px; margin-top: 4px;">Contractor & Workforce Management</p>
@@ -276,13 +283,17 @@ class handler(BaseHTTPRequestHandler):
 
             # Dispatch Email
             sent_ok, msg_res = send_real_email_otp(email, otp_code)
-            is_dev = (msg_res == "DEV_MODE")
+
+            if not sent_ok:
+                self.send_json({
+                    "success": False,
+                    "error": f"Failed to send email OTP: {msg_res}"
+                }, status=500)
+                return
 
             self.send_json({
                 "success": True,
                 "message": f"6-digit OTP sent to {email}. Valid for 10 minutes.",
-                "dev_mode": is_dev,
-                "dev_otp": otp_code if is_dev else None,
                 "cooldown": 60
             })
             return

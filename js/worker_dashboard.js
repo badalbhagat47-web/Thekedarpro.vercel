@@ -443,7 +443,7 @@ const WorkerDashboardModule = {
                 <tr>
                   <td class="font-mono text-xs text-slate-600">${a.date}</td>
                   <td class="font-black text-purple-700">₹${Number(a.amount).toLocaleString('en-IN')}</td>
-                  <td class="text-xs text-slate-700">${a.reason || 'Advance'}</td>
+                  <td class="text-xs font-semibold text-slate-700 dark:text-slate-300 max-w-xs break-words">${a.reason || a.note || a.remarks || 'Advance'}</td>
                   <td><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded text-xs font-bold">DEDUCTED IN SALARY</span></td>
                 </tr>
               `).join('') : `<tr><td colspan="4" class="text-xs text-slate-400 text-center py-3">No advances recorded for ${selectedMonth}</td></tr>`}
