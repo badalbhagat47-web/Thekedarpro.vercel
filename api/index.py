@@ -27,6 +27,13 @@ if not os.path.exists(DB_DIR):
 
 DB_FILE = os.path.join(DB_DIR, "attendance_v6.db")
 
+import random
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+OTP_SECRET = os.environ.get("OTP_SECRET", "THEKEDAR_SECURE_OTP_SECRET_KEY_2026")
+
 def init_db():
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -38,10 +45,67 @@ def init_db():
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS otp_verifications (
+                email TEXT PRIMARY KEY,
+                otp_hash TEXT NOT NULL,
+                expires_at TIMESTAMP NOT NULL,
+                resend_available_at TIMESTAMP NOT NULL,
+                verified INT DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
         conn.commit()
         conn.close()
     except Exception as e:
         print("DB init warning:", e)
+
+def send_real_email_otp(to_email, otp_code):
+    smtp_host = os.environ.get("SMTP_HOST")
+    smtp_port = int(os.environ.get("SMTP_PORT", 587))
+    smtp_user = os.environ.get("SMTP_USER")
+    smtp_pass = os.environ.get("SMTP_PASS")
+    smtp_from = os.environ.get("SMTP_FROM", smtp_user or "noreply@thekedar.com")
+
+    if not smtp_host or not smtp_user or not smtp_pass:
+        print(f"[DEV OTP MODE] OTP for {to_email} is: {otp_code}")
+        return True, "DEV_MODE"
+
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f"🔒 {otp_code} is your THEKEDAR Verification Code"
+        msg['From'] = f"THEKEDAR Verification <{smtp_from}>"
+        msg['To'] = to_email
+
+        html_body = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded: 12px; background-color: #0f172a; color: #f8fafc;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #38bdf8; margin: 0; font-size: 24px;">THEKEDAR PRO</h1>
+                <p style="color: #94a3b8; font-size: 14px; margin-top: 4px;">Contractor & Workforce Management</p>
+            </div>
+            <div style="background-color: #1e293b; padding: 20px; border-radius: 8px; text-align: center;">
+                <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 12px;">Your Email Verification Code:</p>
+                <div style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #f59e0b; margin: 15px 0;">{otp_code}</div>
+                <p style="font-size: 12px; color: #94a3b8;">This code is valid for <strong>10 minutes</strong>. Do not share this code with anyone.</p>
+            </div>
+            <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 20px;">If you did not request this code, please ignore this email.</p>
+        </div>
+        """
+        msg.attach(MIMEText(html_body, 'html'))
+
+        if smtp_port == 465:
+            server = smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10)
+        else:
+            server = smtplib.SMTP(smtp_host, smtp_port, timeout=10)
+            server.starttls()
+        
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_from, [to_email], msg.as_string())
+        server.quit()
+        return True, "SENT"
+    except Exception as e:
+        print(f"SMTP Error sending to {to_email}: {e}")
+        return False, str(e)
 
 def get_db_state():
     try:
@@ -162,6 +226,136 @@ class handler(BaseHTTPRequestHandler):
                 self.send_json({"success": False, "error": "Invalid store payload."}, status=400)
             return
 
+        elif path == '/api/otp/send':
+            email = payload.get('email', '').strip().lower()
+            if not email or '@' not in email or '.' not in email:
+                self.send_json({"success": False, "error": "Please enter a valid email address."}, status=400)
+                return
+
+            init_db()
+            now_dt = datetime.datetime.utcnow()
+            now_ts = int(now_dt.timestamp())
+
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+            cursor.execute("SELECT resend_available_at, verified FROM otp_verifications WHERE email = ?", (email,))
+            row = cursor.fetchone()
+
+            if row:
+                resend_at = int(row[0]) if str(row[0]).isdigit() else 0
+                if now_ts < resend_at:
+                    cooldown = resend_at - now_ts
+                    conn.close()
+                    self.send_json({
+                        "success": False, 
+                        "error": f"Please wait {cooldown} seconds before requesting a new OTP.",
+                        "cooldown": cooldown
+                    }, status=429)
+                    return
+
+            # Generate 6-digit OTP
+            otp_code = f"{random.randint(100000, 999999)}"
+            otp_hash = hashlib.sha256(f"{email}:{otp_code}:{OTP_SECRET}".encode('utf-8')).hexdigest()
+
+            # 10 minutes expiry (600s), 60s cooldown
+            expires_at = now_ts + 600
+            resend_available_at = now_ts + 60
+
+            cursor.execute("""
+                INSERT INTO otp_verifications (email, otp_hash, expires_at, resend_available_at, verified, created_at)
+                VALUES (?, ?, ?, ?, 0, CURRENT_TIMESTAMP)
+                ON CONFLICT(email) DO UPDATE SET
+                    otp_hash = excluded.otp_hash,
+                    expires_at = excluded.expires_at,
+                    resend_available_at = excluded.resend_available_at,
+                    verified = 0,
+                    created_at = CURRENT_TIMESTAMP
+            """, (email, otp_hash, expires_at, resend_available_at))
+            conn.commit()
+            conn.close()
+
+            # Dispatch Email
+            sent_ok, msg_res = send_real_email_otp(email, otp_code)
+            is_dev = (msg_res == "DEV_MODE")
+
+            self.send_json({
+                "success": True,
+                "message": f"6-digit OTP sent to {email}. Valid for 10 minutes.",
+                "dev_mode": is_dev,
+                "dev_otp": otp_code if is_dev else None,
+                "cooldown": 60
+            })
+            return
+
+        elif path == '/api/otp/verify':
+            email = payload.get('email', '').strip().lower()
+            otp = payload.get('otp', '').strip()
+
+            if not email or not otp:
+                self.send_json({"success": False, "error": "Email address and OTP code are required."}, status=400)
+                return
+
+            init_db()
+            now_ts = int(datetime.datetime.utcnow().timestamp())
+
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+            cursor.execute("SELECT otp_hash, expires_at, verified FROM otp_verifications WHERE email = ?", (email,))
+            row = cursor.fetchone()
+
+            if not row:
+                conn.close()
+                self.send_json({"success": False, "error": "No OTP requested for this email address. Please click Send OTP."}, status=400)
+                return
+
+            stored_hash, expires_at_val, is_verified = row[0], int(row[1]), int(row[2])
+
+            if is_verified == 1:
+                conn.close()
+                self.send_json({"success": True, "message": "✓ Email address is already verified!", "emailVerified": True})
+                return
+
+            if now_ts > expires_at_val:
+                conn.close()
+                self.send_json({"success": False, "error": "OTP expired, resend OTP"}, status=400)
+                return
+
+            input_hash = hashlib.sha256(f"{email}:{otp}:{OTP_SECRET}".encode('utf-8')).hexdigest()
+
+            if input_hash != stored_hash:
+                conn.close()
+                self.send_json({"success": False, "error": "Galat OTP. Please check and try again."}, status=400)
+                return
+
+            # OTP Correct: Mark as verified
+            cursor.execute("UPDATE otp_verifications SET verified = 1 WHERE email = ?", (email,))
+            conn.commit()
+            conn.close()
+
+            self.send_json({
+                "success": True,
+                "message": "✓ Email verified successfully!",
+                "emailVerified": True
+            })
+            return
+
+        elif path == '/api/otp/status':
+            email = payload.get('email', '').strip().lower()
+            if not email:
+                self.send_json({"verified": False})
+                return
+
+            init_db()
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+            cursor.execute("SELECT verified FROM otp_verifications WHERE email = ?", (email,))
+            row = cursor.fetchone()
+            conn.close()
+
+            verified = bool(row and row[0] == 1)
+            self.send_json({"success": True, "email": email, "verified": verified})
+            return
+
         elif path == '/api/auth/register-company':
             current_data = get_db_state() or {}
             companies = current_data.get('companies', [])
@@ -193,6 +387,7 @@ class handler(BaseHTTPRequestHandler):
                 "ownerName": payload.get('ownerName'),
                 "mobile": mobile,
                 "email": email,
+                "emailVerified": True,
                 "address": payload.get('address') or 'Registered Business Address',
                 "password": payload.get('password'),
                 "logoUrl": payload.get('logoUrl', None),
@@ -226,4 +421,5 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.end_headers()
+
 

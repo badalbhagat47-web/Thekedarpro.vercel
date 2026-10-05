@@ -587,6 +587,9 @@ class AppController {
   }
 
   openCompanyRegistrationModal() {
+    this.regEmailVerified = false;
+    if (this.otpTimerInterval) clearInterval(this.otpTimerInterval);
+
     const modal = document.getElementById('modalOverlay');
     const content = document.getElementById('modalContent');
 
@@ -620,6 +623,7 @@ class AppController {
             <label class="block text-xs font-bold text-slate-700 mb-1">Company Name *</label>
             <input type="text" id="regCompName" required placeholder="e.g. Power Solutions" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
           </div>
+
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Owner / Contractor Name *</label>
@@ -627,24 +631,57 @@ class AppController {
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Mobile Number *</label>
-              <input type="text" id="regMobile" required placeholder="e.g. 9876543210" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+              <input type="text" id="regMobile" required placeholder="e.g. 9876543210" maxlength="10" 
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                     class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
-              <input type="email" id="regEmail" required placeholder="owner@company.com" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+
+          <!-- EMAIL WITH OTP VERIFICATION FIELD -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-xs font-bold text-slate-700">Company Email Address *</label>
+              <span id="emailVerifiedBadge" class="hidden text-[11px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <i class="fa-solid fa-circle-check"></i> Email Verified
+              </span>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
-              <div class="relative">
-                <input type="password" id="regPassword" required placeholder="••••••••" class="w-full p-2.5 pr-9 bg-slate-50 border rounded-xl text-xs">
-                <button type="button" onclick="AuthModule.togglePasswordVisibility('regPassword', 'eyeIconReg')" class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-xs p-1 focus:outline-none">
-                  <i id="eyeIconReg" class="fa-solid fa-eye"></i>
+            <div class="flex gap-2">
+              <input type="email" id="regEmail" required placeholder="owner@company.com" 
+                     class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+              <button type="button" id="btnSendEmailOtp" onclick="appController.sendCompanyEmailOtp()" 
+                      class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs whitespace-nowrap shadow-sm">
+                Send OTP
+              </button>
+            </div>
+            <p id="emailOtpTimerText" class="text-[11px] text-slate-500 mt-1"></p>
+
+            <!-- OTP INPUT GROUP (Hidden until Send OTP clicked) -->
+            <div id="emailOtpGroup" class="hidden mt-2 p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <label class="block text-xs font-bold text-slate-800">Enter 6-Digit OTP *</label>
+              <div class="flex gap-2">
+                <input type="text" id="regEmailOtp" placeholder="123456" maxlength="6" 
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
+                       class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-sm font-mono font-bold text-center tracking-widest text-slate-900">
+                <button type="button" id="btnVerifyEmailOtp" onclick="appController.verifyCompanyEmailOtp()" 
+                        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs whitespace-nowrap shadow-md">
+                  Verify OTP
                 </button>
               </div>
+              <div id="emailOtpStatusAlert" class="hidden text-xs font-bold p-2 rounded-lg"></div>
             </div>
           </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Password *</label>
+            <div class="relative">
+              <input type="password" id="regPassword" required placeholder="••••••••" class="w-full p-2.5 pr-9 bg-slate-50 border rounded-xl text-xs">
+              <button type="button" onclick="AuthModule.togglePasswordVisibility('regPassword', 'eyeIconReg')" class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-xs p-1 focus:outline-none">
+                <i id="eyeIconReg" class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="companyRegErrorAlert" class="hidden p-3 bg-rose-100 text-rose-800 rounded-xl text-xs font-bold"></div>
 
           <div class="pt-2 flex justify-end gap-2">
             <button type="button" onclick="appController.closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">Cancel</button>
@@ -655,6 +692,138 @@ class AppController {
     `;
 
     modal.classList.remove('hidden');
+  }
+
+  async sendCompanyEmailOtp() {
+    const emailInput = document.getElementById('regEmail');
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+    const statusAlert = document.getElementById('emailOtpStatusAlert');
+    const timerText = document.getElementById('emailOtpTimerText');
+    const otpGroup = document.getElementById('emailOtpGroup');
+    const btnSend = document.getElementById('btnSendEmailOtp');
+
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      alert("⚠️ Please enter a valid email address first.");
+      return;
+    }
+
+    btnSend.disabled = true;
+    btnSend.innerText = "Sending...";
+
+    try {
+      const res = await fetch('/api/otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        btnSend.disabled = false;
+        btnSend.innerText = "Send OTP";
+        if (data.cooldown) {
+          this.startOtpCooldownTimer(data.cooldown);
+        }
+        alert(data.error || "Failed to send OTP.");
+        return;
+      }
+
+      otpGroup.classList.remove('hidden');
+      if (statusAlert) {
+        statusAlert.classList.remove('hidden', 'bg-rose-100', 'text-rose-800', 'bg-emerald-100', 'text-emerald-800');
+        statusAlert.classList.add('bg-blue-100', 'text-blue-900');
+        statusAlert.innerText = `📩 6-Digit OTP sent to ${email} (Valid for 10 minutes).` + (data.dev_mode ? ` [DEV OTP: ${data.dev_otp}]` : '');
+      }
+
+      this.startOtpCooldownTimer(60);
+
+    } catch (e) {
+      btnSend.disabled = false;
+      btnSend.innerText = "Send OTP";
+      console.error("OTP send error:", e);
+      alert("❌ Could not connect to OTP service. Please try again.");
+    }
+  }
+
+  startOtpCooldownTimer(seconds) {
+    const btnSend = document.getElementById('btnSendEmailOtp');
+    const timerText = document.getElementById('emailOtpTimerText');
+    if (!btnSend) return;
+
+    let timeLeft = seconds;
+    btnSend.disabled = true;
+
+    if (this.otpTimerInterval) clearInterval(this.otpTimerInterval);
+
+    this.otpTimerInterval = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(this.otpTimerInterval);
+        btnSend.disabled = false;
+        btnSend.innerText = "Resend OTP";
+        if (timerText) timerText.innerText = "Did not receive OTP? Click Resend OTP.";
+      } else {
+        btnSend.innerText = `Resend (${timeLeft}s)`;
+        if (timerText) timerText.innerText = `OTP sent. You can resend OTP in ${timeLeft} seconds.`;
+        timeLeft--;
+      }
+    }, 1000);
+  }
+
+  async verifyCompanyEmailOtp() {
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const otp = document.getElementById('regEmailOtp').value.trim();
+    const statusAlert = document.getElementById('emailOtpStatusAlert');
+    const badge = document.getElementById('emailVerifiedBadge');
+    const emailInput = document.getElementById('regEmail');
+    const btnVerify = document.getElementById('btnVerifyEmailOtp');
+
+    if (!otp || otp.length !== 6) {
+      if (statusAlert) {
+        statusAlert.classList.remove('hidden', 'bg-blue-100', 'text-blue-900', 'bg-emerald-100', 'text-emerald-800');
+        statusAlert.classList.add('bg-rose-100', 'text-rose-800');
+        statusAlert.innerText = "⚠️ Please enter a 6-digit numeric OTP code.";
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, otp: otp })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        if (statusAlert) {
+          statusAlert.classList.remove('hidden', 'bg-blue-100', 'text-blue-900', 'bg-emerald-100', 'text-emerald-800');
+          statusAlert.classList.add('bg-rose-100', 'text-rose-800');
+          statusAlert.innerText = `❌ ${data.error || "Galat OTP. Please check and try again."}`;
+        }
+        return;
+      }
+
+      // Successful OTP verification
+      this.regEmailVerified = true;
+      if (statusAlert) {
+        statusAlert.classList.remove('hidden', 'bg-blue-100', 'text-blue-900', 'bg-rose-100', 'text-rose-800');
+        statusAlert.classList.add('bg-emerald-100', 'text-emerald-900');
+        statusAlert.innerText = "✓ Email address verified successfully!";
+      }
+
+      if (badge) badge.classList.remove('hidden');
+      if (emailInput) emailInput.readOnly = true;
+
+      const btnSend = document.getElementById('btnSendEmailOtp');
+      if (btnSend) btnSend.classList.add('hidden');
+      if (btnVerify) btnVerify.disabled = true;
+
+    } catch (e) {
+      console.error("OTP verification error:", e);
+      alert("❌ Could not connect to verification server.");
+    }
   }
 
   toggleRegGstField(isGst) {
@@ -685,8 +854,20 @@ class AppController {
     }
   }
 
-  submitCompanyRegistrationForm(e) {
+  async submitCompanyRegistrationForm(e) {
     e.preventDefault();
+
+    if (!this.regEmailVerified) {
+      const errEl = document.getElementById('companyRegErrorAlert');
+      if (errEl) {
+        errEl.innerText = "⚠️ Please verify your Company Email using 6-Digit OTP before registering.";
+        errEl.classList.remove('hidden');
+      } else {
+        alert("⚠️ Please verify your Company Email using 6-Digit OTP before registering.");
+      }
+      return;
+    }
+
     const isGst = document.querySelector('input[name="regGstType"]:checked').value === 'GST';
 
     const res = window.appStore.registerCompany({
@@ -698,6 +879,7 @@ class AppController {
       email: document.getElementById('regEmail').value,
       password: document.getElementById('regPassword').value
     });
+
 
     if (!res.success) {
       alert(res.error);

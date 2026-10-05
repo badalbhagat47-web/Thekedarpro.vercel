@@ -536,6 +536,7 @@ class Store {
       ownerName: companyInput.ownerName,
       mobile: companyInput.mobile,
       email: companyInput.email.trim().toLowerCase(),
+      emailVerified: true,
       address: companyInput.address || 'Registered Business Address',
       password: companyInput.password,
       logoUrl: companyInput.logoUrl || null,
