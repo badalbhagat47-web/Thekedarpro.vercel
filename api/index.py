@@ -4,6 +4,10 @@ import datetime
 import os
 import sqlite3
 import hashlib
+import ssl
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from urllib.parse import parse_qs, urlparse
 
 # Define persistent DB file path suitable for both local development and Vercel serverless environment
@@ -64,18 +68,18 @@ def send_real_email_otp(to_email, otp_code):
     gmail_user = os.environ.get("GMAIL_USER") or os.environ.get("SMTP_USER") or os.environ.get("EMAIL_USER") or os.environ.get("MAIL_USERNAME")
     gmail_pass = os.environ.get("GMAIL_APP_PASSWORD") or os.environ.get("SMTP_PASS") or os.environ.get("EMAIL_PASS") or os.environ.get("MAIL_PASSWORD")
 
-    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.environ.get("SMTP_PORT", 587))
-    smtp_user = gmail_user
-    smtp_pass = gmail_pass
-    smtp_from = os.environ.get("SMTP_FROM", smtp_user or "noreply@thekedar.com")
-
-    if not smtp_user or not smtp_pass:
+    if not gmail_user or not gmail_pass:
         if os.environ.get("ALLOW_TEST_MODE") == "1":
             print(f"[TEST MODE] Generated OTP for {to_email}: {otp_code}")
             return True, "SENT"
         print(f"[SMTP ERROR] Email credentials (GMAIL_USER/GMAIL_APP_PASSWORD) not configured on server.")
         return False, "SMTP credentials missing on Vercel. Please set GMAIL_USER and GMAIL_APP_PASSWORD in Vercel Project Settings."
+
+    # Clean user and password (remove any spaces in 16-character App Password)
+    smtp_user = gmail_user.strip()
+    smtp_pass = gmail_pass.replace(" ", "").strip()
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com").strip()
+    smtp_from = os.environ.get("SMTP_FROM", smtp_user).strip()
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f"🔒 {otp_code} is your THEKEDAR Verification Code"
@@ -98,39 +102,27 @@ def send_real_email_otp(to_email, otp_code):
     """
     msg.attach(MIMEText(html_body, 'html'))
 
-    # Try Port 587 (STARTTLS) first, fallback to Port 465 (SSL)
+    # Method 1: Try Port 465 SSL with explicit SSL Context
     try:
-        if smtp_port == 465:
-            server = smtplib.SMTP_SSL(smtp_host, 465, timeout=10)
-        else:
-            server = smtplib.SMTP(smtp_host, 587, timeout=10)
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-        
-        server.login(smtp_user, smtp_pass)
-        server.sendmail(smtp_from, [to_email], msg.as_string())
-        server.quit()
-        return True, "SENT"
-    except Exception as e1:
-        print(f"SMTP Primary Port {smtp_port} failed: {e1}. Trying alternate port...")
-        try:
-            alt_port = 465 if smtp_port != 465 else 587
-            if alt_port == 465:
-                server = smtplib.SMTP_SSL(smtp_host, 465, timeout=10)
-            else:
-                server = smtplib.SMTP(smtp_host, 587, timeout=10)
-                server.ehlo()
-                server.starttls()
-                server.ehlo()
-            
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_host, 465, context=context, timeout=12) as server:
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_from, [to_email], msg.as_string())
-            server.quit()
+        return True, "SENT"
+    except Exception as e1:
+        print(f"SMTP SSL (465) failed: {e1}. Trying STARTTLS (587)...")
+        try:
+            context = ssl.create_default_context()
+            with smtplib.SMTP(smtp_host, 587, timeout=12) as server:
+                server.ehlo()
+                server.starttls(context=context)
+                server.ehlo()
+                server.login(smtp_user, smtp_pass)
+                server.sendmail(smtp_from, [to_email], msg.as_string())
             return True, "SENT"
         except Exception as e2:
-            print(f"SMTP Alternate Port failed: {e2}")
-            return False, f"SMTP delivery failed: {e1} / {e2}"
+            print(f"SMTP STARTTLS (587) failed: {e2}")
+            return False, f"Gmail authentication error ({e1} / {e2}). Please verify GMAIL_APP_PASSWORD has no spaces and 2-Step Verification is active."
 
 def get_db_state():
     try:
