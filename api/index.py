@@ -672,17 +672,24 @@ class handler(BaseHTTPRequestHandler):
             })
             return
 
-        elif path == '/api/otp/send-phone':
-            phone = payload.get('phone', '').strip()
-            digits = ''.join(c for c in phone if c.isdigit())
-            if len(digits) != 10:
-                self.send_json({"success": False, "error": "Invalid phone number. Must be 10 digits."}, status=400)
+        elif path == '/api/whatsapp/verify-number':
+            mobile = payload.get('mobile', '').strip()
+            digits = ''.join(c for c in mobile if c.isdigit())
+            if not mobile or len(digits) < 7 or len(digits) > 15:
+                self.send_json({"success": False, "error": "Please enter a valid phone number."}, status=400)
                 return
+            
+            current_data = get_db_state() or {}
+            companies = current_data.get('companies', [])
+            for c in companies:
+                if c.get('mobile') == mobile or c.get('mobile') == digits:
+                    self.send_json({"success": False, "error": "This phone number is already registered with another company."}, status=400)
+                    return
+
             self.send_json({
                 "success": True,
-                "message": f"✓ OTP Sent to +91-{digits}",
-                "otpCode": "123456",
-                "cooldown": 60
+                "whatsappVerified": True,
+                "message": "✓ WhatsApp Verified"
             })
             return
 
