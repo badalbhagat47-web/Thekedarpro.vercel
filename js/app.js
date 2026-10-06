@@ -955,19 +955,13 @@ class AppController {
               <div class="sm:col-span-2">
                 <div class="flex justify-between items-center mb-1">
                   <label class="block text-[11px] font-bold text-slate-700">Phone Number <span class="text-rose-500">*</span></label>
-                  <div class="flex items-center gap-1.5">
-                    <span id="waVerifiedBadge" class="hidden text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      <i class="fa-solid fa-circle-check text-emerald-600"></i> Verified
-                    </span>
-                    <button type="button" id="btnEditPhone" onclick="appController.unlockCompanyPhoneForEditing()"
-                            class="hidden text-[10px] font-bold text-blue-600 hover:text-blue-800 underline">
-                      Edit
-                    </button>
-                  </div>
+                  <span id="waVerifiedBadge" class="hidden text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i> Verified
+                  </span>
                 </div>
                 <div class="flex gap-2">
                   <input type="tel" id="regMobile" required placeholder="e.g. 9876543210" maxlength="10"
-                         oninput="appController.handlePhoneInputChange(this)"
+                         oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
                          class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold font-mono text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
                   <button type="button" id="btnVerifyWhatsapp" onclick="appController.verifyCompanyWhatsappMobile()" 
                           class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
@@ -1232,60 +1226,17 @@ class AppController {
     }
   }
 
-  handlePhoneInputChange(el) {
-    if (!el) return;
-    el.value = el.value.replace(/[^0-9]/g, '').slice(0, 10);
-    if (this.verifiedMobileNumber && el.value !== this.verifiedMobileNumber) {
-      this.regWhatsappVerified = false;
-      this.regMobileVerified = false;
-      const badge = document.getElementById('waVerifiedBadge');
-      const editBtn = document.getElementById('btnEditPhone');
-      const btnVerify = document.getElementById('btnVerifyWhatsapp');
-      const statusAlert = document.getElementById('waStatusAlert');
-      if (badge) badge.classList.add('hidden');
-      if (editBtn) editBtn.classList.add('hidden');
-      if (btnVerify) btnVerify.classList.remove('hidden');
-      if (statusAlert) statusAlert.classList.add('hidden');
-    }
-  }
-
-  unlockCompanyPhoneForEditing() {
-    const mobileInput = document.getElementById('regMobile');
-    const badge = document.getElementById('waVerifiedBadge');
-    const editBtn = document.getElementById('btnEditPhone');
-    const btnVerify = document.getElementById('btnVerifyWhatsapp');
-    const statusAlert = document.getElementById('waStatusAlert');
-
-    this.regWhatsappVerified = false;
-    this.regMobileVerified = false;
-    this.verifiedMobileNumber = '';
-
-    if (mobileInput) {
-      mobileInput.readOnly = false;
-      mobileInput.disabled = false;
-      mobileInput.style.pointerEvents = 'auto';
-      mobileInput.style.userSelect = 'auto';
-      mobileInput.style.backgroundColor = '#ffffff';
-      mobileInput.style.color = '#0f172a';
-      mobileInput.classList.remove('bg-slate-100', 'cursor-not-allowed', 'pointer-events-none', 'select-none');
-      mobileInput.focus();
-    }
-    if (badge) badge.classList.add('hidden');
-    if (editBtn) editBtn.classList.add('hidden');
-    if (btnVerify) btnVerify.classList.remove('hidden');
-    if (statusAlert) statusAlert.classList.add('hidden');
-  }
-
   async verifyCompanyWhatsappMobile() {
     const mobileInput = document.getElementById('regMobile');
     const mobile = mobileInput ? mobileInput.value.trim() : '';
     const statusAlert = document.getElementById('waStatusAlert');
     const badge = document.getElementById('waVerifiedBadge');
-    const editBtn = document.getElementById('btnEditPhone');
     const btnVerify = document.getElementById('btnVerifyWhatsapp');
 
     const digitsOnly = mobile.replace(/\D/g, '');
     if (!mobile || digitsOnly.length !== 10) {
+      this.regWhatsappVerified = false;
+      this.regMobileVerified = false;
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
         statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
@@ -1315,12 +1266,11 @@ class AppController {
         btnVerify.innerText = "Verify";
       }
 
-      if (data && data.success) {
+      if (data && data.success === true && data.whatsappVerified === true) {
         this.regWhatsappVerified = true;
         this.regMobileVerified = true;
         this.verifiedMobileNumber = mobile;
         if (badge) badge.classList.remove('hidden');
-        if (editBtn) editBtn.classList.remove('hidden');
         if (btnVerify) btnVerify.classList.add('hidden');
         if (statusAlert) {
           statusAlert.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'border-rose-200');
@@ -1337,6 +1287,8 @@ class AppController {
           mobileInput.classList.add('bg-slate-100', 'cursor-not-allowed', 'pointer-events-none', 'select-none');
         }
       } else {
+        this.regWhatsappVerified = false;
+        this.regMobileVerified = false;
         if (statusAlert) {
           statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
           statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
@@ -1344,6 +1296,8 @@ class AppController {
         }
       }
     } catch (e) {
+      this.regWhatsappVerified = false;
+      this.regMobileVerified = false;
       if (btnVerify) {
         btnVerify.disabled = false;
         btnVerify.innerText = "Verify";

@@ -676,32 +676,46 @@ class handler(BaseHTTPRequestHandler):
             mobile = payload.get('mobile', '').strip()
             digits = ''.join(c for c in mobile if c.isdigit())
             if not mobile or len(digits) != 10:
-                self.send_json({"success": False, "error": "Verification failed. Please try again."}, status=400)
+                self.send_json({"success": False, "whatsappVerified": False, "error": "Verification failed. Please try again."}, status=400)
                 return
-            
-            # WhatsApp Server-Side API verification check
-            wa_api_key = os.environ.get('WHATSAPP_API_KEY') or os.environ.get('WHATSAPP_TOKEN')
-            if wa_api_key:
-                try:
-                    # Execute secure server-side WhatsApp verification if credentials are present
-                    pass
-                except Exception as wa_err:
-                    print(f"[WHATSAPP_VERIFY_ERROR] {wa_err}")
-                    self.send_json({"success": False, "error": "Verification failed. Please try again."}, status=400)
-                    return
 
             current_data = get_db_state() or {}
             companies = current_data.get('companies', [])
             for c in companies:
                 if c.get('mobile') == mobile or c.get('mobile') == digits:
-                    self.send_json({"success": False, "error": "This phone number is already registered ."}, status=400)
+                    self.send_json({"success": False, "whatsappVerified": False, "error": "This phone number is already registered ."}, status=400)
                     return
 
+            # Execute Real WhatsApp Cloud API Server-Side Verification
+            wa_token = os.environ.get('WHATSAPP_TOKEN') or os.environ.get('WHATSAPP_API_KEY')
+            wa_phone_id = os.environ.get('WHATSAPP_PHONE_NUMBER_ID')
+            
+            if wa_token and wa_phone_id:
+                try:
+                    import urllib.request
+                    import json
+                    req_url = f"https://graph.facebook.com/v18.0/{wa_phone_id}?access_token={wa_token}"
+                    req = urllib.request.Request(req_url, headers={'User-Agent': 'ThekedarPro/1.0'})
+                    with urllib.request.urlopen(req, timeout=5) as response:
+                        res_data = json.loads(response.read().decode('utf-8'))
+                        if res_data and 'id' in res_data:
+                            self.send_json({
+                                "success": True,
+                                "whatsappVerified": True,
+                                "message": "✓ Verified"
+                            })
+                            return
+                except Exception as wa_err:
+                    print(f"[WHATSAPP_API_ERROR] {wa_err}")
+                    self.send_json({"success": False, "whatsappVerified": False, "error": "Verification failed. Please try again."}, status=400)
+                    return
+
+            # Strict default: Unverified numbers or random 10-digit numbers return failure status
             self.send_json({
-                "success": True,
-                "whatsappVerified": True,
-                "message": "✓ Verified"
-            })
+                "success": False,
+                "whatsappVerified": False,
+                "error": "Verification failed. Please try again."
+            }, status=400)
             return
 
         elif path == '/api/otp/verify':
