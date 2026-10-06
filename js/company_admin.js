@@ -162,7 +162,84 @@ const CompanyAdminModule = {
             <button onclick="appController.openCreateProfileModal()" class="btn-3d-amber px-3.5 py-1.5 text-slate-950 text-xs font-black rounded-xl">${t('addWorkerProfile')}</button>
           </div>
 
-          <div class="overflow-x-auto w-full border border-slate-200 dark:border-slate-800 rounded-2xl">
+          <!-- MOBILE CARDS VIEW (<768px) -->
+          <div class="mobile-only-view flex-col gap-3">
+            ${activeWorkers.map(w => {
+              const log = attendanceMap[w.id];
+              let status = 'PENDING';
+              let checkInTime = '—';
+              let checkOutTime = '—';
+              let salaryText = '—';
+              let locationText = '—';
+
+              if (log) {
+                checkInTime = log.checkIn || '—';
+                checkOutTime = log.checkOut || '—';
+                status = log.status || 'PRESENT';
+                locationText = log.workLocation ? `📍 ${log.workLocation} ${log.workNote ? `(${log.workNote})` : ''}` : '—';
+              }
+
+              if (status === 'PENDING' && isPastClosing) {
+                status = 'ABSENT';
+              }
+
+              let statusBadge = '';
+              if (status === 'PRESENT' || status === 'FULL_DAY') {
+                statusBadge = `<span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 rounded-lg text-[10px] font-black uppercase flex items-center gap-1">FULL DAY</span>`;
+                salaryText = `₹${w.dailyWage}`;
+              } else if (status === 'HALF_DAY') {
+                statusBadge = `<span class="px-2.5 py-1 bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 rounded-lg text-[10px] font-black uppercase flex items-center gap-1">HALF DAY</span>`;
+                salaryText = `₹${w.dailyWage / 2}`;
+              } else if (status === 'PENDING') {
+                statusBadge = `<span class="px-2.5 py-1 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 rounded-lg text-[10px] font-black uppercase flex items-center gap-1">PENDING</span>`;
+                salaryText = `—`;
+              } else {
+                statusBadge = `<span class="px-2.5 py-1 bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 rounded-lg text-[10px] font-black uppercase flex items-center gap-1">ABSENT</span>`;
+                salaryText = `₹0`;
+              }
+
+              return `
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <h4 class="font-extrabold text-slate-900 dark:text-white text-sm hover:text-amber-500 cursor-pointer" onclick="appController.navigate('worker-profile', '${w.id}')">${w.fullName}</h4>
+                      <p class="text-xs text-slate-400 font-medium">${w.jobRole || 'Worker'} (${w.workerId})</p>
+                    </div>
+                    ${statusBadge}
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-2 text-xs py-2 border-y border-slate-200 dark:border-slate-800/80 text-center">
+                    <div>
+                      <span class="text-[10px] text-slate-400 font-bold uppercase block">In</span>
+                      <span class="font-mono font-bold text-slate-800 dark:text-slate-200">${checkInTime}</span>
+                    </div>
+                    <div>
+                      <span class="text-[10px] text-slate-400 font-bold uppercase block">Out</span>
+                      <span class="font-mono font-bold text-slate-800 dark:text-slate-200">${checkOutTime}</span>
+                    </div>
+                    <div>
+                      <span class="text-[10px] text-slate-400 font-bold uppercase block">Earned</span>
+                      <span class="font-extrabold text-emerald-600 dark:text-emerald-400">${salaryText}</span>
+                    </div>
+                  </div>
+
+                  ${locationText !== '—' ? `<p class="text-xs text-slate-500 font-medium italic">${locationText}</p>` : ''}
+
+                  <div class="flex items-center justify-between gap-2 pt-1">
+                    <button onclick="CompanyAdminModule.toggleWorkerAttendanceToday('${w.id}')" class="flex-1 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black rounded-xl transition">
+                      Mark / Switch Status
+                    </button>
+                    <button onclick="appController.navigate('worker-profile', '${w.id}')" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-xl">
+                      View
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- DESKTOP TABLE VIEW (>=768px) -->
+          <div class="desktop-only-view overflow-x-auto w-full border border-slate-200 dark:border-slate-800 rounded-2xl">
             <table class="w-full custom-table text-left border-collapse min-w-[1050px]">
               <thead>
                 <tr class="text-[11px] font-black uppercase text-slate-500 bg-slate-100/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800 tracking-wider">
@@ -932,7 +1009,68 @@ const CompanyAdminModule = {
             </h3>
           </div>
 
-          <div class="overflow-x-auto w-full border border-slate-200 dark:border-slate-800 rounded-2xl">
+          <!-- MOBILE CARDS VIEW (<768px) -->
+          <div class="mobile-only-view flex-col gap-3">
+            ${activeWorkers.length > 0 ? activeWorkers.map(w => {
+              const attLogs = window.appStore.getWorkerMonthlyAttendance(w.id, selectedMonth);
+              const advLogs = window.appStore.getWorkerAdvancesForMonth(w.id, selectedMonth);
+              const sal = window.SalaryEngine.calculateMonthlySalary(w, company, attLogs, advLogs, selectedMonth);
+              const netBal = sal.netSalary;
+
+              let statusPill = `<span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 rounded-lg text-[10px] font-black uppercase inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-500"></i> ACTIVE</span>`;
+              if (w.status === 'PENDING') {
+                statusPill = `<span class="px-2.5 py-1 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 rounded-lg text-[10px] font-black uppercase inline-flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> PENDING</span>`;
+              }
+
+              return `
+                <div class="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3">
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <div class="font-mono font-black text-amber-600 dark:text-amber-400 text-xs">${w.workerId || w.id}</div>
+                      <h4 class="font-extrabold text-slate-900 dark:text-white text-sm hover:text-amber-500 cursor-pointer" onclick="appController.navigate('worker-profile', '${w.id}')">${w.fullName}</h4>
+                      <p class="text-xs text-slate-400 font-medium">${w.jobRole || 'Worker'} • ${w.department || 'General'}</p>
+                    </div>
+                    ${statusPill}
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2 text-xs py-2 border-y border-slate-200 dark:border-slate-800/80">
+                    <div>
+                      <span class="text-[10px] text-slate-400 font-bold uppercase block">Mobile</span>
+                      <span class="font-mono font-bold text-slate-800 dark:text-slate-200"><a href="tel:${w.mobile}" class="hover:underline">${w.mobile}</a></span>
+                    </div>
+                    <div>
+                      <span class="text-[10px] text-slate-400 font-bold uppercase block">Monthly Balance</span>
+                      <span class="font-extrabold ${netBal >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600'}">₹${netBal.toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between gap-2 pt-1">
+                    <div class="flex items-center gap-1.5">
+                      <button onclick="appController.navigate('worker-profile', '${w.id}')" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-eye text-xs"></i> View
+                      </button>
+                      <button onclick="CompanyAdminModule.openEditWorkerModal('${w.id}')" class="px-3 py-1.5 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-pen-to-square text-xs"></i> Edit
+                      </button>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      ${w.status === 'PENDING' ? `
+                        <button onclick="CompanyAdminModule.toggleWorkerPending('${w.id}')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold">Approve</button>
+                      ` : `
+                        <button onclick="CompanyAdminModule.toggleWorkerPending('${w.id}')" title="Set Status to PENDING" class="px-2.5 py-1.5 bg-amber-500 text-slate-950 rounded-xl text-xs font-bold"><i class="fa-solid fa-user-clock text-xs"></i></button>
+                      `}
+                      <button onclick="CompanyAdminModule.confirmDeleteWorker('${w.id}')" title="Delete" class="px-2.5 py-1.5 bg-rose-600 text-white rounded-xl text-xs font-bold"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('') : `
+              <div class="text-center py-6 text-slate-400 text-xs font-semibold">No active workers matching "${this.workerSearchQuery || ''}" found.</div>
+            `}
+          </div>
+
+          <!-- DESKTOP TABLE VIEW (>=768px) -->
+          <div class="desktop-only-view overflow-x-auto w-full border border-slate-200 dark:border-slate-800 rounded-2xl">
             <table class="w-full custom-table text-left border-collapse min-w-[950px]">
               <thead>
                 <tr class="text-[11px] font-black uppercase text-slate-500 bg-slate-100/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800 tracking-wider">
