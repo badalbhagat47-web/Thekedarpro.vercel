@@ -956,7 +956,7 @@ class AppController {
                 <div class="flex justify-between items-center mb-1">
                   <label class="block text-[11px] font-bold text-slate-700">Phone Number <span class="text-rose-500">*</span></label>
                   <span id="waVerifiedBadge" class="hidden text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    <i class="fa-solid fa-circle-check text-emerald-600"></i> WhatsApp Verified
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i> Verified
                   </span>
                 </div>
                 <div class="flex gap-2">
@@ -964,8 +964,8 @@ class AppController {
                          oninput="this.value = this.value.replace(/[^0-9+]/g, '').slice(0, 16)"
                          class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold font-mono text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
                   <button type="button" id="btnVerifyWhatsapp" onclick="appController.verifyCompanyWhatsappMobile()" 
-                          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition flex items-center gap-1.5">
-                    <i class="fa-brands fa-whatsapp text-sm"></i> Verify WhatsApp
+                          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
+                    Verify
                   </button>
                 </div>
                 <div id="waStatusAlert" class="hidden text-xs font-bold mt-1.5 p-2 rounded-lg"></div>
@@ -1238,9 +1238,9 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
         statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
-        statusAlert.innerText = "Please enter a valid phone number.";
+        statusAlert.innerText = "Please try again.";
       } else {
-        alert("Please enter a valid phone number.");
+        alert("Please try again.");
       }
       return;
     }
@@ -1261,7 +1261,7 @@ class AppController {
 
       if (btnVerify) {
         btnVerify.disabled = false;
-        btnVerify.innerHTML = `<i class="fa-brands fa-whatsapp text-sm"></i> Verify WhatsApp`;
+        btnVerify.innerText = "Verify";
       }
 
       if (data && data.success) {
@@ -1272,26 +1272,26 @@ class AppController {
         if (statusAlert) {
           statusAlert.classList.remove('hidden', 'bg-rose-50', 'text-rose-700', 'border-rose-200');
           statusAlert.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
-          statusAlert.innerText = "✓ WhatsApp Verified";
+          statusAlert.innerText = "✓ Verified";
         }
         if (mobileInput) mobileInput.readOnly = true;
       } else {
         if (statusAlert) {
           statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
           statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
-          statusAlert.innerText = (data && data.error) || "WhatsApp verification could not be completed. Please try again.";
+          statusAlert.innerText = "Please try again.";
         }
       }
     } catch (e) {
       if (btnVerify) {
         btnVerify.disabled = false;
-        btnVerify.innerHTML = `<i class="fa-brands fa-whatsapp text-sm"></i> Verify WhatsApp`;
+        btnVerify.innerText = "Verify";
       }
-      console.error("WhatsApp verification error:", e);
+      console.error("Verification error:", e);
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
         statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
-        statusAlert.innerText = "WhatsApp verification could not be completed. Please try again.";
+        statusAlert.innerText = "Please try again.";
       }
     }
   }
