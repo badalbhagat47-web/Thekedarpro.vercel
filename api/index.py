@@ -675,7 +675,7 @@ class handler(BaseHTTPRequestHandler):
         elif path == '/api/whatsapp/verify-number':
             mobile = payload.get('mobile', '').strip()
             digits = ''.join(c for c in mobile if c.isdigit())
-            if not mobile or len(digits) < 7 or len(digits) > 15:
+            if not mobile or len(digits) != 10:
                 self.send_json({"success": False, "error": "Please try again."}, status=400)
                 return
             

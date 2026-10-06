@@ -960,8 +960,8 @@ class AppController {
                   </span>
                 </div>
                 <div class="flex gap-2">
-                  <input type="tel" id="regMobile" required placeholder="e.g. +919876543210 or 9876543210" maxlength="16"
-                         oninput="this.value = this.value.replace(/[^0-9+]/g, '').slice(0, 16)"
+                  <input type="tel" id="regMobile" required placeholder="e.g. 9876543210" maxlength="10"
+                         oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
                          class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold font-mono text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
                   <button type="button" id="btnVerifyWhatsapp" onclick="appController.verifyCompanyWhatsappMobile()" 
                           class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
@@ -1234,7 +1234,7 @@ class AppController {
     const btnVerify = document.getElementById('btnVerifyWhatsapp');
 
     const digitsOnly = mobile.replace(/\D/g, '');
-    if (!mobile || digitsOnly.length < 7 || digitsOnly.length > 15) {
+    if (!mobile || digitsOnly.length !== 10) {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
         statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
@@ -1421,13 +1421,13 @@ class AppController {
     const mobile = mobileInput ? mobileInput.value.trim() : '';
 
     const digitsOnly = mobile.replace(/\D/g, '');
-    if (!mobile || digitsOnly.length < 7 || digitsOnly.length > 15) {
+    if (!mobile || digitsOnly.length !== 10) {
       const errEl = document.getElementById('companyRegErrorAlert');
       if (errEl) {
-        errEl.innerText = "⚠️ Please enter a valid Phone Number.";
+        errEl.innerText = "⚠️ Please enter a valid 10-digit Phone Number.";
         errEl.classList.remove('hidden');
       } else {
-        alert("⚠️ Please enter a valid Phone Number.");
+        alert("⚠️ Please enter a valid 10-digit Phone Number.");
       }
       return;
     }
