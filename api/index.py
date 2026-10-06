@@ -672,6 +672,20 @@ class handler(BaseHTTPRequestHandler):
             })
             return
 
+        elif path == '/api/otp/send-phone':
+            phone = payload.get('phone', '').strip()
+            digits = ''.join(c for c in phone if c.isdigit())
+            if len(digits) != 10:
+                self.send_json({"success": False, "error": "Invalid phone number. Must be 10 digits."}, status=400)
+                return
+            self.send_json({
+                "success": True,
+                "message": f"✓ OTP Sent to +91-{digits}",
+                "otpCode": "123456",
+                "cooldown": 60
+            })
+            return
+
         elif path == '/api/otp/verify':
             email = payload.get('email', '').strip().lower()
             otp = payload.get('otp', '').strip()
