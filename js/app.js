@@ -888,13 +888,13 @@ class AppController {
         <form onsubmit="appController.submitCompanyRegistrationForm(event)" class="space-y-4">
           <!-- REGISTRATION TYPE SEGMENTED TOGGLE -->
           <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100 rounded-2xl text-xs font-bold">
-            <label id="lblGstOption" class="flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold">
-              <input type="radio" name="regGstType" value="GST" checked class="hidden" onchange="appController.toggleRegGstField(true)">
+            <label id="lblGstOption" onclick="appController.toggleRegGstField(true)" class="flex items-center justify-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold select-none">
+              <input type="radio" id="radioGstTypeGst" name="regGstType" value="GST" checked class="hidden">
               <i class="fa-solid fa-building-circle-check"></i>
               <span>GST Registered</span>
             </label>
-            <label id="lblNonGstOption" class="flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700">
-              <input type="radio" name="regGstType" value="NON_GST" class="hidden" onchange="appController.toggleRegGstField(false)">
+            <label id="lblNonGstOption" onclick="appController.toggleRegGstField(false)" class="flex items-center justify-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700 font-bold select-none">
+              <input type="radio" id="radioGstTypeNonGst" name="regGstType" value="NON_GST" class="hidden">
               <i class="fa-solid fa-store"></i>
               <span>Non-GST</span>
             </label>
@@ -1094,22 +1094,26 @@ class AppController {
     const alertEl = document.getElementById('gstinStatusAlert');
     const lblGst = document.getElementById('lblGstOption');
     const lblNonGst = document.getElementById('lblNonGstOption');
+    const radioGst = document.getElementById('radioGstTypeGst');
+    const radioNonGst = document.getElementById('radioGstTypeNonGst');
 
     if (isGst) {
+      if (radioGst) radioGst.checked = true;
       if (lblGst) {
-        lblGst.className = "flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold";
+        lblGst.className = "flex items-center justify-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold select-none";
       }
       if (lblNonGst) {
-        lblNonGst.className = "flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700 font-bold";
+        lblNonGst.className = "flex items-center justify-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700 font-bold select-none";
       }
       if (group) group.classList.remove('hidden');
       if (gstinInput) gstinInput.required = true;
     } else {
+      if (radioNonGst) radioNonGst.checked = true;
       if (lblGst) {
-        lblGst.className = "flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700 font-bold";
+        lblGst.className = "flex items-center justify-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700 font-bold select-none";
       }
       if (lblNonGst) {
-        lblNonGst.className = "flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold";
+        lblNonGst.className = "flex items-center justify-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold select-none";
       }
       if (group) group.classList.add('hidden');
       if (alertEl) alertEl.innerHTML = '';
