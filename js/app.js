@@ -927,31 +927,31 @@ class AppController {
               <div class="sm:col-span-2">
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Company / Legal Name <span class="text-rose-500">*</span></label>
                 <input type="text" id="regCompName" required placeholder="e.g. Power Solutions" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-extrabold text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Trade Name</label>
                 <input type="text" id="regTradeName" placeholder="e.g. Power Services" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">PAN Number</label>
                 <input type="text" id="regPan" placeholder="e.g. ASRPB9910D" maxlength="10" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold uppercase focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono font-black uppercase text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Business / Entity Type</label>
                 <input type="text" id="regBusinessType" placeholder="e.g. Proprietorship / LLP / Pvt Ltd" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">GST Registration Date</label>
                 <input type="text" id="regGstRegDate" placeholder="DD/MM/YYYY" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
             </div>
           </div>
@@ -966,14 +966,14 @@ class AppController {
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Owner / Contact Person <span class="text-rose-500">*</span></label>
                 <input type="text" id="regOwnerName" required placeholder="e.g. Rajesh Sharma" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Phone Number <span class="text-rose-500">*</span></label>
                 <input type="tel" id="regMobile" required placeholder="e.g. +91 9876543210" maxlength="18"
                        oninput="this.value = this.value.replace(/[^0-9+\s-]/g, '').slice(0, 18)"
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold font-mono focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold font-mono text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div class="sm:col-span-2">
@@ -985,7 +985,7 @@ class AppController {
                 </div>
                 <div class="flex gap-2">
                   <input type="email" id="regEmail" required placeholder="owner@company.com" 
-                         class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                         class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
                   <button type="button" id="btnSendEmailOtp" onclick="appController.sendCompanyEmailOtp()" 
                           class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
                     Send OTP
@@ -1020,31 +1020,31 @@ class AppController {
               <div class="sm:col-span-2">
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Address Line 1</label>
                 <input type="text" id="regAddrLine1" placeholder="Plot / Street / Premises details" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Address Line 2 / Landmark</label>
                 <input type="text" id="regAddrLine2" placeholder="Locality / Landmark" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">City / District</label>
                 <input type="text" id="regCity" placeholder="e.g. New Delhi" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">State</label>
                 <input type="text" id="regState" placeholder="e.g. Delhi / NCR" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Pincode</label>
                 <input type="text" id="regPincode" placeholder="e.g. 110001" maxlength="10" 
-                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold focus:border-blue-500 focus:outline-none transition">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
             </div>
           </div>
@@ -1385,24 +1385,35 @@ class AppController {
 
       if (badgeActive) badgeActive.classList.remove('hidden');
 
-      // Auto-fill ONLY real available GST API fields into form inputs
-      if (compNameInput && legalName) compNameInput.value = legalName;
-      if (tradeNameInput && tradeName) tradeNameInput.value = tradeName;
-      if (panInput && pan) panInput.value = pan;
-      if (businessTypeInput && bType) businessTypeInput.value = bType;
-      if (regDateInput && regDate) regDateInput.value = regDate;
-      if (addr1Input && addr1) addr1Input.value = addr1;
-      if (addr2Input && addr2) addr2Input.value = addr2;
-      if (cityInput && city) cityInput.value = city;
-      if (stateInput && stateName) stateInput.value = stateName;
-      if (pincodeInput && pincode) pincodeInput.value = pincode;
+      const fillInput = (el, val, isBold = true) => {
+        if (!el) return;
+        el.value = val || '';
+        if (val) {
+          el.style.color = '#0f172a'; // Deep slate black text
+          el.style.webkitTextFillColor = '#0f172a'; // Overrides WebKit text dimming
+          el.style.fontWeight = isBold ? '800' : '700';
+          el.style.backgroundColor = '#ffffff';
+          el.classList.add('text-slate-900', 'font-extrabold');
+        }
+      };
+
+      fillInput(compNameInput, legalName, true);
+      fillInput(tradeNameInput, tradeName, true);
+      fillInput(panInput, pan, true);
+      fillInput(businessTypeInput, bType, true);
+      fillInput(regDateInput, regDate, true);
+      fillInput(addr1Input, addr1, true);
+      fillInput(addr2Input, addr2, true);
+      fillInput(cityInput, city, true);
+      fillInput(stateInput, stateName, true);
+      fillInput(pincodeInput, pincode, true);
 
       alertEl.innerHTML = `<span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>GST Verified:</strong> ${legalName || gstin} (${bType} • ${stateName})</span>`;
       alertEl.className = "text-[11px] text-emerald-800 font-extrabold mt-1 bg-emerald-50/90 p-2.5 rounded-xl border border-emerald-200 block shadow-sm";
 
       if (compNameInput) {
-        compNameInput.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50/50');
-        setTimeout(() => compNameInput.classList.remove('ring-2', 'ring-emerald-500', 'bg-emerald-50/50'), 2500);
+        compNameInput.classList.add('ring-2', 'ring-emerald-500');
+        setTimeout(() => compNameInput.classList.remove('ring-2', 'ring-emerald-500'), 2500);
       }
     } else {
       const errMsg = (res && res.error) || (res && res.message) || "GST details could not be verified. Please check the GSTIN and try again.";
