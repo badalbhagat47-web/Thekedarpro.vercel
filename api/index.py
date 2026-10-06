@@ -406,46 +406,77 @@ class handler(BaseHTTPRequestHandler):
                 "07ASRPB9910D1ZR": {
                     "legalName": "ASR POWER & CONTRACTING SERVICES",
                     "tradeName": "ASR POWER SERVICES",
+                    "pan": "ASRPB9910D",
                     "gstin": "07ASRPB9910D1ZR",
                     "gstStatus": "ACTIVE",
                     "businessType": "Proprietorship",
+                    "registrationDate": "15/08/2019",
+                    "addressLine1": "Plot No. 42, Okhla Industrial Area Phase 3",
+                    "addressLine2": "Near Govindpuri Metro Station",
+                    "city": "South Delhi",
                     "state": "Delhi / NCR",
-                    "pincode": "110001"
+                    "country": "India",
+                    "pincode": "110020"
                 },
                 "06AEBFS9815A1Z8": {
                     "legalName": "HARYANA LOGISTICS & INFRASTRUCTURE LLP",
                     "tradeName": "HARYANA LOGISTICS & INFRASTRUCTURE LLP",
+                    "pan": "AEBFS9815A",
                     "gstin": "06AEBFS9815A1Z8",
                     "gstStatus": "ACTIVE",
                     "businessType": "Limited Liability Partnership",
+                    "registrationDate": "12/05/2018",
+                    "addressLine1": "Tower B, DLF Cyber City, Sector 24",
+                    "addressLine2": "DLF Phase 3",
+                    "city": "Gurugram",
                     "state": "Haryana",
-                    "pincode": "122001"
+                    "country": "India",
+                    "pincode": "122002"
                 },
                 "09AAOFV9611N1Z9": {
                     "legalName": "VRY LOGISTIC PARK LLP",
                     "tradeName": "VRY LOGISTIC PARK LLP",
+                    "pan": "AAOFV9611N",
                     "gstin": "09AAOFV9611N1Z9",
                     "gstStatus": "ACTIVE",
                     "businessType": "Limited Liability Partnership",
+                    "registrationDate": "05/01/2021",
+                    "addressLine1": "Plot 18, Yamuna Expressway Industrial Development Area",
+                    "addressLine2": "Greater Noida Phase 2",
+                    "city": "Gautam Buddha Nagar",
                     "state": "Uttar Pradesh",
-                    "pincode": "203205",
-                    "natureOfBusiness": "Leasing Business"
+                    "country": "India",
+                    "pincode": "203205"
                 },
                 "07AAACR8821F1Z5": {
                     "legalName": "RLV POWER SOLUTION",
                     "tradeName": "RLV POWER SOLUTION",
+                    "pan": "AAACR8821F",
                     "gstin": "07AAACR8821F1Z5",
                     "gstStatus": "ACTIVE",
                     "businessType": "Proprietorship",
-                    "state": "Delhi / NCR"
+                    "registrationDate": "10/11/2020",
+                    "addressLine1": "A-14, Connaught Place",
+                    "addressLine2": "Inner Circle",
+                    "city": "New Delhi",
+                    "state": "Delhi / NCR",
+                    "country": "India",
+                    "pincode": "110001"
                 },
                 "27AAACR1234F1Z1": {
                     "legalName": "MAHARASHTRA ELECTRICAL WORKS",
                     "tradeName": "MAHA POWER SERVICES",
+                    "pan": "AAACR1234F",
                     "gstin": "27AAACR1234F1Z1",
                     "gstStatus": "ACTIVE",
                     "businessType": "Partnership",
-                    "state": "Maharashtra"
+                    "registrationDate": "01/04/2017",
+                    "addressLine1": "Plot 88, MIDC Industrial Area, Andheri East",
+                    "addressLine2": "Opp. SEEPZ Gate 1",
+                    "city": "Mumbai",
+                    "state": "Maharashtra",
+                    "country": "India",
+                    "pincode": "400093"
                 }
             }
 
@@ -475,10 +506,12 @@ class handler(BaseHTTPRequestHandler):
                     "data": {
                         "legalName": matching_comp.get('legalName') or matching_comp.get('name'),
                         "tradeName": matching_comp.get('name'),
+                        "pan": gstin_raw[2:12],
                         "gstin": gstin_raw,
                         "gstStatus": matching_comp.get('gstStatus', 'ACTIVE'),
                         "businessType": matching_comp.get('businessType', 'Proprietorship'),
-                        "state": matching_comp.get('address', 'Delhi / NCR')
+                        "state": matching_comp.get('address', 'Delhi / NCR'),
+                        "country": "India"
                     }
                 })
                 return
@@ -503,6 +536,7 @@ class handler(BaseHTTPRequestHandler):
             st_code = gstin_raw[:2]
             pan_type = gstin_raw[5] if len(gstin_raw) > 5 else 'P'
             pan_code = gstin_raw[2:7] # e.g. ASRPB for 07ASRPB9910D1ZR
+            extracted_pan = gstin_raw[2:12] if len(gstin_raw) >= 12 else ""
             st_name = state_codes.get(st_code, "India")
             ent_type = entity_types.get(pan_type, "Registered Enterprise")
 
@@ -518,10 +552,12 @@ class handler(BaseHTTPRequestHandler):
                 "data": {
                     "legalName": generated_legal_name,
                     "tradeName": generated_legal_name,
+                    "pan": extracted_pan,
                     "gstin": gstin_raw,
                     "gstStatus": "ACTIVE",
                     "businessType": ent_type,
-                    "state": st_name
+                    "state": st_name,
+                    "country": "India"
                 }
             })
             return

@@ -874,18 +874,18 @@ class AppController {
     const content = document.getElementById('modalContent');
 
     content.innerHTML = `
-      <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-100 shadow-2xl max-w-lg w-full mx-auto space-y-4">
+      <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-100 shadow-2xl max-w-xl w-full mx-auto space-y-4 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b border-slate-100 pb-3">
           <div>
             <h3 class="text-xl font-black text-slate-900 brand-font tracking-tight">Register Contractor Company</h3>
-            <p class="text-xs text-slate-500 font-medium">Create your company workspace in seconds</p>
+            <p class="text-xs text-slate-500 font-medium">Complete company onboarding details</p>
           </div>
           <button onclick="appController.closeModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center transition">
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
 
-        <form onsubmit="appController.submitCompanyRegistrationForm(event)" class="space-y-3.5">
+        <form onsubmit="appController.submitCompanyRegistrationForm(event)" class="space-y-4">
           <!-- REGISTRATION TYPE SEGMENTED TOGGLE -->
           <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100 rounded-2xl text-xs font-bold">
             <label id="lblGstOption" class="flex items-center justify-center gap-2 p-2 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold">
@@ -901,10 +901,10 @@ class AppController {
           </div>
 
           <!-- GSTIN INPUT ROW -->
-          <div id="gstinFieldGroup" class="space-y-1">
-            <label id="gstinLabel" class="block text-xs font-bold text-slate-700">GSTIN Number <span class="text-rose-500">*</span></label>
+          <div id="gstinFieldGroup" class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700">GSTIN Number <span class="text-rose-500">*</span></label>
             <div class="flex gap-2">
-              <input type="text" id="regGstin" required placeholder="e.g. 07AAACR8821F1Z5" 
+              <input type="text" id="regGstin" required placeholder="e.g. 07ASRPB9910D1ZR" 
                      class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold uppercase focus:bg-white focus:border-blue-500 focus:outline-none transition">
               <button type="button" onclick="appController.verifyGstinClick()" 
                       class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition flex items-center gap-1.5">
@@ -914,72 +914,156 @@ class AppController {
             <p id="gstinStatusAlert" class="text-[11px] text-slate-500 mt-1"></p>
           </div>
 
-          <!-- COMPANY NAME -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Company Name <span class="text-rose-500">*</span></label>
-            <input type="text" id="regCompName" required placeholder="e.g. Power Solutions" 
-                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-blue-500 focus:outline-none transition">
+          <!-- SECTION 1: COMPANY DETAILS -->
+          <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-2xl space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-200/60 pb-2">
+              <h4 class="text-xs font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-building text-blue-600"></i> Company Details
+              </h4>
+              <span id="badgeGstActive" class="hidden text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">ACTIVE</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Company / Legal Name <span class="text-rose-500">*</span></label>
+                <input type="text" id="regCompName" required placeholder="e.g. Power Solutions" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Trade Name</label>
+                <input type="text" id="regTradeName" placeholder="e.g. Power Services" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">PAN Number</label>
+                <input type="text" id="regPan" placeholder="e.g. ASRPB9910D" maxlength="10" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold uppercase focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Business / Entity Type</label>
+                <input type="text" id="regBusinessType" placeholder="e.g. Proprietorship / LLP / Pvt Ltd" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">GST Registration Date</label>
+                <input type="text" id="regGstRegDate" placeholder="DD/MM/YYYY" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+            </div>
           </div>
 
-          <!-- BALANCED 2-COLUMN ROW FOR OWNER NAME & PHONE -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Owner / Contractor Name <span class="text-rose-500">*</span></label>
-              <input type="text" id="regOwnerName" required placeholder="e.g. Rajesh Sharma" 
-                     class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-blue-500 focus:outline-none transition">
-            </div>
+          <!-- SECTION 2: CONTACT DETAILS -->
+          <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-2xl space-y-3">
+            <h4 class="text-xs font-extrabold text-slate-800 border-b border-slate-200/60 pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-address-book text-blue-600"></i> Contact Details
+            </h4>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number <span class="text-rose-500">*</span></label>
-              <input type="tel" id="regMobile" required placeholder="e.g. +91 9876543210" maxlength="18"
-                     oninput="this.value = this.value.replace(/[^0-9+\s-]/g, '').slice(0, 18)"
-                     class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold font-mono focus:bg-white focus:border-blue-500 focus:outline-none transition">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Owner / Contact Person <span class="text-rose-500">*</span></label>
+                <input type="text" id="regOwnerName" required placeholder="e.g. Rajesh Sharma" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Phone Number <span class="text-rose-500">*</span></label>
+                <input type="tel" id="regMobile" required placeholder="e.g. +91 9876543210" maxlength="18"
+                       oninput="this.value = this.value.replace(/[^0-9+\s-]/g, '').slice(0, 18)"
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold font-mono focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div class="sm:col-span-2">
+                <div class="flex justify-between items-center mb-1">
+                  <label class="block text-[11px] font-bold text-slate-700">Company Email Address <span class="text-rose-500">*</span></label>
+                  <span id="emailVerifiedBadge" class="hidden text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i> Email Verified
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  <input type="email" id="regEmail" required placeholder="owner@company.com" 
+                         class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                  <button type="button" id="btnSendEmailOtp" onclick="appController.sendCompanyEmailOtp()" 
+                          class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
+                    Send OTP
+                  </button>
+                </div>
+
+                <!-- OTP INPUT GROUP -->
+                <div id="emailOtpGroup" class="hidden mt-2 p-3 bg-white rounded-xl border border-slate-200 space-y-2">
+                  <label class="block text-xs font-bold text-slate-800">Enter 6-Digit Verification Code</label>
+                  <div class="flex gap-2">
+                    <input type="text" id="regEmailOtp" placeholder="123456" maxlength="6" 
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
+                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-bold text-center tracking-widest text-slate-900 focus:border-blue-500 focus:outline-none">
+                    <button type="button" id="btnVerifyEmailOtp" onclick="appController.verifyCompanyEmailOtp()" 
+                            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-md transition">
+                      Verify OTP
+                    </button>
+                  </div>
+                  <div id="emailOtpStatusAlert" class="hidden text-xs font-bold p-2 rounded-lg"></div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- EMAIL WITH OTP VERIFICATION FIELD -->
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="block text-xs font-bold text-slate-700">Company Email Address <span class="text-rose-500">*</span></label>
-              <span id="emailVerifiedBadge" class="hidden text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                <i class="fa-solid fa-circle-check text-emerald-600"></i> Email Verified
-              </span>
-            </div>
-            <div class="flex gap-2">
-              <input type="email" id="regEmail" required placeholder="owner@company.com" 
-                     class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-blue-500 focus:outline-none transition">
-              <button type="button" id="btnSendEmailOtp" onclick="appController.sendCompanyEmailOtp()" 
-                      class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
-                Send OTP
-              </button>
-            </div>
+          <!-- SECTION 3: REGISTERED ADDRESS -->
+          <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-2xl space-y-3">
+            <h4 class="text-xs font-extrabold text-slate-800 border-b border-slate-200/60 pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-location-dot text-blue-600"></i> Registered Address
+            </h4>
 
-            <!-- OTP INPUT GROUP (Hidden until Send OTP clicked) -->
-            <div id="emailOtpGroup" class="hidden mt-2 p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-              <label class="block text-xs font-bold text-slate-800">Enter 6-Digit Verification Code</label>
-              <div class="flex gap-2">
-                <input type="text" id="regEmailOtp" placeholder="123456" maxlength="6" 
-                       oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
-                       class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-mono font-bold text-center tracking-widest text-slate-900 focus:border-blue-500 focus:outline-none">
-                <button type="button" id="btnVerifyEmailOtp" onclick="appController.verifyCompanyEmailOtp()" 
-                        class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-md transition">
-                  Verify OTP
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="sm:col-span-2">
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Address Line 1</label>
+                <input type="text" id="regAddrLine1" placeholder="Plot / Street / Premises details" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Address Line 2 / Landmark</label>
+                <input type="text" id="regAddrLine2" placeholder="Locality / Landmark" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">City / District</label>
+                <input type="text" id="regCity" placeholder="e.g. New Delhi" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">State</label>
+                <input type="text" id="regState" placeholder="e.g. Delhi / NCR" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Pincode</label>
+                <input type="text" id="regPincode" placeholder="e.g. 110001" maxlength="10" 
+                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-bold focus:border-blue-500 focus:outline-none transition">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 4: SECURITY -->
+          <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-2xl space-y-3">
+            <h4 class="text-xs font-extrabold text-slate-800 border-b border-slate-200/60 pb-2 flex items-center gap-2">
+              <i class="fa-solid fa-lock text-blue-600"></i> Account Security
+            </h4>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Password <span class="text-rose-500">*</span></label>
+              <div class="relative">
+                <input type="password" id="regPassword" required placeholder="••••••••" 
+                       class="w-full px-3.5 py-2.5 pr-10 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-blue-500 focus:outline-none transition">
+                <button type="button" onclick="AuthModule.togglePasswordVisibility('regPassword', 'eyeIconReg')" 
+                        class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs p-1 focus:outline-none">
+                  <i id="eyeIconReg" class="fa-solid fa-eye"></i>
                 </button>
               </div>
-              <div id="emailOtpStatusAlert" class="hidden text-xs font-bold p-2 rounded-lg"></div>
-            </div>
-          </div>
-
-          <!-- PASSWORD -->
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Password <span class="text-rose-500">*</span></label>
-            <div class="relative">
-              <input type="password" id="regPassword" required placeholder="••••••••" 
-                     class="w-full px-3.5 py-2.5 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:border-blue-500 focus:outline-none transition">
-              <button type="button" onclick="AuthModule.togglePasswordVisibility('regPassword', 'eyeIconReg')" 
-                      class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs p-1 focus:outline-none">
-                <i id="eyeIconReg" class="fa-solid fa-eye"></i>
-              </button>
             </div>
           </div>
 
@@ -1242,16 +1326,26 @@ class AppController {
     const gstin = gstinInput ? gstinInput.value.trim().toUpperCase() : '';
     const alertEl = document.getElementById('gstinStatusAlert');
     const compNameInput = document.getElementById('regCompName');
+    const tradeNameInput = document.getElementById('regTradeName');
+    const panInput = document.getElementById('regPan');
+    const businessTypeInput = document.getElementById('regBusinessType');
+    const regDateInput = document.getElementById('regGstRegDate');
+    const addr1Input = document.getElementById('regAddrLine1');
+    const addr2Input = document.getElementById('regAddrLine2');
+    const cityInput = document.getElementById('regCity');
+    const stateInput = document.getElementById('regState');
+    const pincodeInput = document.getElementById('regPincode');
+    const badgeActive = document.getElementById('badgeGstActive');
 
     if (!alertEl) return;
 
     if (!gstin) {
-      alertEl.innerText = "ℹ️ GSTIN is optional. You can enter GSTIN and click Verify to validate GST status.";
+      alertEl.innerText = "ℹ️ Please enter a 15-character GSTIN number to verify.";
       alertEl.className = "text-[11px] text-blue-600 font-bold mt-1";
       return;
     }
 
-    alertEl.innerHTML = `<span class="inline-flex items-center gap-1 text-blue-600"><i class="fa-solid fa-spinner fa-spin"></i> Verifying GSTIN with GST portal...</span>`;
+    alertEl.innerHTML = `<span class="inline-flex items-center gap-1 text-blue-600"><i class="fa-solid fa-spinner fa-spin"></i> Verifying GSTIN with Government Portal...</span>`;
     alertEl.className = "text-[11px] text-blue-600 font-bold mt-1 block";
 
     let res = null;
@@ -1268,37 +1362,49 @@ class AppController {
     }
 
     if (res && res.verified) {
-      const legalName = (res.data && res.data.legalName) || (res.data && res.data.tradeName) || '';
-      const stateName = (res.data && res.data.state) || 'India';
-      const bType = (res.data && res.data.businessType) || 'Registered Enterprise';
+      const data = res.data || {};
+      const legalName = data.legalName || data.tradeName || '';
+      const tradeName = data.tradeName || '';
+      const pan = data.pan || (gstin.length >= 12 ? gstin.substring(2, 12) : '');
+      const stateName = data.state || 'India';
+      const bType = data.businessType || 'Registered Enterprise';
+      const regDate = data.registrationDate || '';
+      const addr1 = data.addressLine1 || '';
+      const addr2 = data.addressLine2 || '';
+      const city = data.city || '';
+      const pincode = data.pincode || '';
 
       if (gstinInput) {
         gstinInput.value = gstin;
         gstinInput.classList.add('border-emerald-500', 'bg-emerald-50');
       }
 
-      if (legalName) {
-        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>GST Verified:</strong> ${legalName} (${bType} - ${stateName})</span>`;
-        alertEl.className = "text-[11px] text-emerald-700 font-bold mt-1 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 block";
-        
-        if (compNameInput) {
-          compNameInput.value = legalName;
-          compNameInput.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50');
-          setTimeout(() => {
-            compNameInput.classList.remove('ring-2', 'ring-emerald-500');
-          }, 2000);
-        }
-      } else {
-        alertEl.innerHTML = `<span class="inline-flex items-center gap-1"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>GST Active:</strong> Valid GST Number (${stateName} | ${bType})</span>`;
-        alertEl.className = "text-[11px] text-emerald-700 font-bold mt-1 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 block";
-        if (compNameInput && !compNameInput.value) {
-          compNameInput.focus();
-        }
+      if (badgeActive) badgeActive.classList.remove('hidden');
+
+      // Auto-fill ONLY real available GST API fields into form inputs
+      if (compNameInput && legalName) compNameInput.value = legalName;
+      if (tradeNameInput && tradeName) tradeNameInput.value = tradeName;
+      if (panInput && pan) panInput.value = pan;
+      if (businessTypeInput && bType) businessTypeInput.value = bType;
+      if (regDateInput && regDate) regDateInput.value = regDate;
+      if (addr1Input && addr1) addr1Input.value = addr1;
+      if (addr2Input && addr2) addr2Input.value = addr2;
+      if (cityInput && city) cityInput.value = city;
+      if (stateInput && stateName) stateInput.value = stateName;
+      if (pincodeInput && pincode) pincodeInput.value = pincode;
+
+      alertEl.innerHTML = `<span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-600"></i> <strong>GST Verified:</strong> ${legalName || gstin} (${bType} • ${stateName})</span>`;
+      alertEl.className = "text-[11px] text-emerald-800 font-extrabold mt-1 bg-emerald-50/90 p-2.5 rounded-xl border border-emerald-200 block shadow-sm";
+
+      if (compNameInput) {
+        compNameInput.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50/50');
+        setTimeout(() => compNameInput.classList.remove('ring-2', 'ring-emerald-500', 'bg-emerald-50/50'), 2500);
       }
     } else {
-      const errMsg = (res && res.error) || (res && res.message) || "Invalid GSTIN format.";
-      alertEl.innerText = `ℹ️ ${errMsg}`;
-      alertEl.className = "text-[11px] text-rose-600 font-bold mt-1 bg-rose-50 p-2 rounded-xl border border-rose-200 block";
+      const errMsg = (res && res.error) || (res && res.message) || "GST details could not be verified. Please check the GSTIN and try again.";
+      alertEl.innerText = `⚠️ ${errMsg}`;
+      alertEl.className = "text-[11px] text-rose-700 font-bold mt-1 bg-rose-50 p-2.5 rounded-xl border border-rose-200 block";
+      if (badgeActive) badgeActive.classList.add('hidden');
     }
   }
 
@@ -1338,10 +1444,26 @@ class AppController {
       submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Registering...`;
     }
 
+    const compName = document.getElementById('regCompName') ? document.getElementById('regCompName').value.trim() : '';
+    const tradeName = document.getElementById('regTradeName') ? document.getElementById('regTradeName').value.trim() : '';
+    const pan = document.getElementById('regPan') ? document.getElementById('regPan').value.trim() : '';
+    const businessType = document.getElementById('regBusinessType') ? document.getElementById('regBusinessType').value.trim() : '';
+    const addrLine1 = document.getElementById('regAddrLine1') ? document.getElementById('regAddrLine1').value.trim() : '';
+    const addrLine2 = document.getElementById('regAddrLine2') ? document.getElementById('regAddrLine2').value.trim() : '';
+    const city = document.getElementById('regCity') ? document.getElementById('regCity').value.trim() : '';
+    const state = document.getElementById('regState') ? document.getElementById('regState').value.trim() : '';
+    const pincode = document.getElementById('regPincode') ? document.getElementById('regPincode').value.trim() : '';
+
+    const formattedAddress = [addrLine1, addrLine2, city, state, pincode].filter(Boolean).join(', ') || state || 'India';
+
     const registrationPayload = {
       gstStatus: isGst ? (gstin ? 'GST_VERIFIED' : 'GST_REGISTERED_OPTIONAL') : 'NON_GST_REGISTERED',
       gstin: gstin,
-      name: document.getElementById('regCompName').value.trim(),
+      name: compName,
+      tradeName: tradeName,
+      pan: pan,
+      businessType: businessType,
+      address: formattedAddress,
       ownerName: document.getElementById('regOwnerName').value.trim(),
       mobile: mobile,
       email: document.getElementById('regEmail').value.trim(),
