@@ -133,6 +133,10 @@ const HolidayService = {
     const companyData = this.getCompanyHolidayData(companyId);
     if (companyData.decisions[dateStr] && companyData.decisions[dateStr].decision === 'APPROVED') return true;
 
+    // Check company announcements for Paid Holiday entries
+    const announcements = window.appStore.getCompanyAnnouncements ? window.appStore.getCompanyAnnouncements(companyId) : [];
+    if (announcements.some(a => a.type === 'PAID_HOLIDAY' && a.date === dateStr)) return true;
+
     return false;
   },
 

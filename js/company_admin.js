@@ -2178,6 +2178,8 @@ const CompanyAdminModule = {
     const isHindi = window.i18n.currentLang === 'hi';
     const alerts = window.HolidayService ? window.HolidayService.check15DayFestivalNotifications(companyId) : [];
     const companyHolidayData = window.HolidayService ? window.HolidayService.getCompanyHolidayData(companyId) : { decisions: {}, customHolidays: [] };
+    const announcements = window.appStore.getCompanyAnnouncements ? window.appStore.getCompanyAnnouncements(companyId) : [];
+    const todayStr = window.TimeService ? window.TimeService.getTodayStr() : new Date().toISOString().substring(0, 10);
 
     return `
       <div class="space-y-6">
@@ -2190,12 +2192,81 @@ const CompanyAdminModule = {
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white brand-font tracking-wide">
               🎉 ${t('navFestivalHolidays')}
             </h2>
-            <p class="text-xs text-slate-500 mt-1">Manage company festival holidays, 15-day advance approvals, and worker paid holiday schedules.</p>
+            <p class="text-xs text-slate-500 mt-1">Manage company festival holidays, announcements, 15-day advance approvals, and worker paid holiday schedules.</p>
           </div>
-          <button onclick="CompanyAdminModule.openAddCustomHolidayModal()" 
-                  class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs shadow-md flex items-center gap-2 transition active:scale-95">
-            <i class="fa-solid fa-plus-circle"></i> ${t('addCustomHolidayBtn')}
+          <button onclick="CompanyAdminModule.openAnnouncementModal()" 
+                  class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black rounded-xl text-xs shadow-md flex items-center gap-2 transition active:scale-95">
+            <i class="fa-solid fa-bullhorn"></i> Publish Paid Holiday / Announcement
           </button>
+        </div>
+
+        <!-- Published Announcements & Paid Holidays Roster Card -->
+        <div class="glass-card card-3d p-6 rounded-3xl shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div>
+              <h3 class="text-lg font-extrabold text-slate-900 dark:text-white brand-font flex items-center gap-2">
+                <i class="fa-solid fa-bullhorn text-amber-500"></i> Company Paid Holidays & Published Announcements
+              </h3>
+              <p class="text-xs text-slate-500">Announcements published here are automatically synced to all active workers of ${company.name}.</p>
+            </div>
+            <button onclick="CompanyAdminModule.openAnnouncementModal()" 
+                    class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl text-xs shadow transition flex items-center gap-1.5">
+              <i class="fa-solid fa-plus-circle"></i> Add New Notice
+            </button>
+          </div>
+
+          ${announcements.length > 0 ? `
+            <div class="space-y-3">
+              ${announcements.map(a => {
+                const isPast = a.date < todayStr;
+                const isPaid = a.type === 'PAID_HOLIDAY';
+                const icon = isPaid ? '🎉' : '📢';
+
+                return `
+                  <div class="p-4 ${isPast ? 'bg-slate-100/80 dark:bg-slate-900/60 opacity-80' : 'bg-slate-50 dark:bg-slate-900/90'} border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
+                    <div class="space-y-1.5 max-w-2xl">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-lg">${icon}</span>
+                        <h4 class="text-sm font-black text-slate-900 dark:text-white">${a.title}</h4>
+                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase ${isPaid ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30'}">
+                          ${isPaid ? 'Paid Holiday' : 'Company Announcement'}
+                        </span>
+                        ${isPast ? `<span class="px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded text-[10px] font-bold">Past Event</span>` : ''}
+                      </div>
+
+                      <div class="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
+                        <i class="fa-solid fa-calendar-day"></i> Date: ${a.date}
+                      </div>
+
+                      ${a.message ? `
+                        <p class="text-xs text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 mt-1 leading-relaxed">
+                          💬 ${a.message}
+                        </p>
+                      ` : ''}
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                      <button onclick="CompanyAdminModule.openAnnouncementModal('${a.id}')" 
+                              class="px-3 py-1.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-600 dark:text-blue-400 font-extrabold rounded-xl text-xs border border-blue-500/30 transition flex items-center gap-1">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                      </button>
+                      <button onclick="CompanyAdminModule.deleteAnnouncement('${a.id}')" 
+                              class="px-3 py-1.5 bg-rose-600/10 hover:bg-rose-600/20 text-rose-600 dark:text-rose-400 font-extrabold rounded-xl text-xs border border-rose-500/30 transition flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Delete
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : `
+            <div class="p-6 text-center bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-xl mx-auto">
+                <i class="fa-solid fa-bullhorn"></i>
+              </div>
+              <p class="text-xs font-bold text-slate-500">No company announcements or paid holidays published yet.</p>
+            </div>
+          `}
         </div>
 
         <!-- 15-Day Festival Notification Banner -->
@@ -2309,6 +2380,105 @@ const CompanyAdminModule = {
     window.HolidayService.setCompanyFestivalDecision(companyId, festivalId, dateStr, decision);
     const msg = decision === 'APPROVED' ? "✅ Marked as Approved Paid Company Holiday!" : "ℹ️ Marked as Normal Working Day.";
     alert(msg);
+    window.appController.renderCurrentView();
+  },
+
+  openAnnouncementModal(editId = null) {
+    const modal = document.getElementById('modalOverlay');
+    const content = document.getElementById('modalContent');
+    if (!modal || !content) return;
+
+    const currentUser = window.appStore.getCurrentUser();
+    const companyId = currentUser ? currentUser.companyId : "RLV-POWER-8821";
+    const announcements = window.appStore.getCompanyAnnouncements ? window.appStore.getCompanyAnnouncements(companyId) : [];
+    const editingAnn = editId ? announcements.find(a => a.id === editId) : null;
+
+    const todayStr = window.TimeService ? window.TimeService.getTodayStr() : new Date().toISOString().substring(0, 10);
+
+    content.innerHTML = `
+      <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl max-w-lg w-full mx-auto space-y-4 border border-slate-200 dark:border-slate-800">
+        <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center font-black text-sm">
+              <i class="fa-solid fa-bullhorn"></i>
+            </span>
+            <h3 class="text-lg font-extrabold text-slate-900 dark:text-white brand-font">
+              ${editingAnn ? 'Edit Announcement / Paid Holiday' : 'Publish New Paid Holiday / Announcement'}
+            </h3>
+          </div>
+          <button onclick="appController.closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <form onsubmit="CompanyAdminModule.submitAnnouncementForm(event, ${editingAnn ? `'${editingAnn.id}'` : 'null'})" class="space-y-4 text-xs">
+          <div>
+            <label class="block font-extrabold text-slate-700 dark:text-slate-300 mb-1">Title / Holiday Name *</label>
+            <input type="text" id="annTitle" required placeholder="e.g. 🎉 Diwali Paid Holiday" value="${editingAnn ? editingAnn.title : ''}" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-extrabold text-slate-700 dark:text-slate-300 mb-1">Date *</label>
+              <input type="date" id="annDate" required value="${editingAnn ? editingAnn.date : todayStr}" class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white font-mono">
+            </div>
+
+            <div>
+              <label class="block font-extrabold text-slate-700 dark:text-slate-300 mb-1">Notice Type *</label>
+              <select id="annType" required class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl font-bold text-slate-900 dark:text-white">
+                <option value="PAID_HOLIDAY" ${editingAnn && editingAnn.type === 'PAID_HOLIDAY' ? 'selected' : ''}>🎉 Paid Holiday</option>
+                <option value="ANNOUNCEMENT" ${editingAnn && editingAnn.type === 'ANNOUNCEMENT' ? 'selected' : ''}>📢 Company Announcement</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-extrabold text-slate-700 dark:text-slate-300 mb-1">Message / Details (Optional)</label>
+            <textarea id="annMessage" rows="3" placeholder="e.g. Company will remain closed on this day. Full day wage will be paid." class="w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl font-medium text-slate-900 dark:text-white">${editingAnn && editingAnn.message ? editingAnn.message : ''}</textarea>
+          </div>
+
+          <div class="pt-3 flex justify-end gap-2 border-t dark:border-slate-800">
+            <button type="button" onclick="appController.closeModal()" class="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold">Cancel</button>
+            <button type="submit" class="px-5 py-2.5 btn-3d-amber text-slate-950 font-black rounded-xl shadow-md flex items-center gap-1.5">
+              <i class="fa-solid fa-paper-plane"></i> ${editingAnn ? 'Update Announcement' : 'Save & Publish'}
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+  },
+
+  submitAnnouncementForm(e, editId) {
+    e.preventDefault();
+    const currentUser = window.appStore.getCurrentUser();
+    const companyId = currentUser ? currentUser.companyId : "RLV-POWER-8821";
+
+    const title = document.getElementById('annTitle').value;
+    const date = document.getElementById('annDate').value;
+    const type = document.getElementById('annType').value;
+    const message = document.getElementById('annMessage').value;
+
+    if (!title || !date) {
+      alert("⚠️ Please fill in Title and Date.");
+      return;
+    }
+
+    if (editId) {
+      window.appStore.updateCompanyAnnouncement(editId, { title, date, type, message });
+      alert("✅ Announcement updated successfully!");
+    } else {
+      window.appStore.addCompanyAnnouncement(companyId, { title, date, type, message });
+      alert("✅ New announcement published successfully to workers!");
+    }
+
+    window.appController.closeModal();
+    window.appController.renderCurrentView();
+  },
+
+  deleteAnnouncement(annId) {
+    if (!confirm("Are you sure you want to delete this announcement?")) return;
+    window.appStore.deleteCompanyAnnouncement(annId);
+    alert("🗑️ Announcement deleted.");
     window.appController.renderCurrentView();
   },
 

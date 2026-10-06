@@ -97,7 +97,7 @@ const WorkerDashboardModule = {
     const otRequests = (window.appStore.data.otRequests || []).filter(r => r.workerId === worker.id && r.date === todayStr);
 
     // Get Company Holidays / Announcements
-    const holidays = (window.appStore.data.festivalHolidays || []).filter(h => h.companyId === company.id);
+    const announcements = window.appStore.getCompanyAnnouncements ? window.appStore.getCompanyAnnouncements(company.id) : [];
 
     // Check for completed or finishing OT requests today
     const completedOt = otRequests.find(r => r.status === 'COMPLETED' || (r.status === 'APPROVED' && r.endTime && nowTimeStr >= r.endTime));
@@ -279,28 +279,61 @@ const WorkerDashboardModule = {
         </div>
 
         <!-- COMPANY ANNOUNCEMENTS & PAID HOLIDAYS -->
-        <div class="glass-card card-3d p-6 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 space-y-3">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-bullhorn text-amber-500 text-base"></i>
-            <h3 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">Company Paid Holidays & Announcements</h3>
+        <div class="glass-card card-3d p-6 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bullhorn text-amber-500 text-lg"></i>
+              <h3 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">Company Paid Holidays & Announcements</h3>
+            </div>
+            <span class="text-xs font-bold text-slate-500 font-mono">${announcements.length} Posted</span>
           </div>
 
-          ${holidays.length > 0 ? `
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              ${holidays.slice(0, 4).map(h => `
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center font-black text-sm">
-                    <i class="fa-solid fa-cake-candles"></i>
+          ${announcements.length > 0 ? `
+            <div class="space-y-3">
+              ${announcements.map(a => {
+                const isPast = a.date < todayStr;
+                const isPaid = a.type === 'PAID_HOLIDAY';
+                const icon = isPaid ? '🎉' : '📢';
+                
+                return `
+                  <div class="p-4 ${isPast ? 'bg-slate-100/70 dark:bg-slate-900/50 opacity-75' : 'bg-slate-50 dark:bg-slate-900/90'} border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2 shadow-sm transition">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div class="flex items-center gap-2.5">
+                        <span class="text-xl">${icon}</span>
+                        <h4 class="text-sm font-black text-slate-900 dark:text-white">${a.title}</h4>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-black tracking-wide uppercase ${isPaid ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30'}">
+                          ${isPaid ? 'Paid Holiday' : 'Company Announcement'}
+                        </span>
+                        ${isPast ? `
+                          <span class="px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded text-[10px] font-bold">Past Event</span>
+                        ` : ''}
+                      </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-4 text-xs font-bold text-slate-600 dark:text-slate-400 pt-1">
+                      <span class="flex items-center gap-1.5 font-mono text-slate-800 dark:text-slate-200">
+                        <i class="fa-solid fa-calendar-day text-amber-500"></i> Date: <strong>${a.date}</strong>
+                      </span>
+                    </div>
+
+                    ${a.message ? `
+                      <p class="text-xs text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200/80 dark:border-slate-700/80 leading-relaxed">
+                        💬 <strong>Message:</strong> ${a.message}
+                      </p>
+                    ` : ''}
                   </div>
-                  <div>
-                    <span class="text-xs font-black text-slate-900 dark:text-white block">${h.nameEn || h.name}</span>
-                    <span class="text-[11px] font-mono text-amber-600 dark:text-amber-400 font-bold">${h.date} — Paid Holiday</span>
-                  </div>
-                </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
           ` : `
-            <p class="text-xs text-slate-400 italic">No upcoming paid holiday notices currently posted by company admin.</p>
+            <div class="p-6 text-center bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-xl mx-auto">
+                <i class="fa-solid fa-bullhorn"></i>
+              </div>
+              <p class="text-xs font-bold text-slate-500">No company paid holidays or announcements posted currently.</p>
+            </div>
           `}
         </div>
       </div>

@@ -68,6 +68,12 @@ class Store {
     // Merge Company Holiday Data
     merged.companyHolidayData = { ...(backend.companyHolidayData || {}), ...(local.companyHolidayData || {}) };
 
+    // Merge Company Announcements
+    const annMap = new Map();
+    (backend.companyAnnouncements || []).forEach(a => annMap.set(a.id, a));
+    (local.companyAnnouncements || []).forEach(a => annMap.set(a.id, { ...annMap.get(a.id), ...a }));
+    merged.companyAnnouncements = Array.from(annMap.values());
+
     return merged;
   }
 
@@ -400,12 +406,25 @@ class Store {
       }
     ];
 
+    const companyAnnouncements = [
+      {
+        id: "ANN-1001",
+        companyId: companyAId,
+        title: "Diwali Paid Holiday",
+        date: `${monthStr}-20`,
+        type: "PAID_HOLIDAY",
+        message: "Company will remain closed on this day for festival celebrations. Full day wage will be paid.",
+        createdAt: `${monthStr}-01T00:00:00.000Z`
+      }
+    ];
+
     return {
       companies: [companyA, companyB],
       workers: allWorkers,
       codes: codes,
       attendance: attendanceLogs,
       advances: advances,
+      companyAnnouncements: companyAnnouncements,
       finalizedMonths: []
     };
   }
@@ -610,7 +629,116 @@ class Store {
     };
   }
 
-  // --- MASTER SUPER ADMIN MANAGEMENT METHODS ---
+  // --- COMPANY PAID HOLIDAYS & ANNOUNCEMENTS PERSISTENCE ---
+  addCompanyAnnouncement(companyId, announcementInput) {
+    if (!this.data.companyAnnouncements) this.data.companyAnnouncements = [];
+    
+    const newAnn = {
+      id: `ANN-${Date.now()}`,
+      companyId: companyId,
+      title: announcementInput.title.trim(),
+      date: announcementInput.date,
+      type: announcementInput.type || 'PAID_HOLIDAY', // 'PAID_HOLIDAY' | 'ANNOUNCEMENT'
+      message: announcementInput.message ? announcementInput.message.trim() : '',
+      createdAt: new Date().toISOString()
+    };
+
+    this.data.companyAnnouncements.push(newAnn);
+
+    // Sync PAID_HOLIDAY to company settings.fixedHolidayDates for Salary Engine
+    if (newAnn.type === 'PAID_HOLIDAY' && newAnn.date) {
+      const comp = this.data.companies.find(c => c.id === companyId);
+      if (comp) {
+        if (!comp.settings) comp.settings = {};
+        if (!comp.settings.fixedHolidayDates) comp.settings.fixedHolidayDates = [];
+        if (!comp.settings.fixedHolidayDates.includes(newAnn.date)) {
+          comp.settings.fixedHolidayDates.push(newAnn.date);
+        }
+      }
+    }
+
+    this.saveData();
+    return { success: true, announcement: newAnn };
+  }
+
+  updateCompanyAnnouncement(id, announcementInput) {
+    if (!this.data.companyAnnouncements) this.data.companyAnnouncements = [];
+    const index = this.data.companyAnnouncements.findIndex(a => a.id === id);
+    if (index === -1) return { success: false, error: 'Announcement not found' };
+
+    const existing = this.data.companyAnnouncements[index];
+    const oldDate = existing.date;
+    const oldType = existing.type;
+
+    existing.title = announcementInput.title ? announcementInput.title.trim() : existing.title;
+    existing.date = announcementInput.date || existing.date;
+    existing.type = announcementInput.type || existing.type;
+    existing.message = announcementInput.message !== undefined ? announcementInput.message.trim() : existing.message;
+    existing.updatedAt = new Date().toISOString();
+
+    // Sync fixedHolidayDates for Salary Engine
+    const comp = this.data.companies.find(c => c.id === existing.companyId);
+    if (comp && comp.settings && comp.settings.fixedHolidayDates) {
+      if (oldType === 'PAID_HOLIDAY' && (oldDate !== existing.date || existing.type !== 'PAID_HOLIDAY')) {
+        const stillHasPaid = this.data.companyAnnouncements.some(a => a.companyId === existing.companyId && a.id !== id && a.type === 'PAID_HOLIDAY' && a.date === oldDate);
+        if (!stillHasPaid) {
+          comp.settings.fixedHolidayDates = comp.settings.fixedHolidayDates.filter(d => d !== oldDate);
+        }
+      }
+      if (existing.type === 'PAID_HOLIDAY' && existing.date) {
+        if (!comp.settings.fixedHolidayDates.includes(existing.date)) {
+          comp.settings.fixedHolidayDates.push(existing.date);
+        }
+      }
+    }
+
+    this.saveData();
+    return { success: true, announcement: existing };
+  }
+
+  deleteCompanyAnnouncement(id) {
+    if (!this.data.companyAnnouncements) this.data.companyAnnouncements = [];
+    const index = this.data.companyAnnouncements.findIndex(a => a.id === id);
+    if (index === -1) return { success: false, error: 'Announcement not found' };
+
+    const target = this.data.companyAnnouncements[index];
+    this.data.companyAnnouncements.splice(index, 1);
+
+    // Clean up fixedHolidayDates
+    if (target.type === 'PAID_HOLIDAY' && target.date) {
+      const comp = this.data.companies.find(c => c.id === target.companyId);
+      if (comp && comp.settings && comp.settings.fixedHolidayDates) {
+        const stillHasPaid = this.data.companyAnnouncements.some(a => a.companyId === target.companyId && a.type === 'PAID_HOLIDAY' && a.date === target.date);
+        if (!stillHasPaid) {
+          comp.settings.fixedHolidayDates = comp.settings.fixedHolidayDates.filter(d => d !== target.date);
+        }
+      }
+    }
+
+    this.saveData();
+    return { success: true };
+  }
+
+  getCompanyAnnouncements(companyId) {
+    if (!this.data.companyAnnouncements) this.data.companyAnnouncements = [];
+    const list = this.data.companyAnnouncements.filter(a => a.companyId === companyId);
+    const todayStr = window.TimeService ? window.TimeService.getTodayStr() : new Date().toISOString().substring(0, 10);
+    
+    // Sort: Upcoming announcements (date >= today) first (by date ascending), then Past announcements (date < today) (by date descending)
+    return list.sort((a, b) => {
+      const aIsPast = a.date < todayStr;
+      const bIsPast = b.date < todayStr;
+      
+      if (!aIsPast && bIsPast) return -1; // Upcoming before past
+      if (aIsPast && !bIsPast) return 1;  // Past after upcoming
+      
+      if (!aIsPast && !bIsPast) {
+        return a.date.localeCompare(b.date); // Upcoming ascending
+      } else {
+        return b.date.localeCompare(a.date); // Past descending
+      }
+    });
+  }
   getSuperAdminStats() {
     const companies = this.data.companies || [];
     const workers = this.data.workers || [];
