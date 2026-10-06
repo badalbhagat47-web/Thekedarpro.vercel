@@ -676,14 +676,14 @@ class handler(BaseHTTPRequestHandler):
             mobile = payload.get('mobile', '').strip()
             digits = ''.join(c for c in mobile if c.isdigit())
             if not mobile or len(digits) != 10:
-                self.send_json({"success": False, "error": "Please try again."}, status=400)
+                self.send_json({"success": False, "error": "Please enter a valid 10-digit phone number."}, status=400)
                 return
             
             current_data = get_db_state() or {}
             companies = current_data.get('companies', [])
             for c in companies:
                 if c.get('mobile') == mobile or c.get('mobile') == digits:
-                    self.send_json({"success": False, "error": "Please try again."}, status=400)
+                    self.send_json({"success": False, "error": "This phone number is already registered with another company."}, status=400)
                     return
 
             self.send_json({
