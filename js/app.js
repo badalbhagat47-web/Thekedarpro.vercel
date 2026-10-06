@@ -888,8 +888,7 @@ class AppController {
             <label class="block text-xs font-bold text-slate-700">GSTIN Number</label>
             <div class="flex gap-2">
               <input type="text" id="regGstin" placeholder="e.g. 07ASRPB9910D1ZR" 
-                     style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                     class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono font-black uppercase text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none transition">
+                     class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-mono font-bold uppercase text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
               <button type="button" onclick="appController.verifyGstinClick()" 
                       class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition flex items-center gap-1.5">
                 <i class="fa-solid fa-shield-halved"></i> Verify GST
@@ -911,36 +910,31 @@ class AppController {
               <div class="sm:col-span-2">
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Company / Legal Name <span class="text-rose-500">*</span></label>
                 <input type="text" id="regCompName" required placeholder="e.g. Power Solutions" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Trade Name</label>
                 <input type="text" id="regTradeName" placeholder="e.g. Power Services" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">PAN Number</label>
                 <input type="text" id="regPan" placeholder="e.g. ASRPB9910D" maxlength="10" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono font-black uppercase text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono font-bold uppercase text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Business / Entity Type</label>
                 <input type="text" id="regBusinessType" placeholder="e.g. Pvt Ltd" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">GST Registration Date</label>
                 <input type="text" id="regGstRegDate" placeholder="e.g. 12/05/2018" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
             </div>
           </div>
@@ -955,16 +949,14 @@ class AppController {
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Owner / Contact Person <span class="text-rose-500">*</span></label>
                 <input type="text" id="regOwnerName" required placeholder="e.g. Rajesh Sharma" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Phone Number <span class="text-rose-500">*</span></label>
-                <input type="tel" id="regMobile" required placeholder="e.g. 9876543210" maxlength="18"
-                       oninput="this.value = this.value.replace(/[^0-9+\s-]/g, '').slice(0, 18)"
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-black font-mono text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                <input type="tel" id="regMobile" required placeholder="e.g. 9876543210" maxlength="10"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold font-mono text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div class="sm:col-span-2">
@@ -976,8 +968,7 @@ class AppController {
                 </div>
                 <div class="flex gap-2">
                   <input type="email" id="regEmail" required placeholder="e.g. owner@company.com" 
-                         style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                         class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                         class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
                   <button type="button" id="btnSendEmailOtp" onclick="appController.sendCompanyEmailOtp()" 
                           class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
                     Send OTP
@@ -990,8 +981,7 @@ class AppController {
                   <div class="flex gap-2">
                     <input type="text" id="regEmailOtp" placeholder="e.g. 123456" maxlength="6" 
                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
-                           style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-black text-center tracking-widest text-slate-900 focus:border-blue-500 focus:outline-none">
+                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-bold text-center tracking-widest text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none">
                     <button type="button" id="btnVerifyEmailOtp" onclick="appController.verifyCompanyEmailOtp()" 
                             class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-md transition">
                       Verify OTP
@@ -1013,36 +1003,31 @@ class AppController {
               <div class="sm:col-span-2">
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Address Line 1</label>
                 <input type="text" id="regAddrLine1" placeholder="e.g. Plot 45, Sector 18" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Address Line 2 / Landmark</label>
                 <input type="text" id="regAddrLine2" placeholder="e.g. DLF Phase 3" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">City / District</label>
                 <input type="text" id="regCity" placeholder="e.g. Gurugram" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">State</label>
                 <input type="text" id="regState" placeholder="e.g. Haryana" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-slate-700 mb-1">Pincode</label>
                 <input type="text" id="regPincode" placeholder="e.g. 122002" maxlength="10" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono font-black text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
               </div>
             </div>
           </div>
@@ -1056,8 +1041,7 @@ class AppController {
               <label class="block text-[11px] font-bold text-slate-700 mb-1">Password <span class="text-rose-500">*</span></label>
               <div class="relative">
                 <input type="password" id="regPassword" required placeholder="••••••••" 
-                       style="color: #0f172a; -webkit-text-fill-color: #0f172a;"
-                       class="w-full px-3.5 py-2.5 pr-10 bg-white border border-slate-300 rounded-xl text-xs font-black text-slate-900 focus:border-blue-500 focus:outline-none transition shadow-sm">
+                       class="w-full px-3.5 py-2.5 pr-10 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none transition shadow-sm">
                 <button type="button" onclick="AuthModule.togglePasswordVisibility('regPassword', 'eyeIconReg')" 
                         class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs p-1 focus:outline-none">
                   <i id="eyeIconReg" class="fa-solid fa-eye"></i>
@@ -1430,7 +1414,13 @@ class AppController {
 
     const digitsOnly = mobile.replace(/\D/g, '');
     if (!mobile || digitsOnly.length < 7 || digitsOnly.length > 15) {
-      alert("Please enter a valid phone number.");
+      const errEl = document.getElementById('companyRegErrorAlert');
+      if (errEl) {
+        errEl.innerText = "⚠️ Please enter a valid 10-digit Phone Number.";
+        errEl.classList.remove('hidden');
+      } else {
+        alert("⚠️ Please enter a valid 10-digit Phone Number.");
+      }
       return;
     }
 
