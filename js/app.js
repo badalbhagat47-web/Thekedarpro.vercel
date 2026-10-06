@@ -961,7 +961,9 @@ class AppController {
                 </div>
                 <div class="flex gap-2">
                   <input type="tel" id="regMobile" required placeholder="e.g. 9876543210" maxlength="10"
-                         oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                         oninput="if (this.readOnly || this.disabled) return false; this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                         onkeydown="if (this.readOnly || this.disabled) return false;"
+                         onpaste="if (this.readOnly || this.disabled) return false;"
                          class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold font-mono text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
                   <button type="button" id="btnVerifyWhatsapp" onclick="appController.verifyCompanyWhatsappMobile()" 
                           class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
@@ -1274,7 +1276,15 @@ class AppController {
           statusAlert.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
           statusAlert.innerText = "✓ Verified";
         }
-        if (mobileInput) mobileInput.readOnly = true;
+        if (mobileInput) {
+          mobileInput.readOnly = true;
+          mobileInput.disabled = true;
+          mobileInput.style.pointerEvents = 'none';
+          mobileInput.style.userSelect = 'none';
+          mobileInput.style.backgroundColor = '#f8fafc';
+          mobileInput.style.color = '#334155';
+          mobileInput.classList.add('bg-slate-100', 'cursor-not-allowed', 'pointer-events-none', 'select-none');
+        }
       } else {
         if (statusAlert) {
           statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
