@@ -961,7 +961,7 @@ class AppController {
                 </div>
                 <div class="flex gap-2">
                   <input type="tel" id="regMobile" required placeholder="e.g. 9876543210" maxlength="10"
-                         oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                         oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10); const alert = document.getElementById('waStatusAlert'); if (alert && !alert.innerText.includes('✓')) alert.classList.add('hidden'); const btn = document.getElementById('btnVerifyWhatsapp'); if (btn) { btn.disabled = false; btn.innerText = 'Verify'; }"
                          class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold font-mono text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:font-sans focus:border-blue-500 focus:outline-none transition shadow-sm">
                   <button type="button" id="btnVerifyWhatsapp" onclick="appController.verifyCompanyWhatsappMobile()" 
                           class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition">
