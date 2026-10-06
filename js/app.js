@@ -1238,9 +1238,9 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
         statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
-        statusAlert.innerText = "Please enter a valid 10-digit phone number.";
+        statusAlert.innerText = "Verification failed. Please try again.";
       } else {
-        alert("Please enter a valid 10-digit phone number.");
+        alert("Verification failed. Please try again.");
       }
       return;
     }
@@ -1279,7 +1279,7 @@ class AppController {
         if (statusAlert) {
           statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
           statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
-          statusAlert.innerText = (data && data.error) || "Please enter a valid 10-digit phone number.";
+          statusAlert.innerText = (data && data.error) || "Verification failed. Please try again.";
         }
       }
     } catch (e) {
@@ -1291,7 +1291,7 @@ class AppController {
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
         statusAlert.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
-        statusAlert.innerText = "Verification failed. Please check phone number and try again.";
+        statusAlert.innerText = "Verification failed. Please try again.";
       }
     }
   }
