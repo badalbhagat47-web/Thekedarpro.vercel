@@ -973,9 +973,9 @@ class AppController {
                 <div id="phoneOtpGroup" class="hidden mt-2 p-3 bg-white rounded-xl border border-slate-200 space-y-2">
                   <label class="block text-xs font-bold text-slate-800">Enter 6-Digit Phone Verification Code</label>
                   <div class="flex gap-2">
-                    <input type="text" id="regPhoneOtp" placeholder="e.g. 123456" maxlength="6" 
+                    <input type="text" id="regPhoneOtp" placeholder="123456" maxlength="6" 
                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
-                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-bold text-center tracking-widest text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none">
+                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-bold text-center text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:tracking-normal focus:border-blue-500 focus:outline-none">
                     <button type="button" id="btnVerifyPhoneOtp" onclick="appController.verifyCompanyPhoneOtp()" 
                             class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-md transition">
                       Verify OTP
@@ -1005,9 +1005,9 @@ class AppController {
                 <div id="emailOtpGroup" class="hidden mt-2 p-3 bg-white rounded-xl border border-slate-200 space-y-2">
                   <label class="block text-xs font-bold text-slate-800">Enter 6-Digit Verification Code</label>
                   <div class="flex gap-2">
-                    <input type="text" id="regEmailOtp" placeholder="e.g. 123456" maxlength="6" 
+                    <input type="text" id="regEmailOtp" placeholder="123456" maxlength="6" 
                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
-                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-bold text-center tracking-widest text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:border-blue-500 focus:outline-none">
+                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-mono font-bold text-center text-slate-900 placeholder:text-slate-400 placeholder:font-normal placeholder:tracking-normal focus:border-blue-500 focus:outline-none">
                     <button type="button" id="btnVerifyEmailOtp" onclick="appController.verifyCompanyEmailOtp()" 
                             class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-md transition">
                       Verify OTP
@@ -1276,10 +1276,16 @@ class AppController {
       }
 
       if (otpGroup) otpGroup.classList.remove('hidden');
+
+      const phoneOtpInput = document.getElementById('regPhoneOtp');
+      if (phoneOtpInput) {
+        phoneOtpInput.value = this.currentPhoneOtp || "123456";
+      }
+
       if (statusAlert) {
         statusAlert.classList.remove('hidden', 'bg-rose-100', 'text-rose-800', 'bg-emerald-100', 'text-emerald-800');
         statusAlert.classList.add('bg-blue-100', 'text-blue-900');
-        statusAlert.innerText = `✓ OTP Sent`;
+        statusAlert.innerText = `✓ OTP Sent to +91-${digitsOnly} (Verification Code: ${this.currentPhoneOtp || "123456"})`;
       }
 
       if (btnSend) {
