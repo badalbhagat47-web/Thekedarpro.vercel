@@ -880,25 +880,14 @@ class AppController {
         </div>
 
         <form onsubmit="appController.submitCompanyRegistrationForm(event)" class="space-y-4">
-          <!-- REGISTRATION TYPE SEGMENTED TOGGLE -->
-          <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100 rounded-2xl text-xs font-bold">
-            <label id="lblGstOption" onclick="appController.toggleRegGstField(true)" class="flex items-center justify-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all bg-white shadow-sm text-blue-700 font-extrabold select-none">
-              <input type="radio" id="radioGstTypeGst" name="regGstType" value="GST" checked class="hidden">
-              <i class="fa-solid fa-building-circle-check"></i>
-              <span>GST Registered</span>
-            </label>
-            <label id="lblNonGstOption" onclick="appController.toggleRegGstField(false)" class="flex items-center justify-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all text-slate-500 hover:text-slate-700 font-bold select-none">
-              <input type="radio" id="radioGstTypeNonGst" name="regGstType" value="NON_GST" class="hidden">
-              <i class="fa-solid fa-store"></i>
-              <span>Non-GST</span>
-            </label>
-          </div>
+          <!-- Hidden default regGstType input -->
+          <input type="hidden" id="radioGstTypeGst" name="regGstType" value="GST">
 
           <!-- GSTIN INPUT ROW -->
           <div id="gstinFieldGroup" class="space-y-1.5">
-            <label class="block text-xs font-bold text-slate-700">GSTIN Number <span class="text-rose-500">*</span></label>
+            <label class="block text-xs font-bold text-slate-700">GSTIN Number</label>
             <div class="flex gap-2">
-              <input type="text" id="regGstin" required placeholder="e.g. 07ASRPB9910D1ZR" 
+              <input type="text" id="regGstin" placeholder="E.G. 07ASRPB9910D1ZR" 
                      class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold uppercase focus:bg-white focus:border-blue-500 focus:outline-none transition">
               <button type="button" onclick="appController.verifyGstinClick()" 
                       class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow-sm transition flex items-center gap-1.5">
