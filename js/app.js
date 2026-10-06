@@ -258,19 +258,19 @@ class AppController {
     const isSuperAdmin = this.currentUser && this.currentUser.role === 'SUPER_ADMIN';
 
     if (userNameEl) {
-      userNameEl.innerText = isSuperAdmin ? 'Bhagat Ji (Platform Owner)' : (this.currentUser.name || this.currentUser.companyName || 'User');
+      userNameEl.innerText = isSuperAdmin ? 'Bhagat Ji' : (this.currentUser.name || this.currentUser.companyName || 'User');
     }
 
     if (userRoleEl) {
       if (isSuperAdmin) {
-        userRoleEl.className = 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider shadow-sm';
-        userRoleEl.innerText = 'SUPER ADMIN';
+        userRoleEl.className = 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wide';
+        userRoleEl.innerText = 'Super Admin';
       } else if (this.currentUser.role === 'COMPANY_ADMIN') {
-        userRoleEl.className = 'bg-indigo-600 text-white font-extrabold px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider';
-        userRoleEl.innerText = 'CONTRACTOR ADMIN';
+        userRoleEl.className = 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wide';
+        userRoleEl.innerText = 'Contractor Admin';
       } else {
-        userRoleEl.className = 'bg-slate-700 text-slate-200 font-bold px-2 py-0.5 rounded-lg text-[10px] uppercase tracking-wider';
-        userRoleEl.innerText = 'WORKER';
+        userRoleEl.className = 'bg-slate-700/60 text-slate-300 border border-slate-600/40 font-semibold px-2 py-0.5 rounded text-[10px] uppercase tracking-wide';
+        userRoleEl.innerText = 'Worker';
       }
     }
   }
@@ -418,11 +418,8 @@ class AppController {
           <span>Revenue & Payments</span>
         </a>
 
-        <div class="pt-4 mt-auto border-t border-slate-800 space-y-2">
-          <button onclick="appController.logout()" class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white rounded-xl text-xs font-semibold transition-all border border-rose-500/20">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Logout</span>
-          </button>
+        <div class="pt-4 mt-auto border-t border-slate-800/80 text-[11px] text-slate-500 text-center font-medium">
+          Thekedar Pro SaaS v2.5
         </div>
       `;
     } else if (role === 'WORKER') {
@@ -463,11 +460,8 @@ class AppController {
           <span>${t('changePassword')}</span>
         </a>
 
-        <div class="pt-4 mt-auto border-t border-slate-800">
-          <button onclick="appController.logout()" class="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white rounded-xl text-xs font-bold transition-all card-3d">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>${t('logout')}</span>
-          </button>
+        <div class="pt-4 mt-auto border-t border-slate-800/80 text-[11px] text-slate-500 text-center font-medium">
+          Thekedar Worker Portal
         </div>
       `;
     } else {
